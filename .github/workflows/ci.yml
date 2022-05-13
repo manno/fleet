@@ -16,6 +16,10 @@ on:
     - 'scripts/**'
     - '*.md'
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   GOARCH: amd64
   CGO_ENABLED: 0
@@ -90,6 +94,68 @@ jobs:
           tar -xz --strip-components=2 -f rancher-linux-amd64-v2.6.0.tar.gz -C /home/runner/.local/bin
           rancher --version
       -
+        name: Build fleet binaries
+        run: |
+          go build -o bin/fleetcontroller-linux-$GOARCH ./cmd/fleetcontroller
+
+          go build -o "bin/fleet-linux-$GOARCH"
+          go build -o "bin/fleetagent-linux-$GOARCH" ./cmd/fleetagent
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Docker meta - fleet
+        id: meta-fleet
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/manno/fleet
+          tags: type=sha
+      -
+        name: Build and push - fleet
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: package/Dockerfile
+          build-args: |
+            ARCH=${{ env.GOARCH }}
+          push: true
+          tags: ${{ steps.meta-fleet.outputs.tags }}
+          labels: ${{ steps.meta-fleet.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      -
+        name: Docker meta - fleetagent
+        id: meta-fleet-agent
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/manno/fleet-agent
+          tags: type=sha
+      -
+        name: Build and push - fleetagent
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: package/Dockerfile.agent
+          build-args: |
+            ARCH=${{ env.GOARCH }}
+          push: true
+          tags: ${{ steps.meta-fleet-agent.outputs.tags }}
+          labels: ${{ steps.meta-fleet-agent.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      -
         name: Set up k3d control-plane cluster
         uses: AbsaOSS/k3d-action@v2
         # k3d will automatically create a network named k3d-test-cluster-1 with the range 172.18.0.0/16
@@ -111,23 +177,6 @@ jobs:
             -p "444:443@agent:0:direct"
             --agents 1
             --network "nw02"
-      -
-        name: go build
-        run: |
-          go build -o bin/fleetcontroller-linux-$GOARCH ./cmd/fleetcontroller
-
-          go build -o "bin/fleet-linux-$GOARCH"
-          go build -o "bin/fleetagent-linux-$GOARCH" ./cmd/fleetagent
-      -
-        name: docker build
-        run: |
-          docker build -f package/Dockerfile -t rancher/fleet:dev --build-arg="ARCH=$GOARCH"  .
-          docker build -f package/Dockerfile.agent -t rancher/fleet-agent:dev --build-arg="ARCH=$GOARCH" .
-      -
-        name: k3d import images
-        run: |
-          k3d image import rancher/fleet:dev rancher/fleet-agent:dev
-          k3d image import rancher/fleet-agent:dev -c "k3s-second"
       -
         name: Set up latest Rancher
         run: |
@@ -154,7 +203,8 @@ jobs:
         run: |
           # wait for cluster to settle
           sleep 30
-          ./.github/assets/upgrade-rancher-fleet-to-dev-fleet.sh
+          echo "${{ steps.meta-fleet.outputs.tags }}"
+          ./.github/assets/upgrade-rancher-fleet-to-dev-fleet.sh ${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}
       -
         name: E2E tests for examples
         run: |
