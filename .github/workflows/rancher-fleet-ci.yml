@@ -1,4 +1,4 @@
-name: ci
+name: Rancher Fleet CI
 
 on:
   schedule:
@@ -25,36 +25,8 @@ env:
   CGO_ENABLED: 0
   SETUP_GO_VERSION: '^1.18'
 
-
 jobs:
-  unit-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      -
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      -
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
-      -
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      -
-        name: unit-test
-        run: go test -shuffle=on $(go list ./... | grep -v /e2e)
-
-
   e2e-test:
-    needs: [unit-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -242,10 +214,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: gha-e2e-logs-${{ github.sha }}-${{ github.run_id }}
+          name: gha-fleet-e2e-logs-${{ github.sha }}-${{ github.run_id }}
           path: |
             tmp/*.json
             tmp/*.log
           retention-days: 2
-
-
