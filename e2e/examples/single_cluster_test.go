@@ -4,14 +4,21 @@ import (
 	"time"
 
 	"github.com/rancher/fleet/e2e/testenv"
+	"github.com/rancher/fleet/e2e/testenv/kubectl"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("SingleCluster", func() {
-	var asset string
-	k := env.Kubectl.Context(testenv.Fleet).Namespace("fleet-default")
+	var (
+		asset string
+		k     kubectl.Command
+	)
+
+	BeforeEach(func() {
+		k = env.Kubectl.Context(env.Fleet).Namespace(env.Namespace)
+	})
 
 	JustBeforeEach(func() {
 		out, err := k.Apply("-f", testenv.AssetPath(asset))
@@ -31,7 +38,7 @@ var _ = Describe("SingleCluster", func() {
 
 		It("deploys the helm in the downstream cluster", func() {
 			Eventually(func() string {
-				out, _ := env.Kubectl.Context(testenv.Downstream).Namespace("fleet-helm-example").Get("pods")
+				out, _ := env.Kubectl.Context(env.Downstream).Namespace("fleet-helm-example").Get("pods")
 				return out
 			}, 5*time.Minute).Should(ContainSubstring("frontend-"))
 		})
