@@ -15,7 +15,7 @@ func TestE2E(t *testing.T) {
 }
 
 var (
-	env testenv.Env
+	env *testenv.Env
 )
 
 var _ = BeforeSuite(func() {
