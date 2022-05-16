@@ -1,4 +1,4 @@
-name: ci
+name: Rancher Fleet CI
 
 on:
   schedule:
