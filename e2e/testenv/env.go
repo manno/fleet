@@ -3,9 +3,12 @@ package testenv
 
 import (
 	"os"
+	"time"
 
 	"github.com/rancher/fleet/e2e/testenv/kubectl"
 )
+
+const Timeout = 5 * time.Minute
 
 type Env struct {
 	Kubectl    kubectl.Command

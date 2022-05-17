@@ -154,6 +154,12 @@ jobs:
         run: |
           ./.github/assets/setup-latest-rancher.sh
       -
+        name: Set up tmate debug session
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
+      -
         name: Register Rancher's downstream clusters
         run: |
           kubectl config use-context k3d-k3s-default
@@ -163,13 +169,10 @@ jobs:
           { grep -q -m 1 -e "tls-rancher-ingress.*True"; kill $!; } < <(kubectl get certs -n cattle-system -w)
           ./.github/assets/register-downstream-clusters.sh
           until rancher cluster list | grep second | grep -q active; do echo waiting for cluster registration; sleep 5; done
-      -
-        name: Set up tmate debug session
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 15
-        with:
-          limit-access-to-actor: true
+          # add label to crd for second cluster
+          kubectl config use-context k3d-k3s-default
+          name=$(kubectl get clusters.fleet.cattle.io -o=jsonpath='{.items[*].metadata.name}' -n fleet-default)
+          kubectl patch clusters.fleet.cattle.io -n fleet-default "$name" --type=json -p '[{"op": "add", "path": "/metadata/labels/env", "value": "test" }]'
       -
         name: Deploy development fleet
         run: |
@@ -181,7 +184,7 @@ jobs:
         name: E2E tests for examples
         run: |
           kubectl config use-context k3d-k3s-default
-          ginkgo e2e/examples
+          ginkgo e2e/multi-cluster
       # -
       #   name: Tmate session for failed runs
       #   if: ${{ failure() }}
