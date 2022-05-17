@@ -1,0 +1,251 @@
+name: ci
+
+on:
+  schedule:
+    - cron:  '0 5 * * *'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: "false"
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - 'charts/**'
+    - 'scripts/**'
+    - '*.md'
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  GOARCH: amd64
+  CGO_ENABLED: 0
+  SETUP_GO_VERSION: '^1.18'
+
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+      -
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      -
+        name: unit-test
+        run: go test -shuffle=on $(go list ./... | grep -v /e2e)
+
+
+  e2e-test:
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+      -
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      -
+        name: Install Ginkgo CLI
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.1
+      -
+        uses: actions/cache@v3
+        id: rancher-cli-cache
+        with:
+          path: /home/runner/.local/bin
+          key: ${{ runner.os }}-rancher-cli-2.6.0
+      -
+        name: Install Rancher CLI
+        if: steps.rancher-cli-cache.outputs.cache-hit != 'true'
+        run: |
+          # download an older CLI to avoid https://github.com/rancher/rancher/issues/37574
+          mkdir -p /home/runner/.local/bin
+          wget -q https://github.com/rancher/cli/releases/download/v2.6.0/rancher-linux-amd64-v2.6.0.tar.gz
+          tar -xz --strip-components=2 -f rancher-linux-amd64-v2.6.0.tar.gz -C /home/runner/.local/bin
+          rancher --version
+      -
+        name: Build fleet binaries
+        run: |
+          go build -o bin/fleetcontroller-linux-$GOARCH ./cmd/fleetcontroller
+
+          go build -o "bin/fleet-linux-$GOARCH"
+          go build -o "bin/fleetagent-linux-$GOARCH" ./cmd/fleetagent
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Docker meta - fleet
+        id: meta-fleet
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/manno/fleet
+          tags: type=sha
+      -
+        name: Build and push - fleet
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: package/Dockerfile
+          build-args: |
+            ARCH=${{ env.GOARCH }}
+          push: true
+          tags: ${{ steps.meta-fleet.outputs.tags }}
+          labels: ${{ steps.meta-fleet.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      -
+        name: Docker meta - fleetagent
+        id: meta-fleet-agent
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/manno/fleet-agent
+          tags: type=sha
+      -
+        name: Build and push - fleetagent
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: package/Dockerfile.agent
+          build-args: |
+            ARCH=${{ env.GOARCH }}
+          push: true
+          tags: ${{ steps.meta-fleet-agent.outputs.tags }}
+          labels: ${{ steps.meta-fleet-agent.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      -
+        name: Set up k3d control-plane cluster
+        uses: AbsaOSS/k3d-action@v2
+        # k3d will automatically create a network named k3d-test-cluster-1 with the range 172.18.0.0/16
+        with:
+          cluster-name: "k3s-default"
+          args: >-
+            -p "80:80@agent:0:direct"
+            -p "443:443@agent:0:direct"
+            --agents 3
+            --network "nw01"
+      -
+        name: Set up k3d downstream cluster
+        uses: AbsaOSS/k3d-action@v2
+        # k3d automatically creates a network named k3d-test-cluster-2 with a range of 172.19.0.0/16
+        with:
+          cluster-name: "k3s-second"
+          args: >-
+            -p "81:80@agent:0:direct"
+            -p "444:443@agent:0:direct"
+            --agents 1
+            --network "nw02"
+      -
+        name: Set up latest Rancher
+        run: |
+          ./.github/assets/setup-latest-rancher.sh
+      -
+        name: Register Rancher's downstream clusters
+        run: |
+          kubectl config use-context k3d-k3s-default
+          # wait for loadBalancer IPs
+          { grep -q -m 1 -e ".*"; kill $!; } < <(kubectl get ingress -n cattle-system rancher -o 'go-template={{range .status.loadBalancer.ingress}}{{.ip}}{{"\n"}}{{end}}' -w)
+          # wait for certificate
+          { grep -q -m 1 -e "tls-rancher-ingress.*True"; kill $!; } < <(kubectl get certs -n cattle-system -w)
+          ./.github/assets/register-downstream-clusters.sh
+          until rancher cluster list | grep second | grep -q active; do echo waiting for cluster registration; sleep 5; done
+      -
+        name: Set up tmate debug session
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
+      -
+        name: Deploy development fleet
+        run: |
+          # wait for cluster to settle
+          sleep 30
+          echo "${{ steps.meta-fleet.outputs.tags }}"
+          ./.github/assets/upgrade-rancher-fleet-to-dev-fleet.sh ${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}
+      -
+        name: E2E tests for examples
+        run: |
+          kubectl config use-context k3d-k3s-default
+          ginkgo e2e/examples
+      # -
+      #   name: Tmate session for failed runs
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
+      #   timeout-minutes: 15
+      #   with:
+      #     limit-access-to-actor: true
+      -
+        name: Dump failed environment
+        if: failure()
+        run: |
+          mkdir -p tmp
+          kubectl config use-context k3d-k3s-default
+          kubectl get -A pod,secret,service,ingress -o json > tmp/cluster.json
+          kubectl get -A events > tmp/events.log
+          helm list -A > tmp/helm.log
+          kubectl logs -n cattle-fleet-system -l app=fleet-controller > tmp/fleetcontroller.log
+          kubectl logs -n cattle-fleet-system -l app=fleet-agent > tmp/fleetagent.log
+
+          kubectl config use-context k3d-k3s-second
+          kubectl get -A pod,secret,service,ingress -o json > tmp/cluster-second.json
+          kubectl get -A events > tmp/events-second.log
+          helm list -A > tmp/helm-second.log
+          kubectl logs -n cattle-fleet-system -l app=fleet-agent > tmp/fleetagent-second.log
+
+          docker logs k3d-k3s-default-server-0 &> tmp/k3s.log
+          docker exec k3d-k3s-default-server-0 sh -c 'cd /var/log/containers; grep -r "." .' > tmp/containers.log
+      -
+        name: Upload Logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: gha-e2e-logs-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            tmp/*.json
+            tmp/*.log
+          retention-days: 2
+
+
