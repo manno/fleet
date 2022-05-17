@@ -117,9 +117,8 @@ jobs:
         name: E2E tests for examples
         env:
           FLEET_E2E_NS: fleet-local
-          FLEET_E2E_CLUSTER_DOWNSTREAM: k3d-k3s-default
         run: |
-          ginkgo e2e/examples
+          ginkgo e2e/single-cluster
       # -
       #   name: Tmate session for failed runs
       #   if: ${{ failure() }}
