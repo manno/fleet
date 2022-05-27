@@ -1,0 +1,165 @@
+name: E2E Standalone Multi-Cluster Fleet
+
+on:
+  schedule:
+    - cron:  '0 5 30 * *'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: "false"
+  pull_request:
+    paths-ignore:
+    - 'docs/**'
+    - 'charts/**'
+    - 'scripts/**'
+    - '*.md'
+
+env:
+  GOARCH: amd64
+  CGO_ENABLED: 0
+  SETUP_GO_VERSION: '^1.18'
+
+jobs:
+  e2e-fleet-mc-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+      -
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      -
+        uses: actions/cache@v3
+        with:
+          path: |
+            e2e/assets/terraform/.terraform/modules
+            e2e/assets/terraform/.terraform/providers
+          key: ${{ runner.os }}-tf-${{ hashFiles('e2e/assets/terraform/.terraform.lock.hcl') }}
+      -
+        name: Install Ginkgo CLI
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.1
+      -
+        name: Build fleet binaries
+        run: |
+          go build -o bin/fleetcontroller-linux-$GOARCH ./cmd/fleetcontroller
+
+          go build -o "bin/fleet-linux-$GOARCH"
+          go build -o "bin/fleetagent-linux-$GOARCH" ./cmd/fleetagent
+      -
+        name: Build Docker images
+        run: |
+          docker build -f package/Dockerfile -t rancher/fleet:dev --build-arg="ARCH=$GOARCH"  .
+          docker build -f package/Dockerfile.agent -t rancher/fleet-agent:dev --build-arg="ARCH=$GOARCH" .
+      -
+        name: Set up k3d cluster
+        uses: AbsaOSS/k3d-action@v2
+        # k3d will automatically create a network named k3d-test-cluster-1 with the range 172.18.0.0/16
+        with:
+          cluster-name: "fleet"
+          args: >-
+            -p "80:80@agent:0:direct"
+            -p "443:443@agent:0:direct"
+            --agents 3
+            --network "nw01"
+      -
+        name: Set up k3d downstream cluster
+        uses: AbsaOSS/k3d-action@v2
+        # k3d automatically creates a network named k3d-test-cluster-2 with a range of 172.19.0.0/16
+        with:
+          cluster-name: "downstream"
+          args: >-
+            -p "81:80@agent:0:direct"
+            -p "444:443@agent:0:direct"
+            --agents 1
+            --network "nw02"
+      -
+        name: K3d import images
+        run: |
+          k3d image import rancher/fleet:dev rancher/fleet-agent:dev -m direct -c fleet
+          # TODO multi cluster is flaky if images are not in a registry
+          k3d image import rancher/fleet-agent:dev -m direct -c downstream
+      -
+        name: Set up tmate debug session
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
+      -
+        name: Deploy standalone fleet
+        env:
+          TF_VAR_fleet_crd_chart: "../fleet/charts/fleet-crd"
+          TF_VAR_fleet_chart: "../fleet/charts/fleet"
+          TF_VAR_fleet_agent_chart: "../fleet/charts/fleet-agent"
+          TF_VAR_fleet_api_url: "172.18.0.1.omg.howdoi.website"
+          TF_VAR_fleet_context: "k3d-fleet"
+          TF_VAR_fleet_downstream_context: "k3d-downstream"
+        run: |
+          kubectl config use-context k3d-fleet
+          cd e2e/assets/terraform
+          terraform init
+
+          # TODO use existing terraform module from https://github.com/moio/fleetaform
+          #terraform apply -target=module.clusters -auto-approve
+
+          # extract clusters CA from kubeconfig
+          export TF_VAR_fleet_ca_certificate=$(ruby -ryaml -rbase64  -e 'kc=YAML.load_file(ENV["HOME"]+"/.kube/config");b=kc["clusters"].select{|c|c["name"]=="k3d-k3s-default"}[0]["cluster"]["certificate-authority-data"];puts Base64.decode64(b)')
+          terraform apply -auto-approve
+
+          # TODO label downstream cluster via terraform?
+          name=$(kubectl get clusters.fleet.cattle.io -o=jsonpath='{.items[-1].metadata.name}' -n fleet-local)
+          kubectl patch clusters.fleet.cattle.io -n fleet-local "$name" --type=json -p '[{"op": "add", "path": "/metadata/labels/env", "value": "test" }]'
+      -
+        name: E2E tests for examples
+        env:
+          FLEET_E2E_NS: fleet-local
+          FLEET_E2E_CLUSTER: k3d-fleet
+          FLEET_E2E_CLUSTER_DOWNSTREAM: k3d-downstream
+        run: |
+          kubectl config use-context k3d-fleet
+          ginkgo e2e/multi-cluster
+      # -
+      #   name: Tmate session for failed runs
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
+      #   timeout-minutes: 15
+      #   with:
+      #     limit-access-to-actor: true
+      -
+        name: Dump failed environment
+        if: failure()
+        run: |
+          mkdir -p tmp
+          kubectl get -A pod,secret,service,ingress -o json > tmp/cluster.json
+          kubectl get -A events > tmp/events.log
+          helm list -A > tmp/helm.log
+          kubectl logs -n fleet-system -l app=fleet-controller > tmp/fleetcontroller.log
+          kubectl logs -n fleet-system -l app=fleet-agent > tmp/fleetagent.log
+
+          docker logs k3d-fleet-server-0 &> tmp/k3s.log
+          docker exec k3d-fleet-server-0 sh -c 'cd /var/log/containers; grep -r "." .' > tmp/containers.log
+      -
+        name: Upload Logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: gha-fleet-e2e-standalone-logs-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            tmp/*.json
+            tmp/*.log
+          retention-days: 2

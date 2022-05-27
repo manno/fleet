@@ -1,0 +1,7 @@
+# Default values for fleet-token-creator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+tokenName: fleet-token
+fleetNamespace: fleet-local
+tokenTtl: null # infinite

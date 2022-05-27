@@ -1,0 +1,7 @@
+apiVersion: "fleet.cattle.io/v1alpha1"
+kind: ClusterRegistrationToken
+metadata:
+  name: {{ .Values.tokenName }}
+  namespace: {{ .Values.fleetNamespace }}
+spec:
+  ttl: {{ .Values.tokenTtl }}
