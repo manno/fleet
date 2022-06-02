@@ -1,4 +1,4 @@
-name: Rancher Fleet CI
+name: E2E Rancher Fleet
 
 on:
   schedule:
@@ -168,6 +168,7 @@ jobs:
 
           # wait for cluster to settle
           sleep 30
+
           # add label to crd for second cluster
           kubectl config use-context k3d-k3s-default
           name=$(kubectl get clusters.fleet.cattle.io -o=jsonpath='{.items[*].metadata.name}' -n fleet-default)
