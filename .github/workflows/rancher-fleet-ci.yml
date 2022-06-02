@@ -154,13 +154,6 @@ jobs:
         run: |
           ./.github/assets/setup-latest-rancher.sh
       -
-        name: Tmate session for failed runs
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 15
-        with:
-          limit-access-to-actor: true
-      -
         name: Register Rancher's downstream clusters
         run: |
           kubectl config use-context k3d-k3s-default
@@ -188,6 +181,13 @@ jobs:
         run: |
           kubectl config use-context k3d-k3s-default
           ginkgo e2e/multi-cluster
+      -
+        name: Tmate session for failed runs
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15
+        with:
+          limit-access-to-actor: true
       -
         name: Dump failed environment
         if: failure()
