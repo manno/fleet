@@ -1,4 +1,4 @@
-name: Standalone Fleet CI
+name: E2E Standalone Fleet
 
 on:
   schedule:
@@ -22,33 +22,7 @@ env:
   SETUP_GO_VERSION: '^1.18'
 
 jobs:
-  unit-test:
-    runs-on: ubuntu-latest
-
-    steps:
-      -
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      -
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
-      -
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      -
-        name: unit-test
-        run: go test -shuffle=on $(go list ./... | grep -v /e2e)
-
   e2e-fleet-test:
-    needs: [unit-test]
     runs-on: ubuntu-latest
 
     steps:
@@ -135,8 +109,8 @@ jobs:
           kubectl get -A pod,secret,service,ingress -o json > tmp/cluster.json
           kubectl get -A events > tmp/events.log
           helm list -A > tmp/helm.log
-          kubectl logs -n cattle-fleet-system -l app=fleet-controller > tmp/fleetcontroller.log
-          kubectl logs -n cattle-fleet-system -l app=fleet-agent > tmp/fleetagent.log
+          kubectl logs -n fleet-system -l app=fleet-controller > tmp/fleetcontroller.log
+          kubectl logs -n fleet-system -l app=fleet-agent > tmp/fleetagent.log
 
           docker logs k3d-k3s-default-server-0 &> tmp/k3s.log
           docker exec k3d-k3s-default-server-0 sh -c 'cd /var/log/containers; grep -r "." .' > tmp/containers.log
