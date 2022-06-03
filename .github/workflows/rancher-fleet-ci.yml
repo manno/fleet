@@ -86,13 +86,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
+        name: Get uuid
+        id: uuid
+        run: echo "::set-output name=uuid::$(uuidgen)"
+      -
         name: Docker meta - fleet
         id: meta-fleet
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/rancher/fleet-test
-          tags: type=sha
+            ttl.sh/rancher/fleet-${{ steps.uuid.outputs.uuid }}
+          tags: type=raw,value=1h
       -
         name: Build and push - fleet
         uses: docker/build-push-action@v3
@@ -112,8 +116,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/rancher/fleet-agent-test
-          tags: type=sha
+            ttl.sh/rancher/fleet-agent-${{ steps.uuid.outputs.uuid }}
+          tags: type=raw,value=1h
       -
         name: Build and push - fleetagent
         uses: docker/build-push-action@v3
