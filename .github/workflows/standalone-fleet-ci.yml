@@ -94,13 +94,6 @@ jobs:
           FLEET_E2E_NS: fleet-local
         run: |
           ginkgo e2e/single-cluster
-      # -
-      #   name: Tmate session for failed runs
-      #   if: ${{ failure() }}
-      #   uses: mxschmitt/action-tmate@v3
-      #   timeout-minutes: 15
-      #   with:
-      #     limit-access-to-actor: true
       -
         name: Dump failed environment
         if: failure()
