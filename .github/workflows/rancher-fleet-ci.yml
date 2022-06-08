@@ -16,6 +16,10 @@ on:
     - 'scripts/**'
     - '*.md'
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   GOARCH: amd64
   CGO_ENABLED: 0
@@ -82,17 +86,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: Get uuid
-        id: uuid
-        run: echo "::set-output name=uuid::$(uuidgen)"
-      -
         name: Docker meta - fleet
         id: meta-fleet
         uses: docker/metadata-action@v4
         with:
           images: |
-            ttl.sh/rancher/fleet-${{ steps.uuid.outputs.uuid }}
-          tags: type=raw,value=1h
+            ghcr.io/manno/fleet
+          tags: type=sha
       -
         name: Build and push - fleet
         uses: docker/build-push-action@v3
@@ -104,14 +104,16 @@ jobs:
           push: true
           tags: ${{ steps.meta-fleet.outputs.tags }}
           labels: ${{ steps.meta-fleet.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       -
         name: Docker meta - fleetagent
         id: meta-fleet-agent
         uses: docker/metadata-action@v4
         with:
           images: |
-            ttl.sh/rancher/fleet-agent-${{ steps.uuid.outputs.uuid }}
-          tags: type=raw,value=1h
+            ghcr.io/manno/fleet-agent
+          tags: type=sha
       -
         name: Build and push - fleetagent
         uses: docker/build-push-action@v3
@@ -123,6 +125,8 @@ jobs:
           push: true
           tags: ${{ steps.meta-fleet-agent.outputs.tags }}
           labels: ${{ steps.meta-fleet-agent.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       -
         name: Set up k3d control-plane cluster
         uses: AbsaOSS/k3d-action@v2
