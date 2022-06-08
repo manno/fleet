@@ -1,8 +1,11 @@
 package examples_test
 
 import (
+	"encoding/json"
+
 	"github.com/rancher/fleet/e2e/testenv"
 	"github.com/rancher/fleet/e2e/testenv/kubectl"
+	appsv1 "k8s.io/api/apps/v1"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -55,6 +58,14 @@ var _ = Describe("multiCluster", func() {
 					out, _ := kd.Namespace("fleet-mc-manifest-example").Get("pods")
 					return out
 				}, testenv.Timeout).Should(SatisfyAll(ContainSubstring("frontend-"), ContainSubstring("redis-")))
+
+				out, err := kd.Namespace("fleet-mc-manifest-example").Get("deployment", "-o", "json", "frontend")
+				Expect(err).ToNot(HaveOccurred())
+
+				d := &appsv1.Deployment{}
+				err = json.Unmarshal([]byte(out), d)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(d.Spec.Replicas).To(Equal(3))
 			})
 		})
 

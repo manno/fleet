@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wait-for-token-secret-job
+  namespace: {{ .Values.fleetNamespace }}
+spec:
+  template:
+    spec:
+      containers:
+        - name: dummy
+          image: busybox
+          env:
+            - name: DUMMY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.tokenName }}
+                  key: values
+                  optional: false
+      restartPolicy: Never
