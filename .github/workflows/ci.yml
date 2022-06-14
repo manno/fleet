@@ -41,7 +41,7 @@ jobs:
         name: unit-test
         run: go test -shuffle=on $(go list ./... | grep -v /e2e | grep -v /integration)
 
-  integration-test:
+  integration-cli-test:
     needs: [unit-test]
     runs-on: ubuntu-latest
 
@@ -75,3 +75,8 @@ jobs:
       -
         name: Test
         run: ginkgo integration
+
+  integration-controller-test:
+
+    # start k3d
+    # test the controllers
