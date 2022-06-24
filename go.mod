@@ -51,7 +51,7 @@ require (
 	github.com/rancher/wrangler-cli v0.0.0-20211112052728-f172e9bf59af
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.1.3
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.5
 	go.mozilla.org/sops/v3 v3.6.1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	helm.sh/helm/v3 v3.5.1
@@ -252,7 +252,7 @@ require (
 	gopkg.in/urfave/cli.v1 v1.20.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 	k8s.io/apiextensions-apiserver v0.21.0 // indirect
 	k8s.io/apiserver v0.21.3 // indirect
