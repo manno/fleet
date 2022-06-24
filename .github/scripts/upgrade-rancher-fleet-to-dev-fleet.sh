@@ -15,7 +15,7 @@ else
   agentTag="dev"
 fi
 
-kubectl config use-context k3d-k3s-default
+kubectl config use-context k3d-upstream
 
 until helm -n cattle-fleet-system status fleet-crd  | grep -q "STATUS: deployed"; do echo waiting for original fleet-crd chart to be deployed; sleep 1; done
 
@@ -35,7 +35,7 @@ helm upgrade fleet charts/fleet \
 kubectl -n cattle-fleet-system rollout status deploy/fleet-controller
 helm list -A
 
-kubectl config use-context k3d-k3s-second
+kubectl config use-context k3d-downstream
 
 # wait for fleet to be up on downstream cluster
 sleep 30

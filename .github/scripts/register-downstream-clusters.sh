@@ -2,8 +2,8 @@
 
 set -euxo pipefail
 
-url="${1-172.18.0.1.omg.howdoi.website}"
-cluster="${2-k3d-k3s-second}"
+url="${url-172.18.0.1.omg.howdoi.website}"
+cluster="cluster-k3d-downstream}"
 
 # hardcoded token, cluster is ephemeral and private
 token="token-ci:zfllcbdr4677rkj4hmlr8rsmljg87l7874882928khlfs2pmmcq7l5"
