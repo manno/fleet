@@ -5,10 +5,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/argoproj/argo-cd/pkg/apis/application/v1alpha1"
-	"github.com/argoproj/argo-cd/util/argo"
-	"github.com/argoproj/gitops-engine/pkg/diff"
 	jsonpatch "github.com/evanphx/json-patch"
+	"github.com/rancher/fleet/modules/agent/pkg/deployer/diff"
+	"github.com/rancher/fleet/modules/agent/pkg/deployer/diff/resource"
 	fleetnorm "github.com/rancher/fleet/modules/agent/pkg/deployer/normalizers"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/wrangler/pkg/apply"
@@ -97,7 +96,7 @@ func (m *Manager) plan(bd *fleet.BundleDeployment, ns string, objs ...runtime.Ob
 }
 
 func (m *Manager) normalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeployment) (diff.Normalizer, error) {
-	var ignore []v1alpha1.ResourceIgnoreDifferences
+	var ignore []resource.ResourceIgnoreDifferences
 	jsonPatchNorm := &fleetnorm.JSONPatchNormalizer{}
 	if bd.Spec.Options.Diff != nil {
 		for _, patch := range bd.Spec.Options.Diff.ComparePatches {
@@ -105,7 +104,7 @@ func (m *Manager) normalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeploy
 			if err != nil {
 				return nil, err
 			}
-			ignore = append(ignore, v1alpha1.ResourceIgnoreDifferences{
+			ignore = append(ignore, resource.ResourceIgnoreDifferences{
 				Namespace:    patch.Namespace,
 				Name:         patch.Name,
 				Kind:         patch.Kind,
@@ -129,7 +128,7 @@ func (m *Manager) normalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeploy
 		}
 	}
 
-	ignoreNorm, err := argo.NewDiffNormalizer(ignore, nil)
+	ignoreNorm, err := diff.NewDiffNormalizer(ignore, nil)
 	if err != nil {
 		return nil, err
 	}
