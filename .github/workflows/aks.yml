@@ -1,0 +1,102 @@
+name: AKS-CI
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "checkout git branch/tag"
+        required: true
+        default: "master"
+      azure_credentials:
+        description: "AZURE_CREDENTIALS"
+        required: false
+        default: ""
+      keep_cluster:
+        description: "Keep the cluster afterwards? (empty/yes)"
+        required: false
+        default: ""
+
+env:
+  SETUP_GO_VERSION: '^1.18'
+  GINKGO_NODES: 1
+  FLAKE_ATTEMPTS: 1
+  PUBLIC_CLOUD: 1
+  KUBECONFIG_NAME: 'kubeconfig-epinio-ci'
+  AWS_REGION: 'us-east-2'
+  AKS_MACHINE_TYPE: 'Standard_D3_v2'
+
+jobs:
+  eks-fleet-examples:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+
+      - name: Setup Ginkgo Test Framework
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.1.1
+
+      # Follow https://github.com/marketplace/actions/azure-login#configure-deployment-credentials
+      # az group create --name epinioCI --location eastus2
+      # az ad sp create-for-rbac --name "epinioCI" --sdk-auth --role contributor \
+      #   --scopes /subscriptions/{id}/resourceGroups/epinioCI
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ github.events.inputs.azure_credentials || secrets.AZURE_CREDENTIALS }}
+
+      - name: Create AKS cluster
+        id: create-cluster
+        # We need to specify bash as a shell when a job is running on windows runner
+        shell: bash
+        run: |
+          id=$RANDOM
+          echo '::set-output name=ID::'$id
+          az aks create --resource-group epinioCI \
+          --node-vm-size ${{ env.AKS_MACHINE_TYPE }} \
+          --name epinioCI$id \
+          --node-count 2 \
+          --generate-ssh-keys
+
+          az aks get-credentials --resource-group epinioCI \
+          --name epinioCI$id \
+          --file ${{ env.KUBECONFIG_NAME }}
+
+          # List existing clusters
+          az aks list | jq '.[] | .name + " " + (.powerState|tostring)'
+
+      - name: Fleet Examples Test
+        env:
+          REGEX: Scenario6
+          REGISTRY_USERNAME: ${{ secrets.CFCIBOT_DOCKERHUB_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.CFCIBOT_DOCKERHUB_PASSWORD }}
+          AWS_ZONE_ID: ${{ github.events.inputs.aws_zone_id || secrets.AWS_ZONE_ID }}
+          # Use a random host name, so we don't collide with our workflows on AKS
+          AKS_DOMAIN: id${{ steps.create-cluster.outputs.ID }}-${{ github.events.inputs.aks_domain || secrets.AKS_DOMAIN }}
+          EPINIO_SYSTEM_DOMAIN: id${{ steps.create-cluster.outputs.ID }}-${{ github.events.inputs.aks_domain || secrets.AKS_DOMAIN }}
+          EPINIO_TIMEOUT_MULTIPLIER: 3
+          INGRESS_CONTROLLER: traefik
+        shell: bash
+        run: |
+          echo "System Domain: $AKS_DOMAIN"
+          export KUBECONFIG=$PWD/${{ env.KUBECONFIG_NAME }}
+          make test-acceptance-install
+
+      - name: Delete AKS cluster
+        # We always tear down the cluster, to avoid costs. Except when running
+        # manually and keep_cluster was set to "yes"
+        if: ${{ always() && !github.event.inputs.keep_cluster == 'yes' }}
+        shell: bash
+        run: |
+          id="${{ steps.create-cluster.outputs.ID }}"
+          az aks delete --resource-group epinioCI --name epinioCI$id --yes
