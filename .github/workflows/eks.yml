@@ -1,0 +1,119 @@
+name: EKS-CI
+
+on:
+  # schedule:
+  #   - cron:  '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "checkout git branch/tag"
+        required: true
+        default: "master"
+      aws_id:
+        description: "AWS_ACCESS_KEY_ID"
+        required: false
+        default: ""
+      aws_key:
+        description: "AWS_SECRET_ACCESS_KEY"
+        required: false
+        default: ""
+      keep_cluster:
+        description: "Keep the cluster afterwards? (empty/yes)"
+        required: false
+        default: ""
+
+env:
+  SETUP_GO_VERSION: '^1.18'
+  GINKGO_NODES: 1
+  FLAKE_ATTEMPTS: 1
+  PUBLIC_CLOUD: 1
+  AWS_REGION: 'us-east-2'
+  AWS_MACHINE_TYPE: 't3.xlarge'
+  KUBECONFIG_NAME: 'kubeconfig-fleet-ci'
+
+jobs:
+  eks-fleet-examples:
+    needs:
+      - linter
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+
+      - name: Setup Ginkgo Test Framework
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.1.1
+
+      # - name: Install Dependencies
+      #   run: |
+      #     brew install kubernetes-cli coreutils
+
+      # - name: Install EKSCTL
+      #   run: |
+      #     # Better to always use the latest eksctl binary to avoid API version issue
+      #     EKSCTL_GH=https://github.com/weaveworks/eksctl/releases/latest/download
+      #     curl --location ${EKSCTL_GH}/eksctl_$(uname -s)_amd64.tar.gz | tar xz -C .
+      #     chmod +x eksctl
+      #     sudo mv eksctl /usr/local/bin
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ github.event.inputs.aws_id || secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ github.event.inputs.aws_key || secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create EKS cluster
+        id: create-cluster
+        run: |
+          id=$RANDOM
+          echo '::set-output name=ID::'$id
+          eksctl create cluster --name=fleet-ci$id \
+          --region=${{ env.AWS_REGION }} \
+          --nodes=2 \
+          --node-type=${{ env.AWS_MACHINE_TYPE }} \
+          --node-volume-size=40 \
+          --managed \
+          --kubeconfig=kubeconfig-fleet-ci
+          # Workaround for https://github.com/aws/aws-cli/issues/6920
+          # https://stackoverflow.com/questions/71318743/kubectl-versions-error-exec-plugin-is-configured-to-use-api-version-client-auth
+          sed -i .bak -e 's/v1alpha1/v1beta1/' kubeconfig-fleet-ci
+          export KUBECONFIG="$PWD/kubeconfig-fleet-ci"
+
+      - name: Fleet Examples Tests
+        env:
+          FLEET_E2E_NS: fleet-local
+        run: |
+          ginkgo e2e/single-cluster
+
+      - name: Fleet Gitrepo Tests
+        env:
+          FLEET_E2E_NS: fleet-local
+          GIT_REPO_URL: "git@github.com:fleetrepoci/testeks.git"
+          GIT_REPO_HOST: "github.com"
+          GIT_REPO_USER: "git"
+        run: |
+          export GIT_SSH_KEY="$GITHUB_WORKSPACE/id_ecdsa"
+          export GIT_SSH_PUBKEY="$GITHUB_WORKSPACE/id_ecdsa.pub"
+          echo "${{ secrets.SSH_KEY }}" > "$GIT_SSH_KEY"
+          echo "${{ secrets.SSH_PUBKEY }}" > "$GIT_SSH_PUBKEY"
+
+          ginkgo e2e/gitrepo
+
+      - name: Delete EKS cluster
+        # We always tear down the cluster, to avoid costs. Except when running
+        # manually and keep_cluster was set to "yes"
+        if: ${{ always() && !github.event.inputs.keep_cluster == 'yes' }}
+        env:
+          KUBECONFIG: ${{ env.KUBECONFIG_NAME }}
+        run: |
+          id="${{ steps.create-cluster.outputs.ID }}"
+          eksctl delete cluster --region=${{ env.AWS_REGION }} --name=fleet-ci$id

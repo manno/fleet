@@ -1,0 +1,105 @@
+name: AKS-CI
+
+on:
+  # schedule:
+  #   - cron:  '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "checkout git branch/tag"
+        required: true
+        default: "master"
+      keep_cluster:
+        description: "Keep the cluster afterwards? (empty/yes)"
+        required: false
+        default: ""
+      azure_credentials:
+        description: "AZURE_CREDENTIALS"
+        required: false
+        default: ""
+
+env:
+  SETUP_GO_VERSION: '^1.18'
+  GINKGO_NODES: 1
+  FLAKE_ATTEMPTS: 1
+  PUBLIC_CLOUD: 1
+  KUBECONFIG_NAME: 'kubeconfig-fleet-ci'
+  AWS_REGION: 'us-east-2'
+  AKS_MACHINE_TYPE: 'Standard_D3_v2'
+
+jobs:
+  eks-fleet-examples:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+
+      - name: Setup Ginkgo Test Framework
+        run: go install github.com/onsi/ginkgo/v2/ginkgo@v2.1.1
+
+      # Follow https://github.com/marketplace/actions/azure-login#configure-deployment-credentials
+      # az group create --name fleetCI --location eastus2
+      # az ad sp create-for-rbac --name "fleetCI" --sdk-auth --role contributor \
+      #   --scopes /subscriptions/{id}/resourceGroups/fleetCI
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ github.events.inputs.azure_credentials || secrets.AZURE_CREDENTIALS }}
+
+      - name: Create AKS cluster
+        id: create-cluster
+        # We need to specify bash as a shell when a job is running on windows runner
+        shell: bash
+        run: |
+          id=$RANDOM
+          echo '::set-output name=ID::'$id
+          az aks create --resource-group fleetCI \
+          --node-vm-size ${{ env.AKS_MACHINE_TYPE }} \
+          --name fleetCI$id \
+          --node-count 2 \
+          --generate-ssh-keys
+
+          az aks get-credentials --resource-group fleetCI \
+          --name fleetCI$id \
+          --file ${{ env.KUBECONFIG_NAME }}
+
+          # List existing clusters
+          az aks list | jq '.[] | .name + " " + (.powerState|tostring)'
+
+      - name: Fleet Examples Tests
+        env:
+          FLEET_E2E_NS: fleet-local
+        run: |
+          ginkgo e2e/single-cluster
+
+      - name: Fleet Gitrepo Tests
+        env:
+          FLEET_E2E_NS: fleet-local
+          GIT_REPO_URL: "git@github.com:fleetrepoci/testeks.git"
+          GIT_REPO_HOST: "github.com"
+          GIT_REPO_USER: "git"
+        run: |
+          export GIT_SSH_KEY="$GITHUB_WORKSPACE/id_ecdsa"
+          export GIT_SSH_PUBKEY="$GITHUB_WORKSPACE/id_ecdsa.pub"
+          echo "${{ secrets.SSH_KEY }}" > "$GIT_SSH_KEY"
+          echo "${{ secrets.SSH_PUBKEY }}" > "$GIT_SSH_PUBKEY"
+
+          ginkgo e2e/gitrepo
+
+      - name: Delete AKS cluster
+        # We always tear down the cluster, to avoid costs. Except when running
+        # manually and keep_cluster was set to "yes"
+        if: ${{ always() && !github.event.inputs.keep_cluster == 'yes' }}
+        shell: bash
+        run: |
+          id="${{ steps.create-cluster.outputs.ID }}"
+          az aks delete --resource-group fleetCI --name fleetCI$id --yes
