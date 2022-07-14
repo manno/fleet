@@ -28,7 +28,7 @@ env:
   AKS_MACHINE_TYPE: 'Standard_D3_v2'
 
 jobs:
-  eks-fleet-examples:
+  aks-fleet-examples:
     runs-on: ubuntu-latest
 
     steps:
@@ -130,6 +130,7 @@ jobs:
       -
         name: Deploy Fleet
         run: |
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           echo "${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}"
           ./.github/scripts/deploy-fleet.sh ${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}
       -
@@ -137,15 +138,17 @@ jobs:
         env:
           FLEET_E2E_NS: fleet-local
         run: |
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           ginkgo e2e/single-cluster
       -
         name: Fleet Gitrepo Tests
         env:
           FLEET_E2E_NS: fleet-local
-          GIT_REPO_URL: "git@github.com:fleetrepoci/testeks.git"
+          GIT_REPO_URL: "git@github.com:fleetrepoci/testaks.git"
           GIT_REPO_HOST: "github.com"
           GIT_REPO_USER: "git"
         run: |
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           export GIT_SSH_KEY="$GITHUB_WORKSPACE/id_ecdsa"
           export GIT_SSH_PUBKEY="$GITHUB_WORKSPACE/id_ecdsa.pub"
           echo "${{ secrets.CI_AKS_SSH_KEY }}" > "$GIT_SSH_KEY"

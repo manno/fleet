@@ -139,7 +139,7 @@ jobs:
       -
         name: Deploy Fleet
         run: |
-          export KUBECONFIG="$PWD/kubeconfig-fleet-ci"
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           echo "${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}"
           ./.github/scripts/deploy-fleet.sh ${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}
       -
@@ -147,7 +147,7 @@ jobs:
         env:
           FLEET_E2E_NS: fleet-local
         run: |
-          export KUBECONFIG="$PWD/kubeconfig-fleet-ci"
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           ginkgo e2e/single-cluster
       -
         name: Fleet Gitrepo Tests
@@ -157,7 +157,7 @@ jobs:
           GIT_REPO_HOST: "github.com"
           GIT_REPO_USER: "git"
         run: |
-          export KUBECONFIG="$PWD/kubeconfig-fleet-ci"
+          export KUBECONFIG="$GITHUB_WORKSPACE/kubeconfig-fleet-ci"
           export GIT_SSH_KEY="$GITHUB_WORKSPACE/id_ecdsa"
           export GIT_SSH_PUBKEY="$GITHUB_WORKSPACE/id_ecdsa.pub"
           echo "${{ secrets.CI_EKS_SSH_KEY }}" > "$GIT_SSH_KEY"

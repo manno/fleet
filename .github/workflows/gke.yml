@@ -145,7 +145,7 @@ jobs:
         name: Fleet Gitrepo Tests
         env:
           FLEET_E2E_NS: fleet-local
-          GIT_REPO_URL: "git@github.com:fleetrepoci/testeks.git"
+          GIT_REPO_URL: "git@github.com:fleetrepoci/testgke.git"
           GIT_REPO_HOST: "github.com"
           GIT_REPO_USER: "git"
         run: |
