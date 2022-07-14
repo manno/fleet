@@ -88,11 +88,7 @@ jobs:
       -
         name: Deploy Fleet
         run: |
-          helm -n fleet-system install --create-namespace --wait fleet-crd charts/fleet-crd
-          helm -n fleet-system upgrade --install --create-namespace --wait fleet charts/fleet
-          kubectl -n fleet-system rollout status deploy/fleet-controller
-          { grep -q -m 1 "fleet-agent"; kill $!; } < <(kubectl get deployment -n fleet-system -w)
-          kubectl -n fleet-system rollout status deploy/fleet-agent
+          ./.github/scripts/deploy-fleet.sh
       -
         name: E2E Tests for Examples
         env:
