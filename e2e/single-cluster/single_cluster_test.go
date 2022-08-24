@@ -1,6 +1,9 @@
 package examples_test
 
 import (
+	"os"
+	"time"
+
 	"github.com/rancher/fleet/e2e/testenv"
 	"github.com/rancher/fleet/e2e/testenv/kubectl"
 
@@ -24,6 +27,10 @@ var _ = Describe("SingleCluster", func() {
 	})
 
 	AfterEach(func() {
+		if _, ok := os.LookupEnv("FLEET_DEBUG"); ok {
+			time.Sleep(5 * time.Minute)
+		}
+
 		out, err := k.Delete("-f", testenv.AssetPath(asset))
 		Expect(err).ToNot(HaveOccurred(), out)
 
@@ -106,6 +113,40 @@ var _ = Describe("SingleCluster", func() {
 
 				Eventually(func() string {
 					out, _ := k.Namespace("fleet-multi-chart-helm-example").Get("deployments")
+					return out
+				}, testenv.Timeout).Should(SatisfyAll(ContainSubstring("frontend"), ContainSubstring("redis-")))
+			})
+		})
+
+		Context("containing multiple paths", func() {
+			BeforeEach(func() {
+				asset = "single-cluster/multiple-paths.yaml"
+			})
+
+			FIt("deploys bundles from all the paths", func() {
+				Eventually(func() string {
+					out, _ := k.Namespace("fleet-local").Get("bundles")
+					return out
+				}, testenv.Timeout).Should(SatisfyAll(
+					ContainSubstring("manifests-single-cluster-manifests"),
+					ContainSubstring("manifests-single-cluster-helm"),
+				))
+
+				Eventually(func() string {
+					out, _ := k.Get("bundledeployments", "-A")
+					return out
+				}, testenv.Timeout).Should(SatisfyAll(
+					ContainSubstring("manifests-single-cluster-manifests"),
+					ContainSubstring("manifests-single-cluster-helm"),
+				))
+
+				Eventually(func() string {
+					out, _ := k.Namespace("fleet-manifest-example").Get("deployments")
+					return out
+				}, testenv.Timeout).Should(SatisfyAll(ContainSubstring("frontend"), ContainSubstring("redis-")))
+
+				Eventually(func() string {
+					out, _ := k.Namespace("fleet-helm-example").Get("deployments")
 					return out
 				}, testenv.Timeout).Should(SatisfyAll(ContainSubstring("frontend"), ContainSubstring("redis-")))
 			})
