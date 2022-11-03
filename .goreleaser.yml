@@ -103,7 +103,8 @@ dockers:
 
     # Templates of the Docker image names.
     image_templates:
-    - "ghcr.io/rancher/fleet:{{ .Version }}-amd64"
+      #- "ghcr.io/rancher/fleet:{{ .Version }}-amd64"
+    - "ghcr.io/manno/fleet:{{ .Version }}-amd64"
 
     # Skips the docker push.
     skip_push: "false"
@@ -128,7 +129,8 @@ dockers:
     ids:
     - fleet-controller
     image_templates:
-    - "ghcr.io/rancher/fleet:{{ .Version }}-arm64v8"
+      #- "ghcr.io/rancher/fleet:{{ .Version }}-arm64v8"
+    - "ghcr.io/manno/fleet:{{ .Version }}-arm64v8"
     dockerfile: package/Dockerfile
     build_flag_templates:
     - "--pull"
@@ -146,7 +148,8 @@ dockers:
     ids:
     - fleet-controller
     image_templates:
-    - "ghcr.io/rancher/fleet:{{ .Version }}-s390x"
+    #- "ghcr.io/rancher/fleet:{{ .Version }}-s390x"
+    - "ghcr.io/manno/fleet:{{ .Version }}-s390x"
     dockerfile: package/Dockerfile
     build_flag_templates:
     - "--pull"
@@ -166,7 +169,8 @@ dockers:
     - fleet-agent
     - fleet-cli
     image_templates:
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-amd64"
+    #- "ghcr.io/rancher/fleet-agent:{{ .Version }}-amd64"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-amd64"
     skip_push: "true"
     dockerfile: package/Dockerfile.agent
     build_flag_templates:
@@ -187,7 +191,8 @@ dockers:
     - fleet-agent
     - fleet-cli
     image_templates:
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-arm64v8"
+    #- "ghcr.io/rancher/fleet-agent:{{ .Version }}-arm64v8"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-arm64v8"
     dockerfile: package/Dockerfile.agent
     build_flag_templates:
     - "--pull"
@@ -207,7 +212,8 @@ dockers:
     - fleet-agent
     - fleet-cli
     image_templates:
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-s390x"
+    #- "ghcr.io/rancher/fleet-agent:{{ .Version }}-s390x"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-s390x"
     dockerfile: package/Dockerfile.agent
     build_flag_templates:
     - "--pull"
@@ -223,14 +229,14 @@ dockers:
 docker_manifests:
   # https://goreleaser.com/customization/docker_manifest/
   -
-    name_template: "ghcr.io/rancher/fleet:{{ .Version }}"
+    name_template: "ghcr.io/manno/fleet:{{ .Version }}"
     image_templates:
-    - "ghcr.io/rancher/fleet:{{ .Version }}-amd64"
-    - "ghcr.io/rancher/fleet:{{ .Version }}-arm64v8"
-    - "ghcr.io/rancher/fleet:{{ .Version }}-s390x"
+    - "ghcr.io/manno/fleet:{{ .Version }}-amd64"
+    - "ghcr.io/manno/fleet:{{ .Version }}-arm64v8"
+    - "ghcr.io/manno/fleet:{{ .Version }}-s390x"
   -
-    name_template: "ghcr.io/rancher/fleet-agent:{{ .Version }}"
+    name_template: "ghcr.io/manno/fleet-agent:{{ .Version }}"
     image_templates:
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-amd64"
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-arm64v8"
-    - "ghcr.io/rancher/fleet-agent:{{ .Version }}-s390x"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-amd64"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-arm64v8"
+    - "ghcr.io/manno/fleet-agent:{{ .Version }}-s390x"
