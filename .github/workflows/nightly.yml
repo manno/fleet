@@ -145,3 +145,8 @@ jobs:
           name: fleet-agent-${{ env.VERSION }}.tgz
           path: ./dist/fleet-agent-${{ env.VERSION }}.tgz
           retention-days: 3
+      -
+        run: |
+          echo "::remove-matcher owner=eslint-compact::"
+          echo "::remove-matcher owner=eslint-stylish::"
+          echo "::remove-matcher owner=tsc::"
