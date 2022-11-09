@@ -13,7 +13,6 @@ import (
 	fleetcontrollers "github.com/rancher/fleet/pkg/generated/controllers/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/helmdeployer"
 	"github.com/rancher/fleet/pkg/manifest"
-	"github.com/rancher/fleet/pkg/options"
 	"github.com/rancher/fleet/pkg/summary"
 	"github.com/rancher/fleet/pkg/target"
 
@@ -195,7 +194,7 @@ func (h *handler) OnBundleChange(bundle *fleet.Bundle, status fleet.BundleStatus
 	}
 
 	if status.ObservedGeneration != bundle.Generation {
-		if err := setResourceKey(&status, bundle, manifest, h.isNamespaced); err != nil {
+		if err := setResourceKey(&status, bundle, manifest, matchedTargets, h.isNamespaced); err != nil {
 			return nil, status, err
 		}
 	}
@@ -225,15 +224,12 @@ func (h *handler) isNamespaced(gvk schema.GroupVersionKind) bool {
 	return mapping.Scope.Name() == meta.RESTScopeNameNamespace
 }
 
-// setResourceKey updates status.ResourceKey from the bundle, by running helm template (does not mutate bundle)
-func setResourceKey(status *fleet.BundleStatus, bundle *fleet.Bundle, manifest *manifest.Manifest, isNSed func(schema.GroupVersionKind) bool) error {
+// setResourceKey updates status.ResourceKey from the targets, by running helm template (does not mutate bundle)
+func setResourceKey(status *fleet.BundleStatus, bundle *fleet.Bundle, manifest *manifest.Manifest, targets []*target.Target, isNSed func(schema.GroupVersionKind) bool) error {
 	seen := map[fleet.ResourceKey]struct{}{}
 
-	// iterate over the defined targets, from "targets.yaml", not the
-	// actually matched targets to avoid duplicates
-	for i := range bundle.Spec.Targets {
-		opts := options.Merge(bundle.Spec.BundleDeploymentOptions, bundle.Spec.Targets[i].BundleDeploymentOptions)
-		objs, err := helmdeployer.Template(bundle.Name, manifest, opts)
+	for _, target := range targets {
+		objs, err := helmdeployer.Template(bundle.Name, manifest, target.Options)
 		if err != nil {
 			return err
 		}
@@ -249,10 +245,10 @@ func setResourceKey(status *fleet.BundleStatus, bundle *fleet.Bundle, manifest *
 			}
 			gvk := obj.GetObjectKind().GroupVersionKind()
 			if key.Namespace == "" && isNSed(gvk) {
-				if opts.DefaultNamespace == "" {
+				if target.Options.DefaultNamespace == "" {
 					key.Namespace = "default"
 				} else {
-					key.Namespace = opts.DefaultNamespace
+					key.Namespace = target.Options.DefaultNamespace
 				}
 			}
 			key.APIVersion, key.Kind = gvk.ToAPIVersionAndKind()
