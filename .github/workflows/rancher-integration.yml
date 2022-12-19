@@ -154,7 +154,6 @@ jobs:
         name: Set up latest Rancher
         env:
           url: "172.18.0.1.omg.howdoi.website"
-          cluster: "k3d-upstream"
         run: |
           ./.github/scripts/setup-latest-rancher.sh
       -
