@@ -176,9 +176,6 @@ jobs:
           ./.github/scripts/upgrade-rancher-fleet-to-dev-fleet.sh ${{ steps.meta-fleet.outputs.tags }} ${{ steps.meta-fleet-agent.outputs.tags }}
       -
         name: E2E tests for examples
-        env:
-          FLEET_E2E_CLUSTER: k3d-upstream
-          FLEET_E2E_CLUSTER_DOWNSTREAM: k3d-downstream
         run: |
           kubectl config use-context k3d-upstream
           ginkgo e2e/multi-cluster

@@ -15,12 +15,20 @@ import (
 // new workload can be created
 var _ = Describe("Fleet Installation", func() {
 	var (
-		asset string
-		k     kubectl.Command
+		asset   string
+		k       kubectl.Command
+		version = "dev"
+		ns      = "cattle-fleet-system"
 	)
 
 	BeforeEach(func() {
-		k = env.Kubectl.Namespace(env.Namespace)
+		k = env.Kubectl.Context(env.Upstream).Namespace(env.Namespace)
+		if v, ok := os.LookupEnv("FLEET_VERSION"); ok {
+			version = v
+		}
+		if n, ok := os.LookupEnv("FLEET_NAMESPACE"); ok {
+			ns = n
+		}
 	})
 
 	Context("sanity checks", func() {
@@ -29,6 +37,20 @@ var _ = Describe("Fleet Installation", func() {
 			Expect(out).To(ContainSubstring("app-service"))
 		})
 
+		It("has the expected fleet images", func() {
+			Eventually(func() string {
+				out, _ := k.Namespace(ns).Get("deployments", "-owide")
+				return out
+			}).Should(ContainSubstring("rancher/fleet-agent:" + version))
+		})
+
+		It("has the expected fleet-agent image in the downstream cluster", Label("multi-cluster"), func() {
+			kd := env.Kubectl.Context(env.Downstream)
+			Eventually(func() string {
+				out, _ := kd.Namespace(ns).Get("deployments", "-owide")
+				return out
+			}).Should(ContainSubstring("rancher/fleet-agent:" + version))
+		})
 	})
 
 	When("Deploying another bundle", func() {
