@@ -8,3 +8,10 @@ spec:
   paths:
   - bundle-diffs
   targetNamespace: {{.TargetNamespace}}
+  targets:
+    - clusterSelector:
+        matchExpressions:
+          - key: provider.cattle.io
+            operator: NotIn
+            values:
+              - harvester

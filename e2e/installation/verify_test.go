@@ -18,7 +18,9 @@ var _ = Describe("Fleet Installation", func() {
 		asset   string
 		k       kubectl.Command
 		version = "dev"
-		ns      = "cattle-fleet-system"
+		// this is the default for fleet standalone
+		localAgentNamespace = "cattle-fleet-system"
+		agentNamespace      = "cattle-fleet-system"
 	)
 
 	BeforeEach(func() {
@@ -26,20 +28,42 @@ var _ = Describe("Fleet Installation", func() {
 		if v, ok := os.LookupEnv("FLEET_VERSION"); ok {
 			version = v
 		}
-		if n, ok := os.LookupEnv("FLEET_NAMESPACE"); ok {
-			ns = n
+		if n, ok := os.LookupEnv("FLEET_LOCAL_AGENT_NAMESPACE"); ok {
+			localAgentNamespace = n
+		}
+		if n, ok := os.LookupEnv("FLEET_AGENT_NAMESPACE"); ok {
+			agentNamespace = n
 		}
 	})
 
-	Context("sanity checks", func() {
+	Context("Verify bundles are deployed", Label("single-cluster"), func() {
 		It("finds the original workload", func() {
 			out, _ := k.Namespace("bundle-diffs-example").Get("services")
 			Expect(out).To(ContainSubstring("app-service"))
 		})
+	})
 
+	Context("Verify bundles are deployed", Label("multi-cluster"), func() {
+		It("finds the original workload", func() {
+			out, _ := k.Namespace("default").Get("cm")
+			Expect(out).To(SatisfyAll(
+				ContainSubstring("test-simple-chart-config"),
+				ContainSubstring("test-simple-manifest-config"),
+			))
+
+			kd := env.Kubectl.Context(env.Downstream)
+			out, _ = kd.Namespace("default").Get("cm")
+			Expect(out).To(SatisfyAll(
+				ContainSubstring("test-simple-chart-config"),
+				ContainSubstring("test-simple-manifest-config"),
+			))
+		})
+	})
+
+	Context("Verify agents are updated to new image", func() {
 		It("has the expected fleet images", func() {
 			Eventually(func() string {
-				out, _ := k.Namespace(ns).Get("deployments", "-owide")
+				out, _ := k.Namespace(localAgentNamespace).Get("deployments", "-owide")
 				return out
 			}).Should(ContainSubstring("rancher/fleet-agent:" + version))
 		})
@@ -47,13 +71,13 @@ var _ = Describe("Fleet Installation", func() {
 		It("has the expected fleet-agent image in the downstream cluster", Label("multi-cluster"), func() {
 			kd := env.Kubectl.Context(env.Downstream)
 			Eventually(func() string {
-				out, _ := kd.Namespace(ns).Get("deployments", "-owide")
+				out, _ := kd.Namespace(agentNamespace).Get("deployments", "-owide")
 				return out
 			}).Should(ContainSubstring("rancher/fleet-agent:" + version))
 		})
 	})
 
-	When("Deploying another bundle", func() {
+	When("Deploying another bundle still works", func() {
 		var tmpdir string
 		BeforeEach(func() {
 			asset = "simple/gitrepo.yaml"

@@ -134,7 +134,7 @@ jobs:
       -
         name: Create example workload
         run: |
-          kubectl apply -n fleet-local -f e2e/assets/bundle-diffs/gitrepo.yaml
+          kubectl apply -n fleet-local -f e2e/assets/gitrepo-simple.yaml
           kubectl apply -n fleet-default -f e2e/assets/gitrepo-simple.yaml
       -
         name: Deploy latest fleet
@@ -167,9 +167,10 @@ jobs:
         env:
           FLEET_E2E_NS: fleet-local
           FLEET_VERSION: v${{matrix.fleet_version}}
-          FLEET_NAMESPACE: "${{ matrix.rancher_version == 'v2.5.16' && 'fleet-system' || 'cattle-fleet-system' }}"
+          FLEET_LOCAL_AGENT_NAMESPACE: "${{ matrix.rancher_version == 'v2.5.16' && 'fleet-system' || 'cattle-fleet-local-system' }}"
+          FLEET_AGENT_NAMESPACE: "${{ matrix.rancher_version == 'v2.5.16' && 'fleet-system' || 'cattle-fleet-system' }}"
         run: |
-          ginkgo e2e/installation
+          ginkgo --label-filter="!single-cluster" e2e/installation
       -
         name: E2E tests for examples
         run: |
