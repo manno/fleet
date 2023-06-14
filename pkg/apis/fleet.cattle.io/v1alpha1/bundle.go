@@ -75,7 +75,7 @@ type BundleSpec struct {
 	// Targets refer to the clusters which will be deployed to.
 	Targets []BundleTarget `json:"targets,omitempty"`
 
-	// TargetRestrictions restrict which clusters the bundle will be deployed to.
+	// TargetRestrictions is an allow list, which controls if a bundledeployment is created for a target.
 	TargetRestrictions []BundleTargetRestriction `json:"targetRestrictions,omitempty"`
 
 	// DependsOn refers to the bundles which must be ready before this bundle can be deployed.
