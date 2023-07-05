@@ -98,7 +98,7 @@ jobs:
           FLEET_E2E_NS: fleet-local
         run: |
           # Generate cert and key for TLS
-          ./dev/create-zot-certs "FleetCI-RootCA"
+          ./.github/scripts/create-zot-certs.sh "FleetCI-RootCA"
       -
         name: E2E Tests
         env:
