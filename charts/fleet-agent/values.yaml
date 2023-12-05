@@ -59,5 +59,8 @@ global:
     repository: rancher/kubectl
     tag: v1.21.5
 
+agentmanagement:
+  enabled: false
+
 debug: false
 debugLevel: 0

@@ -16,6 +16,7 @@ ca=$( kubectl config view --flatten -o jsonpath='{.clusters[?(@.name == "k3d-'"$
 server="https://$host:6443"
 helm -n cattle-fleet-system upgrade --install --create-namespace --wait fleet-crd charts/fleet-crd
 helm -n cattle-fleet-system upgrade --install --create-namespace --wait --reset-values \
+  --set agentmanagement.enabled=false \
   --set apiServerCA="$ca" \
   --set apiServerURL="$server" \
   --set debug=true --set debugLevel=1 fleet charts/fleet

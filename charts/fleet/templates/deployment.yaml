@@ -99,6 +99,7 @@ spec:
             drop:
             - ALL
         {{- end }}
+      {{- if .Values.agentmanagement.enabled }}
       - env:
         - name: NAMESPACE
           valueFrom:
@@ -130,6 +131,7 @@ spec:
             drop:
             - ALL
         {{- end }}
+      {{- end }}
       volumes:
         - name: tmp
           emptyDir: {}

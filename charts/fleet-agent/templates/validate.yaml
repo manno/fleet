@@ -6,6 +6,8 @@
 {{ fail (printf "This chart must be installed in the namespace %s as the release name fleet-agent" .Values.internal.managedReleaseName) }}
 {{end}}
 
+{{- if .Values.agentmanagement.enabled }}
 {{if not .Values.apiServerURL }}
 {{ fail "apiServerURL is required to be set, and most likely also apiServerCA" }}
+{{end}}
 {{end}}
