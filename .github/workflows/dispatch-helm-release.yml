@@ -1,0 +1,27 @@
+---
+name: Publish to Artifacthub
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Set version from ref
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      # - name: Dispatch Repository Event
+      #   run: |
+      #     GITHUB_SHA
+      #     curl -XPOST -u "${{ secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/manno/fleet-helm-charts/actions/workflows/release.yaml/dispatches --data '{"event_type": "publish_chart", "client_payload": {"version": "'$VERSION'"}}'
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: publish_chart
+          client-payload: '{"version": "${{ env.VERSION }}"}'
