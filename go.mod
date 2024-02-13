@@ -55,7 +55,7 @@ require (
 	k8s.io/kubectl v0.29.0
 	k8s.io/kubernetes v1.29.0
 	sigs.k8s.io/cli-utils v0.34.0
-	sigs.k8s.io/controller-runtime v0.17.0
+	sigs.k8s.io/controller-runtime v0.17.1
 	sigs.k8s.io/controller-tools v0.12.0
 	sigs.k8s.io/kustomize/api v0.13.5-0.20230601165947-6ce0bf390ce3
 	sigs.k8s.io/kustomize/kyaml v0.14.3-0.20230601165947-6ce0bf390ce3
