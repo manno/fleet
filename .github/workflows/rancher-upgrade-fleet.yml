@@ -9,21 +9,23 @@ on:
         required: true
         default: "main"
       k3s_version:
+        # https://hub.docker.com/r/rancher/k3s/tags
+        # k3d version list k3s | sed 's/+/-/' | sort -h
         description: "K3s version to use"
         required: true
-        default: "v1.28.1-k3s1"
+        default: "v1.27.9-k3s1"
       rancher_version:
         description: "Rancher version to install"
         required: true
-        default: "2.8.3"
+        default: "2.8.2"
       fleet_crd_url:
         description: "Fleet CRD chart URL from rancher/charts"
         required: true
-        default: https://github.com/rancher/charts/raw/release-v2.8/assets/fleet-crd/fleet-crd-103.1.0+up0.9.0.tgz
+        default: https://github.com/rancher/charts/raw/dev-v2.8/assets/fleet-crd/fleet-crd-103.1.1+up0.9.1-rc.6.tgz
       fleet_url:
         description: "Fleet chart URL from rancher/charts"
         required: true
-        default: https://github.com/rancher/charts/raw/release-v2.8/assets/fleet/fleet-103.1.0+up0.9.0.tgz
+        default: https://github.com/rancher/charts/raw/dev-v2.8/assets/fleet/fleet-103.1.1+up0.9.1-rc.6.tgz
       image_repo:
         description: "Fleet image repo"
         required: true
@@ -31,7 +33,7 @@ on:
       image_tag:
         description: "Fleet image tag"
         required: true
-        default: "v0.9.0"
+        default: "v0.9.1-rc.6"
 
 env:
   GOARCH: amd64
@@ -119,16 +121,16 @@ jobs:
       -
         name: Deploy latest fleet
         env:
-          url_crd: ${{github.event.inputs.fleet_crd_version}}
-          url: ${{github.event.inputs.fleet_version}}
+          fleet_url_crd: ${{github.event.inputs.fleet_crd_url}}
+          fleet_url: ${{github.event.inputs.fleet_url}}
           image_repo: ${{github.event.inputs.image_repo}}
           image_tag: ${{github.event.inputs.image_tag}}
           fleetns: "cattle-fleet-system"
         run: |
-          helm upgrade fleet-crd "$url_crd" --wait -n "$fleetns"
+          helm upgrade fleet-crd "$fleet_url_crd" --wait -n "$fleetns"
           until helm -n "$fleetns" status fleet-crd  | grep -q "STATUS: deployed"; do echo waiting for original fleet-crd chart to be deployed; sleep 1; done
 
-          helm upgrade fleet "$url" \
+          helm upgrade fleet "$fleet_url" \
             --wait -n "$fleetns" \
             --reuse-values \
             --set image.repository="$image_repo" \
