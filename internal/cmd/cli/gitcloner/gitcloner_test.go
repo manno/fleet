@@ -1,4 +1,4 @@
-package cmd
+package gitcloner
 
 import (
 	"testing"
@@ -43,10 +43,10 @@ func TestArgsAreSet(t *testing.T) {
 }
 
 type clonerMock struct {
-	opts *Options
+	opts *GitCloner
 }
 
-func (m *clonerMock) CloneRepo(opts *Options) error {
+func (m *clonerMock) CloneRepo(opts *GitCloner) error {
 	m.opts = opts
 
 	return nil
