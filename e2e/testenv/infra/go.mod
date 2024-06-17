@@ -8,7 +8,7 @@ replace k8s.io/client-go => k8s.io/client-go v0.29.0
 
 require (
 	github.com/rancher/fleet v0.9.0-rc.4.0.20240208111910-ad2d2d829a12
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	golang.org/x/crypto v0.19.0
 	helm.sh/helm/v3 v3.14.1
 )
