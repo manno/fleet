@@ -1,4 +1,6 @@
 // extracted from argoproj/argo-cd/pkg/apis/application/v1alpha1/types.go
+// +       resource "github.com/argoproj/argo-cd/v2/pkg/apis/application/v1alpha1"
+// +       argo "github.com/argoproj/gitops-engine/pkg/diff
 package resource
 
 import (

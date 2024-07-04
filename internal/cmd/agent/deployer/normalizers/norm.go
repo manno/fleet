@@ -1,7 +1,7 @@
 package normalizers
 
 import (
-	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/diff"
+	"github.com/argoproj/gitops-engine/pkg/diff"
 	"github.com/rancher/wrangler/v3/pkg/objectset"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )

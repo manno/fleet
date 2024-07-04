@@ -4,13 +4,13 @@ package normalizers
 import (
 	"encoding/json"
 
+	"github.com/argoproj/gitops-engine/pkg/diff"
 	jsonpatch "github.com/evanphx/json-patch"
 	log "github.com/sirupsen/logrus"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/diff"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/glob"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/resource"
 )

@@ -1,8 +1,9 @@
 // extracted from argoproj/argo-cd/util/argo/diff/normalize.go
+// +       diffnormalize "github.com/argoproj/argo-cd/v2/util/argo/diff"
 package diffnormalize
 
 import (
-	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/diff"
+	"github.com/argoproj/gitops-engine/pkg/diff"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/normalizers"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/resource"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

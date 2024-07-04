@@ -5,9 +5,10 @@ import (
 
 	jsonpatch "github.com/evanphx/json-patch"
 
-	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/diff"
+	argo "github.com/argoproj/gitops-engine/pkg/diff"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/diffnormalize"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/internal/resource"
+
 	fleetnorm "github.com/rancher/fleet/internal/cmd/agent/deployer/normalizers"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 
@@ -56,9 +57,9 @@ func Diff(plan apply.Plan, bd *fleet.BundleDeployment, ns string, objs ...runtim
 				continue
 			}
 
-			diffResult, err := diff.Diff(desiredObj.(*unstructured.Unstructured), actualObj.(*unstructured.Unstructured),
-				diff.WithNormalizer(norms),
-				diff.IgnoreAggregatedRoles(true))
+			diffResult, err := argo.Diff(desiredObj.(*unstructured.Unstructured), actualObj.(*unstructured.Unstructured),
+				argo.WithNormalizer(norms),
+				argo.IgnoreAggregatedRoles(true))
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -81,7 +82,7 @@ func Diff(plan apply.Plan, bd *fleet.BundleDeployment, ns string, objs ...runtim
 	return plan, nil
 }
 
-func normalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeployment) (diff.Normalizer, error) {
+func normalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeployment) (argo.Normalizer, error) {
 	var ignore []resource.ResourceIgnoreDifferences
 	jsonPatchNorm := &fleetnorm.JSONPatchNormalizer{}
 	if bd.Spec.Options.Diff != nil {
