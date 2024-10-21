@@ -12,6 +12,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/agentmanagement"
 	"github.com/rancher/fleet/internal/cmd/controller/gitops"
 
+	"github.com/grafana/pyroscope-go"
 	"github.com/spf13/cobra"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -96,6 +97,7 @@ func (f *FleetController) Run(cmd *cobra.Command, args []string) error {
 		workersOpts.BundleDeployment = w
 	}
 
+	profiling()
 	go func() {
 		log.Println(http.ListenAndServe("localhost:6060", nil)) // nolint:gosec // Debugging only
 	}()
@@ -131,4 +133,31 @@ func App() *cobra.Command {
 		gitops.App(zopts),
 	)
 	return root
+}
+
+func profiling() {
+	pyroscope.Start(pyroscope.Config{
+		ApplicationName: "controller.fleet",
+
+		// replace this with the address of pyroscope server
+		ServerAddress: "http://10.4.4.40:4040",
+
+		// you can disable logging by setting this to nil
+		Logger: pyroscope.StandardLogger,
+
+		// you can provide static tags via a map:
+		Tags: map[string]string{"hostname": os.Getenv("HOSTNAME")},
+
+		ProfileTypes: []pyroscope.ProfileType{
+			// these profile types are enabled by default:
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+
+			// these profile types are optional:
+			pyroscope.ProfileGoroutines,
+		},
+	})
 }

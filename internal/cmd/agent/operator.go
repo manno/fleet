@@ -5,6 +5,8 @@ import (
 	"flag"
 	"os"
 
+	"github.com/grafana/pyroscope-go"
+
 	"github.com/rancher/fleet/internal/cmd/agent/controller"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/cleanup"
@@ -61,6 +63,8 @@ func start(ctx context.Context, localConfig *rest.Config, systemNamespace, agent
 		setupLog.Error(err, "unable to load registration and start manager")
 		return err
 	}
+
+	profiling(clusterName)
 
 	// Start manager for upstream cluster, we do not use leader election
 	setupLog.Info("listening for changes on upstream cluster", "cluster", clusterName, "namespace", fleetNamespace)
@@ -306,4 +310,34 @@ func newCluster(ctx context.Context, config *rest.Config, options manager.Option
 	cluster.GetCache().WaitForCacheSync(ctx)
 
 	return cluster, nil
+}
+
+func profiling(id string) {
+	pyroscope.Start(pyroscope.Config{
+		ApplicationName: "agent.fleet",
+
+		// replace this with the address of pyroscope server
+		ServerAddress: "http://10.4.4.40:4040",
+
+		// you can disable logging by setting this to nil
+		Logger: pyroscope.StandardLogger,
+
+		// you can provide static tags via a map:
+		Tags: map[string]string{
+			"hostname": os.Getenv("HOSTNAME"),
+			"cluster":  id,
+		},
+
+		ProfileTypes: []pyroscope.ProfileType{
+			// these profile types are enabled by default:
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+
+			// these profile types are optional:
+			pyroscope.ProfileGoroutines,
+		},
+	})
 }
