@@ -163,11 +163,7 @@ func (h *Helm) createCfg(ctx context.Context, namespace string) (action.Configur
 	}
 	kc := kube.New(h.getter)
 	kc.Log = info
-	clientSet, err := kc.Factory.KubernetesClientSet()
-	if err != nil {
-		return action.Configuration{}, err
-	}
-	driver := driver.NewSecrets(helmcache.NewSecretClient(h.client, clientSet, namespace))
+	driver := driver.NewSecrets(helmcache.NewSecretClient(h.client, namespace))
 	driver.Log = info
 	store := storage.Init(driver)
 	store.MaxHistory = MaxHelmHistory
