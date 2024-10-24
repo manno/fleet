@@ -32,10 +32,6 @@ func setStatus(ctx context.Context, c client.Client, gitrepo *fleet.GitRepo) err
 		return err
 	}
 
-	if gitrepo.Status.GitJobStatus != "Current" {
-		gitrepo.Status.Display.State = "GitUpdating"
-	}
-
 	setResourceKey(ctx, c, gitrepo)
 
 	gitrepo.Status.Display.ReadyBundleDeployments = fmt.Sprintf("%d/%d",

@@ -42,7 +42,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/event"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -106,25 +105,6 @@ func (r *GitJobReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					webhookCommitChangedPredicate(),
 				),
 			),
-		).
-		Owns(&batchv1.Job{}, builder.WithPredicates(jobUpdatedPredicate())).
-		Watches(
-			// Fan out from bundle to gitrepo
-			&v1alpha1.Bundle{},
-			handler.EnqueueRequestsFromMapFunc(func(ctx context.Context, a client.Object) []ctrl.Request {
-				repo := a.GetLabels()[v1alpha1.RepoLabel]
-				if repo != "" {
-					return []ctrl.Request{{
-						NamespacedName: types.NamespacedName{
-							Namespace: a.GetNamespace(),
-							Name:      repo,
-						},
-					}}
-				}
-
-				return []ctrl.Request{}
-			}),
-			builder.WithPredicates(bundleStatusChangedPredicate()),
 		).
 		WithEventFilter(sharding.FilterByShardID(r.ShardID)).
 		WithOptions(controller.Options{MaxConcurrentReconciles: r.Workers}).
@@ -212,15 +192,6 @@ func (r *GitJobReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	res, err := r.manageGitJob(ctx, logger, gitrepo, oldCommit, repoPolled, result)
 	if err != nil || res.Requeue {
 		return res, err
-	}
-
-	if gitrepo.Status.GitJobStatus != "Current" {
-		gitrepo.Status.Display.State = "GitUpdating"
-	}
-
-	err = setStatus(ctx, r.Client, gitrepo)
-	if err != nil {
-		return result, updateErrorStatus(ctx, r.Client, req.NamespacedName, gitrepo.Status, err)
 	}
 
 	setAcceptedCondition(&gitrepo.Status, nil)
@@ -1270,8 +1241,16 @@ func updateStatus(ctx context.Context, c client.Client, req types.NamespacedName
 		if err != nil {
 			return err
 		}
+
 		commit := t.Status.Commit
-		t.Status = status
+
+		t.Status.Commit = status.Commit
+		t.Status.GitJobStatus = status.GitJobStatus
+		t.Status.LastPollingTime = status.LastPollingTime
+		t.Status.ObservedGeneration = status.ObservedGeneration
+		t.Status.UpdateGeneration = status.UpdateGeneration
+		t.Status.Conditions = status.Conditions
+
 		if commit != "" && status.Commit == "" {
 			// we could incur in a race condition between the poller job
 			// setting the Commit and the first time the reconciler runs.
