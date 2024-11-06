@@ -1,0 +1,14 @@
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: bm-1-gitrepo-50-bundle
+spec:
+  repo: https://github.com/manno/fleet-experiments
+  branch: main
+  paths:
+  - bench/create-1-gitrepo-50-bundle
+  targetNamespace: bm-1-gitrepo-50-bundle
+  targets:
+    - clusterSelector:
+        matchLabels:
+          fleet.cattle.io/benchmark: "true"
