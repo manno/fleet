@@ -131,7 +131,7 @@ var reportCmd = &cobra.Command{
 		}
 
 		fmt.Println("# Total Score")
-		grades := make([]float64, len(sample.Experiments))
+		grades := []float64{}
 		for _, xp := range sample.Experiments {
 			grades = append(grades, float64(xp.Grade))
 		}
