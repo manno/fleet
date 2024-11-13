@@ -214,7 +214,15 @@ func getMetrics(res map[string]float64, url string, controllers ...string) {
 		}
 
 		mfs, err = parser.TextToMetricFamilies(bytes.NewBufferString(out))
-		return err
+		if err != nil {
+			return err
+		}
+
+		if _, ok := mfs["controller_runtime_reconcile_total"]; !ok {
+			return fmt.Errorf("controller_runtime_reconcile_total not found")
+		}
+
+		return nil
 	}).Should(Succeed())
 
 	extractFromMetricFamilies(res, controllers, mfs)

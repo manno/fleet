@@ -15,6 +15,9 @@ n=$(kubectl get clusters.fleet.cattle.io -n "$FLEET_BENCH_NAMESPACE" -l fleet.ca
 if [ "$n" -eq 0 ]; then
   echo "No clusters found to benchmark"
   echo "You need at least one cluster with the label fleet.cattle.io/benchmark=true"
+  echo
+  echo "Example:"
+  echo "kubectl label clusters.fleet.cattle.io -n fleet-local local fleet.cattle.io/benchmark=true:"
   exit 1
 fi
 
