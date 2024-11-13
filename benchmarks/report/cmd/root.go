@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"gonum.org/v1/gonum/floats"
 	"gonum.org/v1/gonum/stat"
 
 	"github.com/onsi/ginkgo/v2/types"
@@ -103,11 +104,13 @@ var reportCmd = &cobra.Command{
 
 		fmt.Println("# Scores Per Experiment")
 		for name, xp := range sample.Experiments {
-			avg := stat.Mean(xp.ZScores, xp.Weights)
+			zscores := minMax(xp.ZScores, -1.5, 1.5)
+			avg := stat.Mean(zscores, xp.Weights)
 			grade := grade(avg)
 
 			xp := sample.Experiments[name]
 			xp.Grade = grade
+			xp.ZScores = zscores
 			sample.Experiments[name] = xp
 
 			fmt.Printf("* %s: %d/5\n", name, grade)
@@ -138,6 +141,19 @@ var reportCmd = &cobra.Command{
 
 		return nil
 	},
+}
+
+func minMax(values []float64, a float64, b float64) []float64 {
+	max := floats.Max(values)
+	min := floats.Min(values)
+
+	result := make([]float64, len(values))
+
+	for i := range values {
+		result[i] = a + (values[i]-min)/(max-min)*(b-a)
+	}
+
+	return result
 }
 
 // Some measurements have a higher volatility than others, or are duplicated.
