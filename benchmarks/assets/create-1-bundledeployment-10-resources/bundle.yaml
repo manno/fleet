@@ -4,7 +4,7 @@ kind: Bundle
 metadata:
   labels:
     fleet.cattle.io/commit: 047f12a5eb8e5552f2cb721b95d8f51288e01738
-    fleet.cattle.io/repo-name: create-1-bundledeployment-10-resources
+    fleet.cattle.io/bench-group: create-1-bundledeployment-10-resources
   name: create-1-bundledeployment-10-resources
 spec:
   defaultNamespace: create-1-bundledeployment-10-resources

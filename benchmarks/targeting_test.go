@@ -40,7 +40,7 @@ var _ = Context("Benchmarks Targeting", func() {
 				Eventually(func(g Gomega) {
 					list := &v1alpha1.BundleDeploymentList{}
 					err := k8sClient.List(ctx, list, client.MatchingLabels{
-						v1alpha1.RepoLabel: name,
+						GroupLabel: name,
 					})
 					g.Expect(err).ToNot(HaveOccurred())
 					g.Expect(len(list.Items)).To(Equal(n))
@@ -67,7 +67,7 @@ var _ = Context("Benchmarks Targeting", func() {
 				Eventually(func(g Gomega) {
 					list := &v1alpha1.BundleDeploymentList{}
 					err := k8sClient.List(ctx, list, client.MatchingLabels{
-						v1alpha1.RepoLabel: name,
+						GroupLabel: name,
 					})
 					g.Expect(err).ToNot(HaveOccurred())
 					g.Expect(len(list.Items)).To(Equal(n * 50))

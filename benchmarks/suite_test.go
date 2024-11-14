@@ -25,6 +25,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// cannot use v1alpha1.RepoLabel because fleet 0.9 deletes bundles with an invalid repo label.
+// However, bundle labels are propagated to bundledeployments.
+const GroupLabel = "fleet.cattle.io/bench-group"
+
 var (
 	ctx    context.Context
 	cancel context.CancelFunc

@@ -5,7 +5,7 @@ metadata:
   name: create-1-bundle
   labels:
     fleet.cattle.io/commit: 269ad1f41bd40bf9f2df9dec571fcc299ecf5c94
-    fleet.cattle.io/repo-name: create-1-bundle
+    fleet.cattle.io/bench-group: create-1-bundle
 spec:
   resources:
   - content: |
