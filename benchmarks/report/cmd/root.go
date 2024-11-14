@@ -184,7 +184,7 @@ func weight(name string) float64 {
 		return 0.3
 	case "ResourceCount":
 		return 0.5
-	case "ReconcileTime":
+	case "ReconcileTime", "TotalDuration":
 		return 1.0
 	}
 
@@ -392,14 +392,24 @@ func loadSampleFile(file string) (*Sample, error) {
 			}
 
 			for _, m := range xp.Measurements {
-				if len(m.Values) < 1 {
-					continue
-				}
-				if m.Type != gm.MeasurementTypeValue && m.Type != gm.MeasurementTypeDuration {
-					continue
-				}
+				var v float64
 
-				v := m.Values[0]
+				switch m.Type {
+				case gm.MeasurementTypeValue:
+					if len(m.Values) < 1 {
+						continue
+					}
+					v = m.Values[0]
+
+				case gm.MeasurementTypeDuration:
+					if len(m.Durations) < 1 {
+						continue
+					}
+					v = m.Durations[0].Seconds()
+
+				default:
+					continue
+				}
 
 				// MemDuring is actually sampled, not a single value
 				if m.Name == "MemDuring" {
