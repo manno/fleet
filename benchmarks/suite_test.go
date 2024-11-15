@@ -47,6 +47,10 @@ var (
 
 	// cluster registration namespace, contains clusters
 	workspace string
+
+	// metrics toggles metrics reporting, old fleet versions don't have
+	// metrics
+	metrics bool
 )
 
 // TestBenchmarkSuite runs the benchmark suite for Fleet.
@@ -54,6 +58,7 @@ var (
 // Inputs for this benchmark suite via env vars:
 // * cluster registration namespace, contains clusters
 // * timeout for eventually
+// * if metrics should be recorded
 func TestBenchmarkSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Fleet Benchmark Suite")
@@ -65,18 +70,24 @@ var _ = JustBeforeEach(func() {
 	AddReportEntry(experiment.Name, experiment)
 	experiment.RecordNote(info, gm.Style("{{green}}"), gm.Annotation("info"))
 	recordMemoryUsage(experiment, "MemBefore")
-	recordMetrics(experiment, "Before")
 	recordResourceCount(experiment, "ResourceCountBefore")
+	if metrics {
+		recordMetrics(experiment, "Before")
+	}
 })
 
 // this will run after DeferClean, so clean up is not included in the measurements
 var _ = AfterEach(func() {
 	recordMemoryUsage(experiment, "MemAfter")
-	recordMetrics(experiment, "After")
 	recordResourceCount(experiment, "ResourceCountAfter")
+	if metrics {
+		recordMetrics(experiment, "After")
+	}
 })
 
 var _ = BeforeSuite(func() {
+	metrics = os.Getenv("FLEET_BENCH_METRICS") == "true"
+
 	tm := os.Getenv("FLEET_BENCH_TIMEOUT")
 	if tm == "" {
 		tm = "2m"
@@ -88,9 +99,9 @@ var _ = BeforeSuite(func() {
 
 	ctx, cancel = context.WithCancel(context.TODO())
 
+	// client for assets
 	workspace = os.Getenv("FLEET_BENCH_NAMESPACE")
 
-	// client for assets
 	k = kubectl.New("", workspace)
 
 	// client for assertions
@@ -106,12 +117,14 @@ var _ = BeforeSuite(func() {
 
 	// describe the e this suite is running against
 	e := gm.NewExperiment("before")
-	recordMetrics(e, "")
 	recordMemoryUsage(e, "MemBefore")
 	recordResourceCount(e, "ResourceCountBefore")
 	recordCRDCount(e, "CRDCount")
 	recordNodes(e)
 	recordClusters(e)
+	if metrics {
+		recordMetrics(e, "")
+	}
 
 	version, err := k.Run("version")
 	Expect(err).NotTo(HaveOccurred())

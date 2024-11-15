@@ -7,9 +7,11 @@ FLEET_BENCH_REPORT=${FLEET_BENCH_DB-$out}
 FLEET_BENCH_DB=${FLEET_BENCH_DB-"benchmarks/db"}
 FLEET_BENCH_TIMEOUT=${FLEET_BENCH_TIMEOUT-"5m"}
 FLEET_BENCH_NAMESPACE=${FLEET_BENCH_NAMESPACE-"fleet-local"}
+FLEET_BENCH_METRICS=${FLEET_BENCH_METRICS-"true"}
 
 export FLEET_BENCH_TIMEOUT
 export FLEET_BENCH_NAMESPACE
+export FLEET_BENCH_METRICS
 
 n=$(kubectl get clusters.fleet.cattle.io -n "$FLEET_BENCH_NAMESPACE" -l fleet.cattle.io/benchmark=true  -ojson | jq '.items | length')
 if [ "$n" -eq 0 ]; then
