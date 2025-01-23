@@ -2,6 +2,7 @@ package bundle
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -49,10 +50,14 @@ var _ = BeforeSuite(func() {
 	cfg, err = testenv.Start()
 	Expect(err).NotTo(HaveOccurred())
 
+	utils.WriteKubeConfig(cfg, "kubeconfig")
+
 	k8sClient, err = utils.NewClient(cfg)
 	Expect(err).NotTo(HaveOccurred())
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&zap.Options{Development: true})))
+	if os.Getenv("DEBUG") != "" {
+		ctrl.SetLogger(zap.New(zap.UseFlagOptions(&zap.Options{Development: true})))
+	}
 
 	mgr, err := utils.NewManager(cfg)
 	Expect(err).ToNot(HaveOccurred())
@@ -67,19 +72,22 @@ var _ = BeforeSuite(func() {
 		Builder: builder,
 		Store:   store,
 		Query:   builder,
+		Workers: 200,
 	}).SetupWithManager(mgr)
 	Expect(err).ToNot(HaveOccurred(), "failed to set up manager")
 
 	err = (&reconciler.BundleDeploymentReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:  mgr.GetClient(),
+		Scheme:  mgr.GetScheme(),
+		Workers: 200,
 	}).SetupWithManager(mgr)
 	Expect(err).ToNot(HaveOccurred(), "failed to set up manager")
 
 	err = (&reconciler.ClusterReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-		Query:  builder,
+		Client:  mgr.GetClient(),
+		Scheme:  mgr.GetScheme(),
+		Query:   builder,
+		Workers: 200,
 	}).SetupWithManager(mgr)
 	Expect(err).ToNot(HaveOccurred(), "failed to set up manager")
 
