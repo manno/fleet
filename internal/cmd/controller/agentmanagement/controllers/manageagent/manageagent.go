@@ -74,6 +74,11 @@ func Register(ctx context.Context,
 }
 
 func (h *handler) onClusterStatusChange(cluster *fleet.Cluster, status fleet.ClusterStatus) (fleet.ClusterStatus, error) {
+	// TODO(mm): this seems useful for skipped clusters too
+	if skipCluster(cluster) {
+		return status, nil
+	}
+
 	logrus.Debugf("Reconciling agent settings for cluster %s/%s", cluster.Namespace, cluster.Name)
 
 	status, vars, err := h.reconcileAgentEnvVars(cluster, status)
@@ -201,6 +206,7 @@ func (h *handler) updateClusterStatus(cluster *fleet.Cluster, status fleet.Clust
 	return status, changed, nil
 }
 
+// resolveNS is a handler that enqueues the cluster registration namespace (e.g. fleet-default) for a changed cluster
 func (h *handler) resolveNS(namespace, _ string, obj runtime.Object) ([]relatedresource.Key, error) {
 	if cluster, ok := obj.(*fleet.Cluster); ok {
 		if _, err := h.bundleCache.Get(namespace, names.SafeConcatName(AgentBundleName, cluster.Name)); err != nil {
@@ -234,6 +240,9 @@ func (h *handler) OnNamespace(key string, namespace *corev1.Namespace) (*corev1.
 	var objs []runtime.Object
 
 	for _, cluster := range clusters {
+		if skipCluster(cluster) {
+			continue
+		}
 		logrus.Infof("Update agent bundle for cluster %s/%s", cluster.Namespace, cluster.Name)
 		bundle, err := h.newAgentBundle(namespace.Name, cluster)
 		if err != nil {
@@ -325,4 +334,17 @@ func (h *handler) newAgentBundle(ns string, cluster *fleet.Cluster) (runtime.Obj
 			},
 		},
 	}, nil
+}
+
+func skipCluster(cluster *fleet.Cluster) bool {
+	if cluster == nil {
+		return true
+	}
+	if cluster.Labels == nil {
+		return false
+	}
+	if cluster.Labels[fleet.ClusterManagementLabel] != "" {
+		return true
+	}
+	return false
 }
