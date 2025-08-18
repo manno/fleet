@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/rancher/wrangler/v3/pkg/yaml"
 	"github.com/sirupsen/logrus"
 
 	"github.com/rancher/fleet/internal/cmd"
@@ -17,6 +18,7 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 var (
@@ -127,6 +129,55 @@ func Manifest(namespace string, agentScope string, opts ManifestOptions) []runti
 	objs = append(objs, admin, defaultSa, agent, networkPolicy)
 
 	return objs
+}
+
+// ManifestYAML builds and returns YAML content for the fleet-agent deployment.
+// This is the bundle-first approach where YAML is the primary output format.
+func ManifestYAML(namespace string, agentScope string, opts ManifestOptions) ([]byte, error) {
+	objs := Manifest(namespace, agentScope, opts)
+
+	// Set GVK information for proper YAML export
+	for _, obj := range objs {
+		setGVK(obj)
+	}
+
+	return yaml.Export(objs...)
+}
+
+// setGVK sets the Group/Version/Kind for Kubernetes objects
+func setGVK(obj runtime.Object) {
+	switch o := obj.(type) {
+	case *appsv1.Deployment:
+		o.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "apps",
+			Version: "v1",
+			Kind:    "Deployment",
+		})
+	case *corev1.ServiceAccount:
+		o.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "",
+			Version: "v1",
+			Kind:    "ServiceAccount",
+		})
+	case *rbacv1.ClusterRole:
+		o.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "rbac.authorization.k8s.io",
+			Version: "v1",
+			Kind:    "ClusterRole",
+		})
+	case *rbacv1.ClusterRoleBinding:
+		o.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "rbac.authorization.k8s.io",
+			Version: "v1",
+			Kind:    "ClusterRoleBinding",
+		})
+	case *networkv1.NetworkPolicy:
+		o.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   "networking.k8s.io",
+			Version: "v1",
+			Kind:    "NetworkPolicy",
+		})
+	}
 }
 
 func Resolve(global, prefix, image string) string {

@@ -17,6 +17,18 @@ import (
 )
 
 func start(ctx context.Context, kubeConfig, namespace string, disableBootstrap bool) error {
+	// Choose implementation based on feature flag
+	if useControllerRuntime() {
+		logrus.Info("Starting agentmanagement with controller-runtime")
+		return startControllerRuntime(ctx, kubeConfig, namespace, disableBootstrap)
+	}
+
+	// Original wrangler implementation
+	logrus.Info("Starting agentmanagement with wrangler")
+	return startWrangler(ctx, kubeConfig, namespace, disableBootstrap)
+}
+
+func startWrangler(ctx context.Context, kubeConfig, namespace string, disableBootstrap bool) error {
 	clientConfig := kubeconfig.GetNonInteractiveClientConfig(kubeConfig)
 	kc, err := clientConfig.ClientConfig()
 	if err != nil {
