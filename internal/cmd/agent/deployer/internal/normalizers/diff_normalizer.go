@@ -31,6 +31,9 @@ type ignoreNormalizer struct {
 
 // NewIgnoreNormalizer creates diff normalizer which removes ignored fields according to given application spec and resource overrides
 func NewIgnoreNormalizer(ignore []resource.ResourceIgnoreDifferences, overrides map[string]resource.ResourceOverride) (diff.Normalizer, error) {
+	// Add default ignore patterns for common Kubernetes resources that are modified by external controllers
+	ignore = append(ignore, getDefaultIgnoreDifferences()...)
+
 	for key, override := range overrides {
 		group, kind, err := getGroupKindForOverrideKey(key)
 		if err != nil {
@@ -104,4 +107,96 @@ func (n *ignoreNormalizer) Normalize(un *unstructured.Unstructured) error {
 		return err
 	}
 	return nil
+}
+
+// getDefaultIgnoreDifferences returns default ignore patterns for common Kubernetes resources
+// that are frequently modified by external controllers.
+// These patterns ignore fields that are ALWAYS modified externally and don't indicate drift.
+func getDefaultIgnoreDifferences() []resource.ResourceIgnoreDifferences {
+	return []resource.ResourceIgnoreDifferences{
+		// Service mesh sidecar injectors modify pod template annotations and containers
+		// Istio injection
+		{
+			Group:        "apps",
+			Kind:         "Deployment",
+			JSONPointers: []string{"/spec/template/metadata/annotations/sidecar.istio.io~1status"},
+		},
+		{
+			Group:        "apps",
+			Kind:         "StatefulSet",
+			JSONPointers: []string{"/spec/template/metadata/annotations/sidecar.istio.io~1status"},
+		},
+
+		// Linkerd injection status
+		{
+			Group:        "apps",
+			Kind:         "Deployment",
+			JSONPointers: []string{"/spec/template/metadata/annotations/linkerd.io~1proxy-version"},
+		},
+		{
+			Group:        "apps",
+			Kind:         "StatefulSet",
+			JSONPointers: []string{"/spec/template/metadata/annotations/linkerd.io~1proxy-version"},
+		},
+
+		// Cert-manager modifies certificate status and annotations
+		{
+			Group:        "cert-manager.io",
+			Kind:         "Certificate",
+			JSONPointers: []string{"/status"},
+		},
+
+		// VPA modifies container resource requests/limits when update mode is Auto
+		// Note: This should ideally be conditional on VPA existing, but VPA annotations
+		// are added to the target, so we can check for them
+		{
+			Group: "apps",
+			Kind:  "Deployment",
+			JSONPointers: []string{
+				"/spec/template/metadata/annotations/vpaUpdates",
+				"/spec/template/metadata/annotations/vpaObservedContainers",
+			},
+		},
+		{
+			Group: "apps",
+			Kind:  "StatefulSet",
+			JSONPointers: []string{
+				"/spec/template/metadata/annotations/vpaUpdates",
+				"/spec/template/metadata/annotations/vpaObservedContainers",
+			},
+		},
+
+		// Cluster autoscaler annotations are updated dynamically
+		{
+			Group: "apps",
+			Kind:  "Deployment",
+			JSONPointers: []string{
+				"/metadata/annotations/cluster-autoscaler.kubernetes.io~1safe-to-evict",
+				"/metadata/annotations/cluster-autoscaler.kubernetes.io~1safe-to-evict-local-volumes",
+			},
+		},
+		{
+			Group: "apps",
+			Kind:  "StatefulSet",
+			JSONPointers: []string{
+				"/metadata/annotations/cluster-autoscaler.kubernetes.io~1safe-to-evict",
+			},
+		},
+
+		// KEDA annotations added when ScaledObject is created
+		{
+			Group: "apps",
+			Kind:  "Deployment",
+			JSONPointers: []string{
+				"/metadata/annotations/autoscaling.keda.sh~1paused-replicas",
+			},
+		},
+		{
+			Group: "apps",
+			Kind:  "StatefulSet",
+			JSONPointers: []string{
+				"/metadata/annotations/autoscaling.keda.sh~1paused-replicas",
+			},
+		},
+	}
 }
