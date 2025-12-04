@@ -156,7 +156,7 @@ func compressFolder(src string, buf io.Writer) error {
 
 func createFileFromString(dir, fileName, data string) error {
 	path := filepath.Join(dir, fileName)
-	return os.WriteFile(path, []byte(data), 0644)
+	return os.WriteFile(path, []byte(data), 0600)
 }
 
 func createHelmChartGZIP() (string, string, error) {
@@ -181,7 +181,7 @@ func createHelmChartGZIP() (string, string, error) {
 	}
 
 	gzipPath := filepath.Join(finalDir, "sleeper-chart-0.1.0.tgz")
-	err = os.WriteFile(gzipPath, buf.Bytes(), os.ModePerm)
+	err = os.WriteFile(gzipPath, buf.Bytes(), 0600)
 	if err != nil {
 		return finalDir, "", err
 	}
@@ -265,7 +265,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 					},
 				},
 			},
-			readerCalls:         func(c *mocks.MockReader) {},
+			readerCalls:         func(_ *mocks.MockReader) {},
 			requiresAuth:        false,
 			expectedNilManifest: true,
 			expectedResources:   []fleet.BundleResource{},
@@ -363,7 +363,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 					},
 				},
 			},
-			readerCalls:         func(c *mocks.MockReader) {},
+			readerCalls:         func(_ *mocks.MockReader) {},
 			requiresAuth:        false,
 			expectedNilManifest: false,
 			expectedResources: []fleet.BundleResource{

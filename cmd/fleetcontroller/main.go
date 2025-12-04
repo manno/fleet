@@ -2,7 +2,7 @@
 package main
 
 import (
-	_ "net/http/pprof"
+	_ "net/http/pprof" // #nosec G108
 
 	_ "github.com/rancher/wrangler/v3/pkg/generated/controllers/apiextensions.k8s.io"
 	_ "github.com/rancher/wrangler/v3/pkg/generated/controllers/networking.k8s.io"

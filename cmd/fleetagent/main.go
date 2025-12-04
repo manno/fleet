@@ -2,7 +2,7 @@
 package main
 
 import (
-	_ "net/http/pprof"
+	_ "net/http/pprof" // #nosec G108
 
 	"github.com/rancher/fleet/internal/cmd/agent"
 

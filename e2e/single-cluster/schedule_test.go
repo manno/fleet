@@ -256,7 +256,7 @@ func replace(path string, s string, r string) {
 
 	b = bytes.ReplaceAll(b, []byte(s), []byte(r))
 
-	err = os.WriteFile(path, b, 0644)
+	err = os.WriteFile(path, b, 0600)
 	Expect(err).ToNot(HaveOccurred())
 }
 

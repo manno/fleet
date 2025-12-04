@@ -101,7 +101,7 @@ func Register(ctx context.Context,
 	relatedresource.Watch(ctx, "sa-to-cluster-registration", saToClusterRegistration, clusterRegistration, serviceAccount)
 }
 
-func saToClusterRegistration(namespace, name string, obj runtime.Object) ([]relatedresource.Key, error) {
+func saToClusterRegistration(_, _ string, obj runtime.Object) ([]relatedresource.Key, error) {
 	if sa, ok := obj.(*v1.ServiceAccount); ok {
 		ns := sa.Annotations[fleet.ClusterRegistrationNamespaceAnnotation]
 		name := sa.Annotations[fleet.ClusterRegistrationAnnotation]
@@ -115,7 +115,7 @@ func saToClusterRegistration(namespace, name string, obj runtime.Object) ([]rela
 	return nil, nil
 }
 
-func (h *handler) OnCluster(key string, cluster *fleet.Cluster) (*fleet.Cluster, error) {
+func (h *handler) OnCluster(_ string, cluster *fleet.Cluster) (*fleet.Cluster, error) {
 	if cluster == nil || cluster.Status.Namespace == "" {
 		return cluster, nil
 	}
@@ -136,7 +136,7 @@ func (h *handler) OnCluster(key string, cluster *fleet.Cluster) (*fleet.Cluster,
 	return cluster, nil
 }
 
-func (h *handler) OnSecretChange(key string, secret *v1.Secret) (*v1.Secret, error) {
+func (h *handler) OnSecretChange(_ string, secret *v1.Secret) (*v1.Secret, error) {
 	if secret == nil || secret.Namespace != h.systemRegistrationNamespace ||
 		secret.Labels[fleet.ClusterAnnotation] == "" {
 		return secret, nil
