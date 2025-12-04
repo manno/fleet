@@ -108,8 +108,12 @@ func CreateKnownHostsCallBack(knownHosts []byte) (ssh.HostKeyCallback, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(f.Name())
-	defer f.Close()
+	defer func() {
+		_ = os.RemoveAll(f.Name())
+	}()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	if _, err := f.Write(knownHosts); err != nil {
 		return nil, err

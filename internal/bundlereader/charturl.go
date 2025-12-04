@@ -151,7 +151,9 @@ func getHelmChartVersion(location fleet.HelmOptions, auth Auth) (*repo.ChartVers
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {

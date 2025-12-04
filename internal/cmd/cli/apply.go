@@ -153,7 +153,9 @@ func (a *Apply) run(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
+		defer func() {
+			_ = f.Close()
+		}()
 		opts.BundleReader = f
 		if len(args) != 1 {
 			return fmt.Errorf("the bundle name is required as the first argument")

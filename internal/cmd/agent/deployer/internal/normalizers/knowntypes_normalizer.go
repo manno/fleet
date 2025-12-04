@@ -23,13 +23,14 @@ type knownTypeField struct {
 	newFieldFn func() interface{}
 }
 
-type knownTypesNormalizer struct {
+// KnownTypesNormalizer is a normalizer that re-formats custom resource fields using built-in Kubernetes types.
+type KnownTypesNormalizer struct {
 	typeFields map[schema.GroupKind][]knownTypeField
 }
 
 // NewKnownTypesNormalizer create a normalizer that re-format custom resource fields using built-in Kubernetes types.
-func NewKnownTypesNormalizer(overrides map[string]resource.ResourceOverride) (*knownTypesNormalizer, error) {
-	normalizer := knownTypesNormalizer{typeFields: map[schema.GroupKind][]knownTypeField{}}
+func NewKnownTypesNormalizer(overrides map[string]resource.ResourceOverride) (*KnownTypesNormalizer, error) {
+	normalizer := KnownTypesNormalizer{typeFields: map[schema.GroupKind][]knownTypeField{}}
 	for key, override := range overrides {
 		group, kind, err := getGroupKindForOverrideKey(key)
 		if err != nil {
@@ -46,7 +47,7 @@ func NewKnownTypesNormalizer(overrides map[string]resource.ResourceOverride) (*k
 	return &normalizer, nil
 }
 
-func (n *knownTypesNormalizer) ensureDefaultCRDsConfigured() {
+func (n *KnownTypesNormalizer) ensureDefaultCRDsConfigured() {
 	rolloutGK := schema.GroupKind{Group: Group, Kind: "Rollout"}
 	if _, ok := n.typeFields[rolloutGK]; !ok {
 		n.typeFields[rolloutGK] = []knownTypeField{{
@@ -73,7 +74,7 @@ func getGroupKindForOverrideKey(key string) (string, string, error) {
 	return group, kind, nil
 }
 
-func (n *knownTypesNormalizer) addKnownField(gk schema.GroupKind, fieldPath string, typePath string) error {
+func (n *KnownTypesNormalizer) addKnownField(gk schema.GroupKind, fieldPath string, typePath string) error {
 	newFieldFn, ok := knownTypes[typePath]
 	if !ok {
 		return fmt.Errorf("type '%s' is not supported", typePath)
@@ -153,7 +154,7 @@ func nremarshal(fieldVal map[string]interface{}, field knownTypeField) (map[stri
 
 // Normalize re-format custom resource fields using built-in Kubernetes types JSON marshaler.
 // This technique allows avoiding false drift detections in CRDs that import data structures from Kubernetes codebase.
-func (n *knownTypesNormalizer) Normalize(un *unstructured.Unstructured) error {
+func (n *KnownTypesNormalizer) Normalize(un *unstructured.Unstructured) error {
 	if fields, ok := n.typeFields[un.GroupVersionKind().GroupKind()]; ok {
 		for _, field := range fields {
 			err := normalize(un.Object, field, field.fieldPath)
