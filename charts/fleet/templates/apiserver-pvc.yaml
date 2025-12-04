@@ -1,0 +1,18 @@
+{{- if .Values.apiserver.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fleet-apiserver-db
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: fleet-apiserver
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.apiserver.storage.size }}
+  {{- if .Values.apiserver.storage.storageClassName }}
+  storageClassName: {{ .Values.apiserver.storage.storageClassName }}
+  {{- end }}
+{{- end }}

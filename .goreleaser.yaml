@@ -44,6 +44,12 @@ archives:
     ids:
       - fleet-benchmark
 
+  - id: fleet-apiserver
+    formats: [ "binary" ]
+    name_template: "{{ .Binary }}"
+    ids:
+      - fleet-apiserver
+
 builds:
   -
     id: fleet-controller
@@ -100,6 +106,20 @@ builds:
     - linux_amd64_v1
     - linux_arm64
     - windows_amd64
+  -
+    id: fleet-apiserver
+    main: ./cmd/fleetapiserver
+    binary: fleetapiserver-{{ .Os }}-{{ .Arch }}{{ if .Arm }}64{{ end }}
+    no_unique_dist_dir: true
+    env:
+      - CGO_ENABLED=1
+    ldflags:
+      - -w -s
+      - -X github.com/rancher/fleet/pkg/version.GitCommit={{ .Commit }}
+      - -X github.com/rancher/fleet/pkg/version.Version={{ .Tag }}
+    targets:
+    - linux_amd64_v1
+    - linux_arm64
 
 snapshot:
   version_template: "{{ .Tag }}-next"

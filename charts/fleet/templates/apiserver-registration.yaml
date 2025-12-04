@@ -1,0 +1,17 @@
+{{- if .Values.apiserver.enabled }}
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.fleet.cattle.io
+  labels:
+    app: fleet-apiserver
+spec:
+  service:
+    name: fleet-apiserver
+    namespace: {{ .Release.Namespace }}
+  group: fleet.cattle.io
+  version: v1alpha1
+  insecureSkipTLSVerify: true
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+{{- end }}
