@@ -140,7 +140,9 @@ func readFleetIgnore(path string) ([]string, error) {
 		return nil, err
 	}
 
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -201,7 +203,9 @@ func GetContent(ctx context.Context, base, source, version string, auth Auth, di
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(temp)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
 
 	orgSource := source
 
@@ -340,7 +344,9 @@ func downloadOCIChart(name, version, path string, auth Auth) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer os.RemoveAll(temp)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
 
 	tmpGetter := newHttpGetter(auth)
 	clientOptions := []registry.ClientOption{

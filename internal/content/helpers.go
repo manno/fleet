@@ -49,7 +49,9 @@ func Decode(content, encoding string) ([]byte, error) {
 func Gzip(data []byte) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	w := gzip.NewWriter(buf)
-	defer w.Close()
+	defer func() {
+		_ = w.Close()
+	}()
 
 	if _, err := w.Write(data); err != nil {
 		return nil, err

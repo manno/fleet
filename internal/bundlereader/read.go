@@ -63,7 +63,9 @@ func NewBundle(ctx context.Context, name, baseDir, file string, opts *Options) (
 			return nil, nil, fmt.Errorf("failed to open existing fleet.yaml in %q: %w", baseDir, err)
 		} else if file != nil {
 			in = file
-			defer file.Close()
+			defer func() {
+				_ = file.Close()
+			}()
 		} else {
 			// Create a new buffer if opening both files resulted in "IsNotExist" errors.
 			in = bytes.NewBufferString("{}")
@@ -73,7 +75,9 @@ func NewBundle(ctx context.Context, name, baseDir, file string, opts *Options) (
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to open file %q: %w", file, err)
 		}
-		defer f.Close()
+		defer func() {
+			_ = f.Close()
+		}()
 		in = f
 	}
 
