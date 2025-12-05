@@ -51,6 +51,7 @@ openapi-gen \
   "k8s.io/apimachinery/pkg/runtime" \
   "k8s.io/apimachinery/pkg/version" \
   github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1 \
+  github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1/summary \
   github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1 \
   github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1/summary
 

@@ -15,12 +15,16 @@ import (
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/apiserver/pkg/endpoints/openapi"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	"k8s.io/apiserver/pkg/server/options"
-	"k8s.io/client-go/kubernetes/scheme"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	restclient "k8s.io/client-go/rest"
 	basecompatibility "k8s.io/component-base/compatibility"
 	baseversion "k8s.io/component-base/version"
@@ -31,9 +35,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/rancher/fleet/integrationtests/utils"
-	"github.com/rancher/fleet/internal/cmd/apiserver"
+	fleetapiserver "github.com/rancher/fleet/internal/cmd/apiserver"
 	"github.com/rancher/fleet/internal/cmd/apiserver/storage"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
+	fleetopenapi "github.com/rancher/fleet/pkg/generated/openapi"
 )
 
 var (
@@ -44,6 +49,11 @@ var (
 	cancel           context.CancelFunc
 	tmpDir           string
 	aggregatedServer *aggregatedServerInfo
+
+	// Scheme defines methods for serializing and deserializing API objects
+	Scheme = runtime.NewScheme()
+	// Codecs provides methods for retrieving codecs and serializers for specific groups and versions
+	Codecs = serializer.NewCodecFactory(Scheme)
 )
 
 type aggregatedServerInfo struct {
@@ -76,16 +86,15 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	// Register our API group scheme
-	err = storagev1alpha1.AddToScheme(scheme.Scheme)
+	// Register the storage.fleet.cattle.io types with the scheme
+	err = storagev1alpha1.AddToScheme(Scheme)
 	Expect(err).NotTo(HaveOccurred())
-
-	// Register APIService scheme
-	err = apiregistrationv1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
+	// ???
+	metav1.AddToGroupVersion(Scheme, schema.GroupVersion{Version: "v1"})
 
 	// Create client
-	k8sclient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+	utilruntime.Must(clientgoscheme.AddToScheme(Scheme))
+	k8sclient, err = client.New(cfg, client.Options{Scheme: Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sclient).NotTo(BeNil())
 
@@ -144,7 +153,7 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 	}
 
 	// Create server options
-	opts := &apiserver.FleetAPIServer{
+	opts := &fleetapiserver.FleetAPIServer{
 		SecurePort: port,
 		CertDir:    certDir,
 		DBPath:     dbPath,
@@ -208,7 +217,7 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 	}, nil
 }
 
-func runTestAPIServer(ctx context.Context, opts *apiserver.FleetAPIServer, kubeConfig *restclient.Config) error {
+func runTestAPIServer(ctx context.Context, opts *fleetapiserver.FleetAPIServer, kubeConfig *restclient.Config) error {
 	// This is a simplified version of internal/cmd/apiserver/server.go:run()
 	// We need to inject the kubeconfig for testing
 
@@ -225,9 +234,9 @@ func runTestAPIServer(ctx context.Context, opts *apiserver.FleetAPIServer, kubeC
 		return fmt.Errorf("failed to create bundle deployment storage: %w", err)
 	}
 
-	// Setup server options
+	// Setup server options using the apiserver's Scheme and Codecs
 	recommendedOptions := options.NewRecommendedOptions("",
-		serializer.NewCodecFactory(scheme.Scheme).LegacyCodec(storagev1alpha1.SchemeGroupVersion))
+		fleetapiserver.Codecs.LegacyCodec(storagev1alpha1.SchemeGroupVersion))
 	recommendedOptions.SecureServing.BindPort = opts.SecurePort
 	recommendedOptions.SecureServing.ServerCert.CertDirectory = opts.CertDir
 	recommendedOptions.Etcd = nil
@@ -237,16 +246,24 @@ func runTestAPIServer(ctx context.Context, opts *apiserver.FleetAPIServer, kubeC
 	recommendedOptions.CoreAPI = nil
 	recommendedOptions.Features.EnablePriorityAndFairness = false
 
-	// Create server config
-	serverConfig := genericapiserver.NewRecommendedConfig(
-		serializer.NewCodecFactory(scheme.Scheme))
+	// Create server config using the apiserver's Codecs
+	serverConfig := genericapiserver.NewRecommendedConfig(fleetapiserver.Codecs)
 	serverConfig.LoopbackClientConfig = kubeConfig
 
-	// Setup OpenAPI - Skip for testing
-	// The apiserver will work without OpenAPI, we just won't have API documentation
-	// To enable OpenAPI, generate definitions with: go generate ./...
-	serverConfig.OpenAPIConfig = nil
-	serverConfig.OpenAPIV3Config = nil
+	// Setup OpenAPI using the apiserver's Scheme
+	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(
+		fleetopenapi.GetOpenAPIDefinitions,
+		openapi.NewDefinitionNamer(fleetapiserver.Scheme),
+	)
+	serverConfig.OpenAPIConfig.Info.Title = "Fleet API Server"
+	serverConfig.OpenAPIConfig.Info.Version = "v1alpha1"
+
+	serverConfig.OpenAPIV3Config = genericapiserver.DefaultOpenAPIV3Config(
+		fleetopenapi.GetOpenAPIDefinitions,
+		openapi.NewDefinitionNamer(fleetapiserver.Scheme),
+	)
+	serverConfig.OpenAPIV3Config.Info.Title = "Fleet API Server"
+	serverConfig.OpenAPIV3Config.Info.Version = "v1alpha1"
 
 	serverConfig.EffectiveVersion = basecompatibility.NewEffectiveVersionFromString(
 		baseversion.DefaultKubeBinaryVersion, "", "")
@@ -262,12 +279,12 @@ func runTestAPIServer(ctx context.Context, opts *apiserver.FleetAPIServer, kubeC
 		return fmt.Errorf("failed to create generic API server: %w", err)
 	}
 
-	// Install API group
+	// Install API group using the apiserver's Scheme and Codecs
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(
 		storagev1alpha1.SchemeGroupVersion.Group,
-		scheme.Scheme,
+		fleetapiserver.Scheme,
 		metav1.ParameterCodec,
-		serializer.NewCodecFactory(scheme.Scheme))
+		fleetapiserver.Codecs)
 
 	v1alpha1Storage := map[string]rest.Storage{}
 	v1alpha1Storage["bundledeployments"] = bundleDeploymentStorage

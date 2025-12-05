@@ -170,6 +170,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.StatusDisplay":                 schema_pkg_apis_storagefleetcattleio_v1alpha1_StatusDisplay(ref),
 		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ValuesFrom":                    schema_pkg_apis_storagefleetcattleio_v1alpha1_ValuesFrom(ref),
 		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions":                   schema_pkg_apis_storagefleetcattleio_v1alpha1_YAMLOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1/summary.Summary":               schema_apis_storagefleetcattleio_v1alpha1_summary_Summary(ref),
 		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroup":                                                    schema_pkg_apis_meta_v1_APIGroup(ref),
 		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroupList":                                                schema_pkg_apis_meta_v1_APIGroupList(ref),
 		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResource":                                                 schema_pkg_apis_meta_v1_APIResource(ref),
@@ -8491,6 +8492,50 @@ func schema_pkg_apis_storagefleetcattleio_v1alpha1_YAMLOptions(ref common.Refere
 						SchemaProps: spec.SchemaProps{
 							Description: "Overlays is a list of names that maps to folders in \"overlays/\". If you wish to customize the file ./subdir/resource.yaml then a file ./overlays/myoverlay/subdir/resource.yaml will replace the base file. A file named ./overlays/myoverlay/subdir/resource_patch.yaml will patch the base file.",
 							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_apis_storagefleetcattleio_v1alpha1_summary_Summary(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"state": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"error": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"transitioning": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{
