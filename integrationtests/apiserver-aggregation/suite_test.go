@@ -99,7 +99,9 @@ var _ = BeforeSuite(func() {
 
 	// CRITICAL: Delete the storage.fleet.cattle.io CRD from envtest
 	// so that API aggregation takes precedence
+	// In production, this CRD should not exist in fleet-crd chart - only the APIService should be installed
 	GinkgoWriter.Println("🔧 Removing storage.fleet.cattle.io CRD to force API aggregation...")
+	GinkgoWriter.Println("   (In production, don't install this CRD - use APIService instead)")
 	err = removeCRD(ctx, k8sclient, "bundledeployments.storage.fleet.cattle.io")
 	Expect(err).NotTo(HaveOccurred())
 	GinkgoWriter.Println("✅ CRD removed, APIService will handle storage.fleet.cattle.io")

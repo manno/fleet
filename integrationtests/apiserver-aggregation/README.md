@@ -1,20 +1,27 @@
 # Full API Aggregation Integration Tests
 
-**Status**: 🚧 Work in Progress - OpenAPI Configuration Required
+**Status**: ✅ Working - Tests Database Persistence via API Aggregation
 
-This directory contains an implementation for full API aggregation integration testing, which would test the complete flow from k8s client through envtest apiserver to our aggregated apiserver.
+This directory contains integration tests that verify the complete flow from k8s client through kube-apiserver to our aggregated API server and finally to the SQLite database.
 
-## What Was Implemented
+## Key Discovery: CRD vs APIService Conflict
 
-✅ **Test Suite Setup** (`suite_test.go`):
-- Start envtest environment
-- Find available port for aggregated apiserver
-- Generate TLS certificates (self-signed for testing)
-- Start aggregated apiserver as HTTP server
-- Create APIService, Service, and Endpoints resources
-- Wait for APIService to become Available
+⚠️ **CRITICAL**: When both a CRD and an APIService exist for the same API group/version, Kubernetes **always prefers the CRD**. This means requests go to etcd, not to the aggregated API server.
 
-✅ **Test Cases** (`aggregation_test.go`):
+**Solution**: The `storage.fleet.cattle.io` CRD must NOT be installed in production. Only the APIService should exist.
+
+## What's Tested
+
+✅ **API Routing Verification**:
+- Confirms requests route to aggregated API server (not etcd)
+- Validates APIService is properly configured and available
+
+✅ **Database Persistence**:
+- Verifies data is actually written to SQLite database
+- Uses `QueryAll()` method to inspect database contents directly
+- Tests create, update, and delete operations reflect in database
+
+✅ **Full CRUD Operations**:
 - Create BundleDeployment through k8s client
 - Get BundleDeployment through k8s client
 - Update BundleDeployment through k8s client
@@ -23,54 +30,16 @@ This directory contains an implementation for full API aggregation integration t
 - List with label selector through k8s client
 - Update status subresource through k8s client
 
-## Current Blocker
+## Test Setup
 
-❌ **OpenAPI Configuration**: The aggregated apiserver requires OpenAPI definitions for `storage.fleet.cattle.io/v1alpha1`, which haven't been generated yet.
+The test suite:
 
-Error: `cannot find model definition for storage.fleet.cattle.io/v1alpha1.BundleDeployment`
-
-## To Complete This Test
-
-### Option 1: Generate OpenAPI Definitions (Recommended)
-
-1. Add OpenAPI generation markers to `pkg/apis/storage.fleet.cattle.io/v1alpha1/`:
-   ```go
-   // +k8s:openapi-gen=true
-   package v1alpha1
-   ```
-
-2. Run code generation:
-   ```bash
-   go generate ./...
-   ```
-
-3. Update `pkg/generated/openapi/` to include storage.fleet.cattle.io types
-
-4. Use the generated OpenAPI in the test
-
-### Option 2: Simplify Test (Quick Fix)
-
-Modify the server config to not require OpenAPI (may lose some functionality):
-```go
-serverConfig.OpenAPIConfig = &genericapiserver.OpenAPIConfig{
-    Info: spec.Info{...},
-    DefaultResponse: &spec.Response{...},
-    GetDefinitions: func(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
-        return map[string]common.OpenAPIDefinition{}
-    },
-}
-```
-
-## What This Test Would Validate
-
-Once working, this test would verify:
-
-1. ✅ **API Aggregation Routing**: Requests to `storage.fleet.cattle.io` route to our server
-2. ✅ **Authentication/Authorization**: Auth flow through main apiserver to aggregated server
-3. ✅ **API Discovery**: The API group is discoverable via `/apis`
-4. ✅ **kubectl Compatibility**: Works like any other Kubernetes API
-5. ✅ **Full CRUD**: All operations work through the aggregated path
-6. ✅ **Status Subresource**: Status updates work correctly
+1. **Starts envtest** with all Fleet CRDs
+2. **Removes the storage.fleet.cattle.io CRD** (simulates production where it shouldn't exist)
+3. **Starts the aggregated API server** with SQLite backend
+4. **Creates APIService resource** to register the aggregated API
+5. **Shares the database instance** between test verification and API server
+6. **Runs tests** to verify complete flow including database persistence
 
 ## Architecture
 
@@ -78,60 +47,135 @@ Once working, this test would verify:
 Test → k8sClient 
      ↓
 envtest kube-apiserver 
-     ↓  (sees APIService resource)
+     ↓  (sees APIService resource, no CRD)
 APIService Routing
      ↓
-Our Aggregated APIServer (HTTP on localhost:random_port)
+Our Aggregated APIServer (HTTPS on localhost:random_port)
      ↓
 Storage Layer (BundleDeploymentStorage)
      ↓
-SQLite Database
+SQLite Database (/tmp/fleet-apiserver-full-test-*/bundledeployments.db)
 ```
+
+## Production Implications
+
+### What Needs to Change
+
+1. **Remove the CRD**: Delete `bundledeployments.storage.fleet.cattle.io` from `charts/fleet-crd/templates/crds.yaml`
+
+2. **Add APIService**: Create `charts/fleet/templates/apiservice.yaml`:
+   ```yaml
+   apiVersion: apiregistration.k8s.io/v1
+   kind: APIService
+   metadata:
+     name: v1alpha1.storage.fleet.cattle.io
+   spec:
+     group: storage.fleet.cattle.io
+     version: v1alpha1
+     service:
+       name: fleet-apiserver
+       namespace: {{ .Release.Namespace }}
+       port: 443
+     groupPriorityMinimum: 1000
+     versionPriority: 100
+     caBundle: {{ .Values.apiserver.caBundle | b64enc }}
+   ```
+
+3. **Deploy API Server**: The `fleetapiserver` binary needs to run as a separate deployment with:
+   - TLS certificates
+   - Service for routing
+   - Persistent storage for SQLite database
+
+See [docs/apiserver-deployment.md](../../docs/apiserver-deployment.md) for complete production deployment guide.
+
+## Running Tests
+
+```bash
+# From repository root
+ginkgo run -v ./integrationtests/apiserver-aggregation/
+
+# Run specific test
+ginkgo run --focus="Database Persistence" ./integrationtests/apiserver-aggregation/
+```
+
+## Test Results
+
+```
+• should verify API aggregation is actually routing to our server
+  - Validates APIService is Available
+  - Creates BundleDeployment via k8s client
+  - Confirms data exists in SQLite database (not etcd)
+
+• should persist data to the SQLite database
+  - Creates 3 BundleDeployments
+  - Uses QueryAll() to verify all are in database
+  - Validates metadata (resource_version, uid, generation, etc.)
+
+• should reflect updates in the database
+  - Creates BundleDeployment with generation=1
+  - Updates spec
+  - Verifies generation=2 and updated labels in database
+
+• should remove deleted resources from the database
+  - Creates BundleDeployment
+  - Verifies it exists in database
+  - Deletes it
+  - Confirms it's removed from database
+```
+
+## New QueryAll Method
+
+Added to `internal/cmd/apiserver/storage/database.go`:
+
+```go
+func (d *Database) QueryAll() ([]map[string]interface{}, error)
+```
+
+This method:
+- Returns all bundledeployments from SQLite as a slice of maps
+- Used in tests to verify database persistence
+- Thread-safe with RLock/RUnlock
+- Handles NULL values for optional fields
 
 ## Comparison with Storage Tests
 
 | Aspect | Storage Tests | Full Integration Tests |
 |--------|---------------|------------------------|
-| **What's Tested** | Storage layer only | Complete API aggregation |
-| **Speed** | Fast (~4s) | Slower (~20s+ with server startup) |
-| **Setup** | Simple | Complex (HTTP server, TLS, APIService) |
-| **Tests** | Storage operations | End-to-end API flow |
+| **What's Tested** | Storage layer only | Complete API aggregation + DB |
+| **Database Check** | No direct DB inspection | QueryAll() verifies DB contents |
+| **Speed** | Fast (~4s) | Moderate (~15s with server startup) |
+| **Setup** | Simple | Complex (HTTPS server, TLS, APIService) |
+| **Tests** | Storage operations | End-to-end including DB persistence |
+| **CRD Handling** | Uses test DB | Removes CRD to force APIService |
 | **Use Case** | Development/TDD | Pre-deployment validation |
-
-## Running Tests (When Fixed)
-
-```bash
-# From repository root
-ginkgo run ./integrationtests/apiserver-aggregation/
-
-# With verbose output
-ginkgo run -v ./integrationtests/apiserver-aggregation/
-```
 
 ## Files
 
-- `suite_test.go`: Test suite setup with HTTP server lifecycle
-- `aggregation_test.go`: Test cases for CRUD operations
+- `suite_test.go`: Test suite setup with HTTPS server and APIService registration
+- `aggregation_test.go`: CRUD operations and database persistence tests
 - `README.md`: This file
 
-## Next Steps
+## Troubleshooting
 
-1. Generate OpenAPI definitions for `storage.fleet.cattle.io/v1alpha1`
-2. Update test to use generated OpenAPI
-3. Run tests to validate full API aggregation
-4. Add additional test cases (watch, patch, etc.)
-5. Add performance benchmarks
+**Problem**: Tests fail with "database should contain bundledeployments"
+- **Cause**: Requests are going to etcd (CRD) instead of API server
+- **Solution**: Ensure CRD is removed in test setup (done automatically)
 
-## Alternative: Use Storage Tests
+**Problem**: APIService shows as unavailable
+- **Cause**: API server not started or TLS issue
+- **Solution**: Check server logs in test output
 
-For now, use the storage layer tests in `../apiserver/` which work perfectly and test the same functionality minus the HTTP/aggregation layer:
+**Problem**: "unable to retrieve the complete list of server APIs"
+- **Cause**: Missing scheme registration
+- **Solution**: Ensure apiextensionsv1 is added to scheme
 
-```bash
-ginkgo run ./integrationtests/apiserver/
-```
+## See Also
 
-These tests are sufficient for validating storage logic and are much faster for development.
+- [docs/apiserver-deployment.md](../../docs/apiserver-deployment.md) - Production deployment guide
+- [integrationtests/apiserver/](../apiserver/) - Storage layer tests (faster, for development)
+- [internal/cmd/apiserver/storage/](../../internal/cmd/apiserver/storage/) - Storage implementation
 
-##License
+## License
 
 See main Fleet LICENSE file.
+
