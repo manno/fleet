@@ -14,6 +14,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apiserver/pkg/endpoints/openapi"
 	"k8s.io/apiserver/pkg/registry/rest"
@@ -51,6 +52,7 @@ type aggregatedServerInfo struct {
 	host   string
 	port   int
 	dbPath string
+	db     *storage.Database
 	cancel context.CancelFunc
 }
 
@@ -81,6 +83,9 @@ var _ = BeforeSuite(func() {
 	err = apiregistrationv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
+	err = apiextensionsv1.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+
 	err = fleetv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -91,6 +96,14 @@ var _ = BeforeSuite(func() {
 	k8sclient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sclient).NotTo(BeNil())
+
+	// CRITICAL: Delete the storage.fleet.cattle.io CRD from envtest
+	// so that API aggregation takes precedence
+	GinkgoWriter.Println("🔧 Removing storage.fleet.cattle.io CRD to force API aggregation...")
+	err = removeCRD(ctx, k8sclient, "bundledeployments.storage.fleet.cattle.io")
+	Expect(err).NotTo(HaveOccurred())
+	GinkgoWriter.Println("✅ CRD removed, APIService will handle storage.fleet.cattle.io")
+
 
 	// Start our aggregated API server
 	aggregatedServer, err = startAggregatedAPIServer(ctx, tmpDir, cfg)
@@ -112,8 +125,13 @@ var _ = AfterSuite(func() {
 	if cancel != nil {
 		cancel()
 	}
-	if aggregatedServer != nil && aggregatedServer.cancel != nil {
-		aggregatedServer.cancel()
+	if aggregatedServer != nil {
+		if aggregatedServer.cancel != nil {
+			aggregatedServer.cancel()
+		}
+		if aggregatedServer.db != nil {
+			aggregatedServer.db.Close()
+		}
 	}
 	if tmpDir != "" {
 		os.RemoveAll(tmpDir)
@@ -146,6 +164,12 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 		return nil, fmt.Errorf("failed to generate certificates: %w", err)
 	}
 
+	// Initialize database before starting server - this will be shared
+	db, err := storage.NewDatabase(dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize database: %w", err)
+	}
+
 	// Create server options
 	opts := &fleetapiserver.FleetAPIServer{
 		SecurePort: port,
@@ -163,8 +187,8 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 		// Signal that we're starting
 		serverStarted <- nil
 
-		// Run server - this blocks until context is cancelled
-		err := runTestAPIServer(serverCtx, opts, kubeConfig)
+		// Run server - pass the shared db instance
+		err := runTestAPIServerWithDB(serverCtx, opts, kubeConfig, db)
 		if err != nil && serverCtx.Err() == nil {
 			GinkgoWriter.Printf("❌ API server error: %v\n", err)
 		}
@@ -174,10 +198,12 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 	select {
 	case err := <-serverStarted:
 		if err != nil {
+			db.Close()
 			serverCancel()
 			return nil, err
 		}
 	case <-time.After(5 * time.Second):
+		db.Close()
 		serverCancel()
 		return nil, fmt.Errorf("timeout waiting for server to start")
 	}
@@ -207,20 +233,14 @@ func startAggregatedAPIServer(ctx context.Context, tmpDir string, kubeConfig *re
 		host:   "localhost",
 		port:   port,
 		dbPath: dbPath,
+		db:     db,
 		cancel: serverCancel,
 	}, nil
 }
 
-func runTestAPIServer(ctx context.Context, opts *fleetapiserver.FleetAPIServer, kubeConfig *restclient.Config) error {
+func runTestAPIServerWithDB(ctx context.Context, opts *fleetapiserver.FleetAPIServer, kubeConfig *restclient.Config, db *storage.Database) error {
 	// This is a simplified version of internal/cmd/apiserver/server.go:run()
-	// We need to inject the kubeconfig for testing
-
-	// Initialize database
-	db, err := storage.NewDatabase(opts.DBPath)
-	if err != nil {
-		return fmt.Errorf("failed to initialize database: %w", err)
-	}
-	defer db.Close()
+	// Use the provided db instance instead of creating a new one
 
 	// Create storage
 	bundleDeploymentStorage, err := storage.NewBundleDeploymentStorage(db)
@@ -376,4 +396,26 @@ func isAPIServiceAvailable(ctx context.Context, k8sClient client.Client) bool {
 
 func intPtr(i int32) *int32 {
 	return &i
+}
+
+func removeCRD(ctx context.Context, k8sClient client.Client, crdName string) error {
+	// Delete the CRD
+	crd := &apiextensionsv1.CustomResourceDefinition{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: crdName,
+		},
+	}
+	
+	err := k8sClient.Delete(ctx, crd)
+	if client.IgnoreNotFound(err) != nil {
+		return fmt.Errorf("failed to delete CRD %s: %w", crdName, err)
+	}
+
+	// Wait for CRD to be fully removed
+	Eventually(func() bool {
+		err := k8sClient.Get(ctx, client.ObjectKey{Name: crdName}, crd)
+		return client.IgnoreNotFound(err) == nil
+	}, 30*time.Second, 1*time.Second).Should(BeTrue())
+
+	return nil
 }
