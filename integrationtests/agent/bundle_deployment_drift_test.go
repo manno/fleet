@@ -33,7 +33,7 @@ var _ = Describe("BundleDeployment drift correction", Ordered, func() {
 	)
 
 	createBundleDeployment := func(name string) {
-		bundled := v1alpha1.BundleDeployment{
+		bundled := storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: clusterNS,
@@ -78,7 +78,7 @@ var _ = Describe("BundleDeployment drift correction", Ordered, func() {
 			Eventually(env.isBundleDeploymentReadyAndNotModified).WithArguments(name).Should(BeTrue())
 
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -117,7 +117,7 @@ var _ = Describe("BundleDeployment drift correction", Ordered, func() {
 			}
 
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -164,7 +164,7 @@ var _ = Describe("BundleDeployment drift correction", Ordered, func() {
 				}
 
 				Eventually(func(g Gomega) {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 					// The bundle deployment will not be ready, because no image can be pulled for
 					// the deployment in envtest clusters.
@@ -302,7 +302,7 @@ var _ = Describe("BundleDeployment drift correction", Ordered, func() {
 			Eventually(env.isBundleDeploymentReadyAndNotModified).WithArguments(name).Should(BeTrue())
 
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})

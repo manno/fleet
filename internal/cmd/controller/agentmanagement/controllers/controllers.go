@@ -15,6 +15,8 @@ import (
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/generated/controllers/fleet.cattle.io"
 	fleetcontrollers "github.com/rancher/fleet/pkg/generated/controllers/fleet.cattle.io/v1alpha1"
+	"github.com/rancher/fleet/pkg/generated/controllers/storage.fleet.cattle.io"
+	storagecontrollers "github.com/rancher/fleet/pkg/generated/controllers/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/lasso/pkg/cache"
 	"github.com/rancher/lasso/pkg/client"
@@ -40,6 +42,7 @@ import (
 
 type AppContext struct {
 	fleetcontrollers.Interface
+	Storage storagecontrollers.Interface
 
 	K8s          kubernetes.Interface
 	Core         corecontrollers.Interface
@@ -93,7 +96,7 @@ func Register(ctx context.Context, appCtx *AppContext, systemNamespace string, d
 	}
 
 	cluster.Register(ctx,
-		appCtx.BundleDeployment(),
+		appCtx.Storage.BundleDeployment(),
 		appCtx.ClusterGroup().Cache(),
 		appCtx.Cluster(),
 		appCtx.GitRepo().Cache(),
@@ -178,6 +181,14 @@ func NewAppContext(cfg clientcmd.ClientConfig) (*AppContext, error) {
 	}
 	fleetv := fleet.Fleet().V1alpha1()
 
+	storage, err := storage.NewFactoryFromConfigWithOptions(client, &storage.FactoryOptions{
+		SharedControllerFactory: scf,
+	})
+	if err != nil {
+		return nil, err
+	}
+	storagev := storage.Storage().V1alpha1()
+
 	rbac, err := rbac.NewFactoryFromConfigWithOptions(client, &rbac.FactoryOptions{
 		SharedControllerFactory: scf,
 	})
@@ -208,6 +219,7 @@ func NewAppContext(cfg clientcmd.ClientConfig) (*AppContext, error) {
 	return &AppContext{
 		K8s:          k8s,
 		Interface:    fleetv,
+		Storage:      storagev,
 		Core:         corev,
 		Apps:         appsv,
 		RBAC:         rbacv,
@@ -216,6 +228,7 @@ func NewAppContext(cfg clientcmd.ClientConfig) (*AppContext, error) {
 		starters: []start.Starter{
 			core,
 			fleet,
+			storage,
 			rbac,
 		},
 	}, nil

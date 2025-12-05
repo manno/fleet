@@ -9,6 +9,7 @@ import (
 
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/wrangler/v3/pkg/condition"
 )
@@ -86,7 +87,7 @@ func GetSummaryState(summary fleet.BundleSummary) fleet.BundleState {
 }
 
 // GetDeploymentState calculates a fleet.BundleState from bundleDeployment (pure function)
-func GetDeploymentState(bundleDeployment *fleet.BundleDeployment) fleet.BundleState {
+func GetDeploymentState(bundleDeployment *storagev1alpha1.BundleDeployment) fleet.BundleState {
 	switch {
 	case bundleDeployment.Status.AppliedDeploymentID != bundleDeployment.Spec.DeploymentID:
 		if condition.Cond(fleet.BundleDeploymentConditionDeployed).IsFalse(bundleDeployment) {
@@ -126,7 +127,7 @@ func MessageFromCondition(conditionType string, conds []v1alpha1.GenericConditio
 }
 
 // MessageFromDeployment returns a relevant message from the deployment conditions (pure function)
-func MessageFromDeployment(deployment *fleet.BundleDeployment) string {
+func MessageFromDeployment(deployment *storagev1alpha1.BundleDeployment) string {
 	if deployment == nil {
 		return ""
 	}

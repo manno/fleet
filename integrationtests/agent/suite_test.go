@@ -43,6 +43,7 @@ import (
 	"github.com/rancher/fleet/internal/helmdeployer"
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 func init() {
@@ -99,7 +100,7 @@ var _ = BeforeSuite(func() {
 
 	setupFakeContents()
 
-	driftChan := make(chan event.TypedGenericEvent[*v1alpha1.BundleDeployment])
+	driftChan := make(chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment])
 
 	// Set up the bundledeployment reconciler
 	Expect(k8sClient.Create(context.Background(), &corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: clusterNS}})).ToNot(HaveOccurred())
@@ -137,7 +138,7 @@ var _ = AfterSuite(func() {
 // newReconciler creates a new BundleDeploymentReconciler that will watch for changes
 // in the test Fleet namespace, using configuration from the provided manager.
 // Resources are provided by the lookup parameter.
-func newReconciler(ctx context.Context, mgr manager.Manager, lookup *lookup, driftChan chan event.TypedGenericEvent[*v1alpha1.BundleDeployment]) *controller.BundleDeploymentReconciler {
+func newReconciler(ctx context.Context, mgr manager.Manager, lookup *lookup, driftChan chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment]) *controller.BundleDeploymentReconciler {
 	upstreamClient := mgr.GetClient()
 	// re-use client, since this is a single cluster test
 	localClient := upstreamClient
@@ -261,7 +262,7 @@ type specEnv struct {
 }
 
 func (se specEnv) isNotReadyAndModified(g Gomega, name string, modifiedStatus v1alpha1.ModifiedStatus, message string) {
-	bd := &v1alpha1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	err := k8sClient.Get(context.TODO(), types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 
 	g.Expect(err).ToNot(HaveOccurred())
@@ -273,7 +274,7 @@ func (se specEnv) isNotReadyAndModified(g Gomega, name string, modifiedStatus v1
 }
 
 func (se specEnv) isBundleDeploymentReadyAndNotModified(name string) bool {
-	bd := &v1alpha1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	err := k8sClient.Get(context.TODO(), types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 	if err != nil {
 		return false

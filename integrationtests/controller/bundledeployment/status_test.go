@@ -8,6 +8,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -40,7 +41,7 @@ var _ = Describe("BundleDeployment Status Fields", func() {
 		})
 
 		AfterEach(func() {
-			Expect(k8sClient.Delete(ctx, &v1alpha1.BundleDeployment{ObjectMeta: metav1.ObjectMeta{
+			Expect(k8sClient.Delete(ctx, &storagev1alpha1.BundleDeployment{ObjectMeta: metav1.ObjectMeta{
 				Name:      "name",
 				Namespace: namespace,
 			}})).NotTo(HaveOccurred())
@@ -48,7 +49,7 @@ var _ = Describe("BundleDeployment Status Fields", func() {
 		})
 
 		It("updates the status fields", func() {
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			name := types.NamespacedName{Namespace: namespace, Name: "name"}
 			Eventually(func() error {
 				err := k8sClient.Get(ctx, name, bd)

@@ -9,6 +9,7 @@ import (
 
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
@@ -74,7 +75,7 @@ func upToDate(target *Target) bool {
 // isUnavailable checks if target is unavailable (pure function). If no target
 // is provided, it returns false, assuming that a nil target is always
 // available.
-func isUnavailable(target *fleet.BundleDeployment) bool {
+func isUnavailable(target *storagev1alpha1.BundleDeployment) bool {
 	if target == nil {
 		return false
 	}

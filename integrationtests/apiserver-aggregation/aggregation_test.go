@@ -11,6 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
+	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
@@ -54,9 +55,9 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 						"test": "aggregation",
 					},
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "aggregation-test-id",
-					Options: storagev1alpha1.BundleDeploymentOptions{
+					Options: fleetv1alpha1.BundleDeploymentOptions{
 						DefaultNamespace: "default",
 					},
 				},
@@ -84,7 +85,7 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 					Name:      "test-get-aggregated",
 					Namespace: testNamespace,
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "get-test-id",
 				},
 			}
@@ -115,7 +116,7 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 					Name:      "test-update-aggregated",
 					Namespace: testNamespace,
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "original-id",
 				},
 			}
@@ -145,7 +146,7 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 					Name:      "test-delete-aggregated",
 					Namespace: testNamespace,
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "delete-test-id",
 				},
 			}
@@ -177,7 +178,7 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 							"test": "list",
 						},
 					},
-					Spec: storagev1alpha1.BundleDeploymentSpec{
+					Spec: fleetv1alpha1.BundleDeploymentSpec{
 						DeploymentID: fmt.Sprintf("list-test-id-%d", i),
 					},
 				}
@@ -243,7 +244,7 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 					Name:      "test-status-aggregated",
 					Namespace: testNamespace,
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "status-test-id",
 				},
 			}

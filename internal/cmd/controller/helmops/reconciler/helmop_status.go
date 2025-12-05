@@ -10,6 +10,7 @@ import (
 	"github.com/rancher/fleet/internal/resourcestatus"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/sharding"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -82,7 +83,7 @@ func (r *HelmOpStatusReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 	logger.V(1).Info("Reconciling HelmOp status")
 
-	bdList := &fleet.BundleDeploymentList{}
+	bdList := &storagev1alpha1.BundleDeploymentList{}
 	err := r.List(ctx, bdList, client.MatchingLabels{
 		fleet.HelmOpLabel:          helmop.Name,
 		fleet.BundleNamespaceLabel: helmop.Namespace,
@@ -110,7 +111,7 @@ func (r *HelmOpStatusReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	return ctrl.Result{}, nil
 }
 
-func setStatusHelm(list *fleet.BundleDeploymentList, helmop *fleet.HelmOp) error {
+func setStatusHelm(list *storagev1alpha1.BundleDeploymentList, helmop *fleet.HelmOp) error {
 	// sort bundledeployments so lists in status are always in the same order
 	sort.Slice(list.Items, func(i, j int) bool {
 		return list.Items[i].UID < list.Items[j].UID

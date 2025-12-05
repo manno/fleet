@@ -9,16 +9,17 @@ import (
 
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
-func SetResources(list []fleet.BundleDeployment, status *fleet.StatusBase) {
+func SetResources(list []storagev1alpha1.BundleDeployment, status *fleet.StatusBase) {
 	byCluster := fromResources(list)
 	status.Resources = aggregateResourceStatesClustersMap(byCluster)
 	status.ResourceCounts = sumResourceCounts(list)
 	status.PerClusterResourceCounts = resourceCountsPerCluster(list)
 }
 
-func SetClusterResources(list []fleet.BundleDeployment, cluster *fleet.Cluster) {
+func SetClusterResources(list []storagev1alpha1.BundleDeployment, cluster *fleet.Cluster) {
 	cluster.Status.ResourceCounts = sumResourceCounts(list)
 }
 
@@ -26,7 +27,7 @@ func key(resource fleet.Resource) string {
 	return resource.Type + "/" + resource.ID
 }
 
-func resourceCountsPerCluster(items []fleet.BundleDeployment) map[string]*fleet.ResourceCounts {
+func resourceCountsPerCluster(items []storagev1alpha1.BundleDeployment) map[string]*fleet.ResourceCounts {
 	res := make(map[string]*fleet.ResourceCounts)
 	for _, bd := range items {
 		clusterID := bd.Labels[fleet.ClusterNamespaceLabel] + "/" + bd.Labels[fleet.ClusterLabel]
@@ -46,13 +47,13 @@ type resourceStateEntry struct {
 
 type resourceStatesByResourceKey map[fleet.ResourceKey][]resourceStateEntry
 
-func clusterID(bd fleet.BundleDeployment) string {
+func clusterID(bd storagev1alpha1.BundleDeployment) string {
 	return bd.Labels[fleet.ClusterNamespaceLabel] + "/" + bd.Labels[fleet.ClusterLabel]
 }
 
 // fromResources inspects a list of BundleDeployments and returns a list of per-cluster states per resource keys.
 // It also returns a list of errors messages produced that may have occurred during processing
-func fromResources(items []fleet.BundleDeployment) resourceStatesByResourceKey {
+func fromResources(items []storagev1alpha1.BundleDeployment) resourceStatesByResourceKey {
 	// ensure cluster order is stable, so we do not trigger reconciles
 	sort.Slice(items, func(i, j int) bool {
 		return clusterID(items[i]) < clusterID(items[j])
@@ -86,7 +87,7 @@ func toType(apiVersion, kind string) string {
 
 // resourceDefaultState calculates the state for items in the status.Resources list.
 // This default state may be replaced individually for each resource with the information from NonReadyStatus and ModifiedStatus fields.
-func resourcesDefaultState(bd *fleet.BundleDeployment) string {
+func resourcesDefaultState(bd *storagev1alpha1.BundleDeployment) string {
 	switch bdState := summary.GetDeploymentState(bd); bdState {
 	// NotReady and Modified BD states are inferred from resource statuses, so it's incorrect to use that to calculate resource states
 	case fleet.NotReady, fleet.Modified:
@@ -100,7 +101,7 @@ func resourcesDefaultState(bd *fleet.BundleDeployment) string {
 	}
 }
 
-func bundleDeploymentResources(bd fleet.BundleDeployment) map[fleet.ResourceKey]resourceStateEntry {
+func bundleDeploymentResources(bd storagev1alpha1.BundleDeployment) map[fleet.ResourceKey]resourceStateEntry {
 	clusterID := bd.Labels[fleet.ClusterNamespaceLabel] + "/" + bd.Labels[fleet.ClusterLabel]
 	incomplete := bd.Status.IncompleteState
 	defaultState := resourcesDefaultState(&bd)
@@ -234,7 +235,7 @@ func appendToPerClusterState(states *fleet.PerClusterState, state, clusterID str
 	}
 }
 
-func sumResourceCounts(items []fleet.BundleDeployment) fleet.ResourceCounts {
+func sumResourceCounts(items []storagev1alpha1.BundleDeployment) fleet.ResourceCounts {
 	var res fleet.ResourceCounts
 	for _, bd := range items {
 		summary.IncrementResourceCounts(&res, bd.Status.ResourceCounts)

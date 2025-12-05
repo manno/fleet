@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apiserver/pkg/registry/rest"
 
+	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
@@ -37,9 +38,9 @@ var _ = Describe("API Server Storage Layer", func() {
 						"test": "label",
 					},
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "test-deployment-id",
-					Options: storagev1alpha1.BundleDeploymentOptions{
+					Options: fleetv1alpha1.BundleDeploymentOptions{
 						DefaultNamespace: "default",
 					},
 				},
@@ -63,7 +64,7 @@ var _ = Describe("API Server Storage Layer", func() {
 					Name:      "test-get",
 					Namespace: "test-namespace",
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "get-test-id",
 				},
 			}
@@ -86,7 +87,7 @@ var _ = Describe("API Server Storage Layer", func() {
 					Name:      "test-update",
 					Namespace: "test-namespace",
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "original-id",
 				},
 			}
@@ -112,7 +113,7 @@ var _ = Describe("API Server Storage Layer", func() {
 					Name:      "test-delete",
 					Namespace: "test-namespace",
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "delete-test-id",
 				},
 			}
@@ -138,7 +139,7 @@ var _ = Describe("API Server Storage Layer", func() {
 							"test": "list",
 						},
 					},
-					Spec: storagev1alpha1.BundleDeploymentSpec{
+					Spec: fleetv1alpha1.BundleDeploymentSpec{
 						DeploymentID: "list-test-id",
 					},
 				}
@@ -204,7 +205,7 @@ var _ = Describe("API Server Storage Layer", func() {
 					Name:      "test-status",
 					Namespace: "test-namespace",
 				},
-				Spec: storagev1alpha1.BundleDeploymentSpec{
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "status-test-id",
 				},
 			}

@@ -9,6 +9,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/driftdetect"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/monitor"
 	fleetv1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/go-logr/logr"
 	"github.com/rancher/wrangler/v3/pkg/condition"
@@ -35,7 +36,7 @@ type DriftReconciler struct {
 	Monitor     *monitor.Monitor
 	DriftDetect *driftdetect.DriftDetect
 
-	DriftChan chan event.TypedGenericEvent[*fleetv1.BundleDeployment]
+	DriftChan chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment]
 
 	Workers int
 }
@@ -67,7 +68,7 @@ func (r *DriftReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	ctx = log.IntoContext(ctx, logger)
 
 	// get latest BundleDeployment from cluster
-	bd := &fleetv1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	err := r.Get(ctx, req.NamespacedName, bd)
 	if apierrors.IsNotFound(err) {
 		return ctrl.Result{}, nil
@@ -139,7 +140,7 @@ func (r *DriftReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	return ctrl.Result{}, errutil.NewAggregate(merr)
 }
 
-func (r *DriftReconciler) updateStatus(ctx context.Context, logger logr.Logger, orig *fleetv1.BundleDeployment, obj *fleetv1.BundleDeployment) error {
+func (r *DriftReconciler) updateStatus(ctx context.Context, logger logr.Logger, orig *storagev1alpha1.BundleDeployment, obj *storagev1alpha1.BundleDeployment) error {
 	statusPatch := client.MergeFrom(orig)
 
 	// Pre-calculate patch contents, to skip request if it's empty
@@ -159,9 +160,9 @@ func (r *DriftReconciler) updateStatus(ctx context.Context, logger logr.Logger, 
 // enqueueRequestHandlerWithDelay implements a TypedEventHandler that introduces a constant delay in the resources being enqueued
 // Due to how workqueue.TypedDelayingInterface's AddAfter is implemented, successive calls with the same key are aggregated.
 // Only implemented for Generic events, as this is only meant to be used from with source.Channel to receive internal events, not from an informer
-func enqueueRequestHandlerWithDelay(delay time.Duration) handler.TypedEventHandler[*fleetv1.BundleDeployment, reconcile.Request] {
-	return &handler.TypedFuncs[*fleetv1.BundleDeployment, reconcile.Request]{
-		GenericFunc: func(ctx context.Context, e event.TypedGenericEvent[*fleetv1.BundleDeployment], w workqueue.TypedRateLimitingInterface[reconcile.Request]) {
+func enqueueRequestHandlerWithDelay(delay time.Duration) handler.TypedEventHandler[*storagev1alpha1.BundleDeployment, reconcile.Request] {
+	return &handler.TypedFuncs[*storagev1alpha1.BundleDeployment, reconcile.Request]{
+		GenericFunc: func(ctx context.Context, e event.TypedGenericEvent[*storagev1alpha1.BundleDeployment], w workqueue.TypedRateLimitingInterface[reconcile.Request]) {
 			if e.Object == nil {
 				log.FromContext(ctx).Error(nil, "GenericEvent received with no metadata", "event", e)
 				return

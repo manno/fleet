@@ -13,6 +13,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/normalizers"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/objectset"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -22,7 +23,7 @@ import (
 // Diff factors the bundledeployment's bundle diff patches into the plan from
 // DryRun. This way, the status of the bundledeployment can be updated
 // accurately.
-func Diff(plan Plan, bd *fleet.BundleDeployment, ns string, objs ...runtime.Object) (Plan, error) {
+func Diff(plan Plan, bd *storagev1alpha1.BundleDeployment, ns string, objs ...runtime.Object) (Plan, error) {
 	desired := objectset.NewObjectSet(objs...).ObjectsByGVK()
 	live := objectset.NewObjectSet(plan.Objects...).ObjectsByGVK()
 
@@ -122,7 +123,7 @@ func Diff(plan Plan, bd *fleet.BundleDeployment, ns string, objs ...runtime.Obje
 //   - normalizers.NewIgnoreNormalizer (patch.JsonPointers)
 //   - normalizers.NewKnownTypesNormalizer (rollout.argoproj.io)
 //   - patch.Operations
-func newNormalizers(live objectset.ObjectByGVK, bd *fleet.BundleDeployment) (diff.Normalizer, error) {
+func newNormalizers(live objectset.ObjectByGVK, bd *storagev1alpha1.BundleDeployment) (diff.Normalizer, error) {
 	var ignore []resource.ResourceIgnoreDifferences
 	jsonPatchNorm := &normalizers.JSONPatchNormalizer{}
 

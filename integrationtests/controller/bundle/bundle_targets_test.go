@@ -9,6 +9,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -43,7 +44,7 @@ var _ = Describe("Bundle targets", Ordered, func() {
 		bundle                            *v1alpha1.Bundle
 	)
 
-	loadValues := func(bd v1alpha1.BundleDeployment) (map[string]any, map[string]any) {
+	loadValues := func(bd storagev1alpha1.BundleDeployment) (map[string]any, map[string]any) {
 		values := make(map[string]any)
 		staged := make(map[string]any)
 		secret := corev1.Secret{}
@@ -70,7 +71,7 @@ var _ = Describe("Bundle targets", Ordered, func() {
 
 	AfterEach(func() {
 		Expect(k8sClient.Delete(ctx, &v1alpha1.Bundle{ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: bundleName}})).NotTo(HaveOccurred())
-		bdList := &v1alpha1.BundleDeploymentList{}
+		bdList := &storagev1alpha1.BundleDeploymentList{}
 		err := k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 		Expect(err).NotTo(HaveOccurred())
 		for _, bd := range bdList.Items {
@@ -543,11 +544,11 @@ var _ = Describe("Bundle targets", Ordered, func() {
 	})
 })
 
-func verifyBundlesDeploymentsAreCreated(numBundleDeployments int, bdLabels map[string]string, bundleName string) *v1alpha1.BundleDeploymentList {
-	var bdList *v1alpha1.BundleDeploymentList
+func verifyBundlesDeploymentsAreCreated(numBundleDeployments int, bdLabels map[string]string, bundleName string) *storagev1alpha1.BundleDeploymentList {
+	var bdList *storagev1alpha1.BundleDeploymentList
 	bdLabels["fleet.cattle.io/bundle-name"] = bundleName
 	Eventually(func() int {
-		bdList = &v1alpha1.BundleDeploymentList{}
+		bdList = &storagev1alpha1.BundleDeploymentList{}
 		err := k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 		Expect(err).NotTo(HaveOccurred())
 

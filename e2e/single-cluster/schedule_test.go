@@ -16,6 +16,7 @@ import (
 	"github.com/rancher/fleet/e2e/testenv/githelper"
 	"github.com/rancher/fleet/e2e/testenv/kubectl"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 var _ = Describe("Schedules", Label("infra-setup"), func() {
@@ -129,7 +130,7 @@ var _ = Describe("Schedules", Label("infra-setup"), func() {
 
 		// When the schedule is active, the bundledeployment should be created and not paused.
 		By("checking the bundle deployment is active")
-		var bd fleet.BundleDeployment
+		var bd storagev1alpha1.BundleDeployment
 		Eventually(func(g Gomega) {
 			label := fmt.Sprintf("fleet.cattle.io/bundle-name=%s-examples", gitrepoName)
 			out, err := k.Namespace(namespace).Get("bundledeployments", "-l", label, "-o", "json")

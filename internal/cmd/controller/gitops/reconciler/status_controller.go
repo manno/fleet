@@ -10,6 +10,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	"github.com/rancher/fleet/internal/resourcestatus"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
 	v1 "k8s.io/api/core/v1"
@@ -103,7 +104,7 @@ func (r *StatusReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	logger.V(1).Info("Reconciling GitRepo status")
 
-	bdList := &fleet.BundleDeploymentList{}
+	bdList := &storagev1alpha1.BundleDeploymentList{}
 	err := r.List(ctx, bdList, client.MatchingLabels{
 		fleet.RepoLabel:            gitrepo.Name,
 		fleet.BundleNamespaceLabel: gitrepo.Namespace,
@@ -161,7 +162,7 @@ func (r *StatusReconciler) updateStatus(ctx context.Context, orig *fleet.GitRepo
 	return r.Client.Status().Patch(ctx, obj, statusPatch)
 }
 
-func setStatus(list *fleet.BundleDeploymentList, gitrepo *fleet.GitRepo) error {
+func setStatus(list *storagev1alpha1.BundleDeploymentList, gitrepo *fleet.GitRepo) error {
 	// sort bundledeployments so lists in status are always in the same order
 	sort.Slice(list.Items, func(i, j int) bool {
 		return list.Items[i].UID < list.Items[j].UID

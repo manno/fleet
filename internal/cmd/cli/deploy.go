@@ -17,6 +17,7 @@ import (
 	"github.com/rancher/fleet/internal/helmdeployer"
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	wyaml "github.com/rancher/wrangler/v3/pkg/yaml"
 
@@ -69,7 +70,7 @@ func (d *Deploy) Run(cmd *cobra.Command, args []string) error {
 	}
 
 	c := &v1alpha1.Content{}
-	bd := &v1alpha1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	objs, err := wyaml.ToObjects(bytes.NewBuffer(b))
 	if err != nil {
 		return err
@@ -104,7 +105,7 @@ func (d *Deploy) Run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to read content resource from file")
 	}
 
-	emptyBD := &v1alpha1.BundleDeployment{}
+	emptyBD := &storagev1alpha1.BundleDeployment{}
 	if reflect.DeepEqual(bd, emptyBD) {
 		return fmt.Errorf("failed to read bundledeployment resource from file")
 	}

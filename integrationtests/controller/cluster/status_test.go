@@ -9,6 +9,7 @@ import (
 	"github.com/rancher/fleet/integrationtests/utils"
 
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -122,7 +123,7 @@ var _ = Describe("Cluster Status Fields", func() {
 			}).ShouldNot(HaveOccurred())
 
 			By("Preparing the bundledeployments so the bundles get to 'Ready' state")
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err = k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "gitrepo-bundle"}, bd)
 				if err != nil {
@@ -144,7 +145,7 @@ var _ = Describe("Cluster Status Fields", func() {
 				return k8sClient.Update(ctx, bd)
 			}).ShouldNot(HaveOccurred())
 
-			bd = &v1alpha1.BundleDeployment{}
+			bd = &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err = k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "helmop-bundle"}, bd)
 				if err != nil {

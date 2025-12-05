@@ -32,7 +32,6 @@ func init() {
 
 type Interface interface {
 	Bundle() BundleController
-	BundleDeployment() BundleDeploymentController
 	BundleNamespaceMapping() BundleNamespaceMappingController
 	Cluster() ClusterController
 	ClusterGroup() ClusterGroupController
@@ -58,10 +57,6 @@ type version struct {
 
 func (v *version) Bundle() BundleController {
 	return generic.NewController[*v1alpha1.Bundle, *v1alpha1.BundleList](schema.GroupVersionKind{Group: "fleet.cattle.io", Version: "v1alpha1", Kind: "Bundle"}, "bundles", true, v.controllerFactory)
-}
-
-func (v *version) BundleDeployment() BundleDeploymentController {
-	return generic.NewController[*v1alpha1.BundleDeployment, *v1alpha1.BundleDeploymentList](schema.GroupVersionKind{Group: "fleet.cattle.io", Version: "v1alpha1", Kind: "BundleDeployment"}, "bundledeployments", true, v.controllerFactory)
 }
 
 func (v *version) BundleNamespaceMapping() BundleNamespaceMappingController {

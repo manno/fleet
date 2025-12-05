@@ -8,7 +8,7 @@ metadata:
 sha256sum: f616452ccd6c2e6962b6b48419504496f87dc6ee536ce834eb994035ce00fd24
 
 ---
-apiVersion: fleet.cattle.io/v1alpha1
+apiVersion: storage.fleet.cattle.io/v1alpha1
 kind: BundleDeployment
 metadata:
   creationTimestamp: null

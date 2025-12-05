@@ -18,6 +18,7 @@ import (
 	"github.com/rancher/fleet/internal/helmdeployer"
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"helm.sh/helm/v4/pkg/cli"
 
@@ -49,6 +50,7 @@ const defaultNamespace = "default"
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
+	utilruntime.Must(storagev1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 
 	utilruntime.Must(clientgoscheme.AddToScheme(localScheme))
@@ -112,7 +114,7 @@ func start(
 	localCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	driftChan := make(chan event.TypedGenericEvent[*v1alpha1.BundleDeployment])
+	driftChan := make(chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment])
 
 	reconciler, err := newReconciler(
 		ctx,
@@ -195,7 +197,7 @@ func newReconciler(
 	fleetNamespace string,
 	agentScope string,
 	agentConfig config.Config,
-	driftChan chan event.TypedGenericEvent[*v1alpha1.BundleDeployment],
+	driftChan chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment],
 	workers int,
 ) (*controller.BundleDeploymentReconciler, error) {
 	upstreamClient := mgr.GetClient()

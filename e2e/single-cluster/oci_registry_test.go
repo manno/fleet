@@ -18,6 +18,7 @@ import (
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/internal/ocistorage"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -625,7 +626,7 @@ var _ = Describe("Single Cluster Deployments using OCI registry", Label("oci-reg
 					pushFakeOCIContents(config.DefaultOCIStorageSecretName, contentsID)
 				})
 				By("forcing the bundle deployment to re-deploy and reject the oci contents", func() {
-					var bd fleet.BundleDeployment
+					var bd storagev1alpha1.BundleDeployment
 					k8sclient.GetObjectShouldSucceed(clientUpstream, "sample-simple-chart-oci", downstreamNamespace, &bd)
 					// force the bundledeployment to re-deploy by deleting it
 					k8sclient.DeleteObjectShouldSucceed(clientUpstream, &bd)
@@ -927,7 +928,7 @@ var _ = Describe("Single Cluster Deployments using OCI registry", Label("oci-reg
 					Expect(bundle.Spec.ContentsID).To(BeEmpty())
 				})
 				By("creating a bundle deployment", func() {
-					var bd fleet.BundleDeployment
+					var bd storagev1alpha1.BundleDeployment
 					k8sclient.GetObjectShouldSucceed(clientUpstream, "sample-simple-chart-oci", downstreamNamespace, &bd)
 					Expect(bd.Spec.DeploymentID).ToNot(BeEmpty())
 					tokens := strings.Split(bd.Spec.DeploymentID, ":")

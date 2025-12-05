@@ -14,6 +14,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/target"
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -118,8 +119,8 @@ func createClusterGroup(name, namespace string, selector *metav1.LabelSelector) 
 	return cg, err
 }
 
-func expectedLabelValue(bdLabels map[string]string, key, value string) (*v1alpha1.BundleDeployment, bool) {
-	list := &v1alpha1.BundleDeploymentList{}
+func expectedLabelValue(bdLabels map[string]string, key, value string) (*storagev1alpha1.BundleDeployment, bool) {
+	list := &storagev1alpha1.BundleDeploymentList{}
 	err := k8sClient.List(ctx, list, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 	Expect(err).NotTo(HaveOccurred())
 	if len(list.Items) == 1 {

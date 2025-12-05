@@ -14,6 +14,7 @@ import (
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	fleetcontrollers "github.com/rancher/fleet/pkg/generated/controllers/fleet.cattle.io"
+	storagecontrollers "github.com/rancher/fleet/pkg/generated/controllers/storage.fleet.cattle.io"
 
 	"github.com/rancher/wrangler/v3/pkg/generated/controllers/core"
 	corecontrollers "github.com/rancher/wrangler/v3/pkg/generated/controllers/core/v1"
@@ -351,12 +352,12 @@ func testClientConfig(cfg []byte) error {
 		return err
 	}
 
-	fc, err := fleetcontrollers.NewFactoryFromConfig(rest)
+	sc, err := storagecontrollers.NewFactoryFromConfig(rest)
 	if err != nil {
 		return err
 	}
 
-	_, err = fc.Fleet().V1alpha1().BundleDeployment().List(ns, metav1.ListOptions{})
+	_, err = sc.Storage().V1alpha1().BundleDeployment().List(ns, metav1.ListOptions{})
 	return err
 }
 

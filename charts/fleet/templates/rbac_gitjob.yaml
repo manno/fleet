@@ -49,9 +49,18 @@ rules:
       - "fleet.cattle.io"
     resources:
       - "bundles"
-      - "bundledeployments"
       - "imagescans"
       - "contents"
+    verbs:
+      - list
+      - delete
+      - get
+      - watch
+      - update
+  - apiGroups:
+      - "storage.fleet.cattle.io"
+    resources:
+      - "bundledeployments"
     verbs:
       - list
       - delete

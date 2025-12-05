@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 // SetValues sets the values in the bundle from the data map. It mutates the bundle.
@@ -38,7 +39,7 @@ func SetValues(bundle *fleet.Bundle, data map[string][]byte) error {
 // SetOptions sets the values in the options of the bundle deployment from the
 // data map. It mutates the bundle deployment.
 // It sets the staged options, however they are not used by the agent.
-func SetOptions(bd *fleet.BundleDeployment, data map[string][]byte) error {
+func SetOptions(bd *storagev1alpha1.BundleDeployment, data map[string][]byte) error {
 	if v, ok := data[ValuesKey]; ok && string(v) != "" {
 		gm := fleet.GenericMap{}
 		if err := gm.UnmarshalJSON(v); err != nil {

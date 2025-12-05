@@ -18,6 +18,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/target/matcher"
 	"github.com/rancher/fleet/internal/helmvalues"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/wrangler/v3/pkg/yaml"
 
@@ -111,7 +112,7 @@ func (m *Manager) Targets(ctx context.Context, bundle *fleet.Bundle, manifestID 
 	})
 
 	// add the existing bundledeployments to the targets.
-	bundleDeployments := &fleet.BundleDeploymentList{}
+	bundleDeployments := &storagev1alpha1.BundleDeploymentList{}
 	err = m.client.List(ctx, bundleDeployments, client.MatchingLabels{
 		fleet.BundleLabel:          bundle.Name,
 		fleet.BundleNamespaceLabel: bundle.Namespace,
@@ -120,7 +121,7 @@ func (m *Manager) Targets(ctx context.Context, bundle *fleet.Bundle, manifestID 
 		return nil, err
 	}
 
-	byNamespace := map[string]*fleet.BundleDeployment{}
+	byNamespace := map[string]*storagev1alpha1.BundleDeployment{}
 	for _, bd := range bundleDeployments.Items {
 		bd := bd.DeepCopy()
 		byNamespace[bd.Namespace] = bd

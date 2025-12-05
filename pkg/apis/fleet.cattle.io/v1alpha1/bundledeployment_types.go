@@ -11,10 +11,6 @@ import (
 
 )
 
-func init() {
-	InternalSchemeBuilder.Register(&BundleDeployment{}, &BundleDeploymentList{})
-}
-
 const (
 	BundleDeploymentResourceNamePlural = "bundledeployments"
 
@@ -30,37 +26,6 @@ const (
 )
 
 const IgnoreOp = "ignore"
-
-// +genclient
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Deployed",type=string,JSONPath=`.status.display.deployed`
-// +kubebuilder:printcolumn:name="Monitored",type=string,JSONPath=`.status.display.monitored`
-// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.conditions[?(@.type=="Ready")].message`
-
-// BundleDeployment is used internally by Fleet and should not be used directly.
-// When a Bundle is deployed to a cluster an instance of a Bundle is called a
-// BundleDeployment. A BundleDeployment represents the state of that Bundle on
-// a specific cluster with its cluster-specific customizations. The Fleet agent
-// is only aware of BundleDeployment resources that are created for the cluster
-// the agent is managing.
-type BundleDeployment struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec   BundleDeploymentSpec   `json:"spec,omitempty"`
-	Status BundleDeploymentStatus `json:"status,omitempty"`
-}
-
-// +kubebuilder:object:root=true
-
-// BundleDeploymentList contains a list of BundleDeployment
-type BundleDeploymentList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []BundleDeployment `json:"items"`
-}
 
 type BundleDeploymentOptions struct {
 	GitOpsBundleDeploymentOptions `json:",inline"`

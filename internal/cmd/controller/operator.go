@@ -14,6 +14,7 @@ import (
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/internal/metrics"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -33,6 +34,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(fleet.AddToScheme(scheme))
+	utilruntime.Must(storagev1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -239,10 +241,10 @@ func start(
 func AddContentNameLabelIndexer(ctx context.Context, mgr manager.Manager) error {
 	return mgr.GetFieldIndexer().IndexField(
 		ctx,
-		&fleet.BundleDeployment{},
+		&storagev1alpha1.BundleDeployment{},
 		config.ContentNameIndex,
 		func(obj client.Object) []string {
-			content, ok := obj.(*fleet.BundleDeployment)
+			content, ok := obj.(*storagev1alpha1.BundleDeployment)
 			if !ok {
 				return nil
 			}

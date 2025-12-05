@@ -11,6 +11,7 @@ import (
 	"github.com/rancher/fleet/internal/helmdeployer"
 	"github.com/rancher/fleet/internal/mocks"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"go.uber.org/mock/gomock"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -39,9 +40,9 @@ func TestCleanupReleases(t *testing.T) {
 	}
 
 	mockClient := mocks.NewMockK8sClient(mockCtrl)
-	bd := &fleet.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	mockClient.EXPECT().Get(gomock.Any(), types.NamespacedName{Namespace: fleetNS, Name: "ID1"}, bd).DoAndReturn(
-		func(_ context.Context, _ types.NamespacedName, bd *fleet.BundleDeployment, _ ...interface{}) error {
+		func(_ context.Context, _ types.NamespacedName, bd *storagev1alpha1.BundleDeployment, _ ...interface{}) error {
 			bd.Spec.Options.TargetNamespace = defaultNS
 			bd.Spec.Options.Helm = &fleet.HelmOptions{
 				ReleaseName: "TestRelease1", // will be kept
@@ -52,7 +53,7 @@ func TestCleanupReleases(t *testing.T) {
 	)
 
 	mockClient.EXPECT().Get(gomock.Any(), types.NamespacedName{Namespace: fleetNS, Name: "ID2"}, bd).DoAndReturn(
-		func(_ context.Context, _ types.NamespacedName, bd *fleet.BundleDeployment, _ ...interface{}) error {
+		func(_ context.Context, _ types.NamespacedName, bd *storagev1alpha1.BundleDeployment, _ ...interface{}) error {
 			bd.Spec.Options.TargetNamespace = defaultNS
 			bd.Spec.Options.Helm = &fleet.HelmOptions{
 				ReleaseName: "TestRelease2-old", // will be deleted
@@ -63,7 +64,7 @@ func TestCleanupReleases(t *testing.T) {
 	)
 
 	mockClient.EXPECT().Get(gomock.Any(), types.NamespacedName{Namespace: fleetNS, Name: "ID3"}, bd).DoAndReturn(
-		func(_ context.Context, _ types.NamespacedName, bd *fleet.BundleDeployment, _ ...interface{}) error {
+		func(_ context.Context, _ types.NamespacedName, bd *storagev1alpha1.BundleDeployment, _ ...interface{}) error {
 			bd.Spec.Options.TargetNamespace = defaultNS + "-old" // will be deleted
 			bd.Spec.Options.Helm = &fleet.HelmOptions{
 				ReleaseName: "TestRelease3",

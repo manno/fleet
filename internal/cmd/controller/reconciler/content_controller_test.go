@@ -9,6 +9,7 @@ import (
 
 	"github.com/rancher/fleet/internal/config"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -42,20 +43,20 @@ var _ = Describe("ContentReconciler", func() {
 
 		It("returns nil for BundleDeployment without content label", func() {
 			reconciler := &ContentReconciler{}
-			bd := &fleet.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Expect(reconciler.mapBundleDeploymentToContent(ctx, bd)).To(BeNil())
 		})
 
 		It("returns nil for BundleDeployment with a label using an empty name", func() {
 			reconciler := &ContentReconciler{}
-			bd := &fleet.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			bd.Labels = map[string]string{fleet.ContentNameLabel: ""}
 			Expect(reconciler.mapBundleDeploymentToContent(ctx, bd)).To(BeNil())
 		})
 
 		It("maps BundleDeployment with label to a single content request", func() {
 			reconciler := &ContentReconciler{}
-			bd := &fleet.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			name := "my-content"
 			bd.Labels = map[string]string{fleet.ContentNameLabel: name}
 			res := reconciler.mapBundleDeploymentToContent(ctx, bd)
@@ -89,8 +90,8 @@ var _ = Describe("ContentReconciler", func() {
 					Status:     fleet.ContentStatus{ReferenceCount: 1},
 				}
 				cl = fake.NewClientBuilder().WithScheme(sch).
-					WithIndex(&fleet.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
-						bd, ok := obj.(*fleet.BundleDeployment)
+					WithIndex(&storagev1alpha1.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
+						bd, ok := obj.(*storagev1alpha1.BundleDeployment)
 						if !ok {
 							return nil
 						}
@@ -125,7 +126,7 @@ var _ = Describe("ContentReconciler", func() {
 					Status:     fleet.ContentStatus{ReferenceCount: 0},
 				}
 
-				bd := &fleet.BundleDeployment{
+				bd := &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "bd-1",
 						Namespace: "default",
@@ -134,8 +135,8 @@ var _ = Describe("ContentReconciler", func() {
 				}
 
 				cl = fake.NewClientBuilder().WithScheme(sch).
-					WithIndex(&fleet.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
-						bd, ok := obj.(*fleet.BundleDeployment)
+					WithIndex(&storagev1alpha1.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
+						bd, ok := obj.(*storagev1alpha1.BundleDeployment)
 						if !ok {
 							return nil
 						}
@@ -177,7 +178,7 @@ var _ = Describe("ContentReconciler", func() {
 				}
 
 				deletionTime := metav1.NewTime(time.Now())
-				bd := &fleet.BundleDeployment{
+				bd := &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:              "bd-deleted",
 						Namespace:         "default",
@@ -188,8 +189,8 @@ var _ = Describe("ContentReconciler", func() {
 				}
 
 				cl = fake.NewClientBuilder().WithScheme(sch).
-					WithIndex(&fleet.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
-						bd, ok := obj.(*fleet.BundleDeployment)
+					WithIndex(&storagev1alpha1.BundleDeployment{}, config.ContentNameIndex, func(obj client.Object) []string {
+						bd, ok := obj.(*storagev1alpha1.BundleDeployment)
 						if !ok {
 							return nil
 						}

@@ -12,6 +12,7 @@ import (
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/internal/cmd/controller/reconciler"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -74,8 +75,8 @@ var _ = AfterSuite(func() {
 	Expect(testenv.Stop()).ToNot(HaveOccurred())
 })
 
-func createBundleDeployment(name, namespace string, options v1alpha1.BundleDeploymentOptions) (*v1alpha1.BundleDeployment, error) {
-	bundleDeployment := v1alpha1.BundleDeployment{
+func createBundleDeployment(name, namespace string, options v1alpha1.BundleDeploymentOptions) (*storagev1alpha1.BundleDeployment, error) {
+	bundleDeployment := storagev1alpha1.BundleDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,

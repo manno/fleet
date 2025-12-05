@@ -6,6 +6,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/desiredset"
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/objectset"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -32,7 +33,7 @@ func Test_Diff_IgnoreResources(t *testing.T) {
 			},
 		},
 	}
-	bd := v1alpha1.BundleDeployment{
+	bd := storagev1alpha1.BundleDeployment{
 		Spec: v1alpha1.BundleDeploymentSpec{
 			Options: v1alpha1.BundleDeploymentOptions{
 				Diff: &v1alpha1.DiffOptions{
