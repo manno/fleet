@@ -242,4 +242,47 @@ var _ = Describe("API Server Storage Layer", func() {
 			Expect(gvk.Kind).To(Equal("BundleDeployment"))
 		})
 	})
+
+	Describe("Database Verification", func() {
+		It("should have actual data in the database", func() {
+			// Create a test BundleDeployment
+			bd := &storagev1alpha1.BundleDeployment{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-db-verification",
+					Namespace: "test-namespace",
+					Labels: map[string]string{
+						"test": "db-verification",
+					},
+				},
+				Spec: fleetv1alpha1.BundleDeploymentSpec{
+					DeploymentID: "db-verification-id",
+					Options: fleetv1alpha1.BundleDeploymentOptions{
+						DefaultNamespace: "default",
+					},
+				},
+			}
+
+			_, err := store.Create(testCtx, bd, nil, nil)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Query the database directly using QueryAll
+			results, err := db.QueryAll()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(results).NotTo(BeEmpty(), "database should contain bundledeployments")
+
+			// Verify our created BundleDeployment is in the results
+			found := false
+			for _, row := range results {
+				if row["name"] == "test-db-verification" && row["namespace"] == "test-namespace" {
+					found = true
+					Expect(row["resource_version"]).NotTo(BeZero())
+					Expect(row["uid"]).NotTo(BeEmpty())
+					Expect(row["creation_timestamp"]).NotTo(BeZero())
+					Expect(row["generation"]).To(Equal(int64(1)))
+					break
+				}
+			}
+			Expect(found).To(BeTrue(), "created bundledeployment should exist in database")
+		})
+	})
 })

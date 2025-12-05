@@ -137,3 +137,72 @@ func (d *Database) Ping() error {
 func (d *Database) DB() *sql.DB {
 	return d.db
 }
+
+// QueryAll returns all bundledeployments from the database for debugging/testing
+func (d *Database) QueryAll() ([]map[string]interface{}, error) {
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+
+	query := `SELECT namespace, name, resource_version, uid, creation_timestamp, 
+	          deletion_timestamp, generation, labels, annotations, finalizers, 
+	          owner_references, spec, status FROM bundledeployments`
+
+	rows, err := d.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query bundledeployments: %w", err)
+	}
+	defer rows.Close()
+
+	var results []map[string]interface{}
+	for rows.Next() {
+		var namespace, name, uid, labels, annotations, finalizers, ownerRefs, spec, status sql.NullString
+		var resourceVersion, generation, creationTimestamp int64
+		var deletionTimestamp sql.NullInt64
+
+		err := rows.Scan(&namespace, &name, &resourceVersion, &uid, &creationTimestamp,
+			&deletionTimestamp, &generation, &labels, &annotations, &finalizers,
+			&ownerRefs, &spec, &status)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		row := map[string]interface{}{
+			"namespace":          namespace.String,
+			"name":               name.String,
+			"resource_version":   resourceVersion,
+			"uid":                uid.String,
+			"creation_timestamp": creationTimestamp,
+			"generation":         generation,
+		}
+
+		if deletionTimestamp.Valid {
+			row["deletion_timestamp"] = deletionTimestamp.Int64
+		}
+		if labels.Valid {
+			row["labels"] = labels.String
+		}
+		if annotations.Valid {
+			row["annotations"] = annotations.String
+		}
+		if finalizers.Valid {
+			row["finalizers"] = finalizers.String
+		}
+		if ownerRefs.Valid {
+			row["owner_references"] = ownerRefs.String
+		}
+		if spec.Valid {
+			row["spec"] = spec.String
+		}
+		if status.Valid {
+			row["status"] = status.String
+		}
+
+		results = append(results, row)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return results, nil
+}

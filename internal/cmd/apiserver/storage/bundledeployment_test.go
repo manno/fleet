@@ -9,6 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
+	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
@@ -84,7 +85,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 				"test": "label",
 			},
 		},
-		Spec: storagev1alpha1.BundleDeploymentSpec{
+		Spec: fleetv1alpha1.BundleDeploymentSpec{
 			DeploymentID: "test-deployment-id",
 		},
 	}
@@ -209,3 +210,84 @@ func TestBundleDeploymentListWithLabelSelector(t *testing.T) {
 		t.Errorf("Expected 1 item with env=prod, got %d", len(list.Items))
 	}
 }
+
+func TestDatabaseQueryAll(t *testing.T) {
+	// Create temporary database
+	tmpfile, err := os.CreateTemp("", "test-*.db")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(tmpfile.Name())
+	tmpfile.Close()
+
+	// Initialize database and storage
+	db, err := NewDatabase(tmpfile.Name())
+	if err != nil {
+		t.Fatalf("Failed to create database: %v", err)
+	}
+	defer db.Close()
+
+	storage, err := NewBundleDeploymentStorage(db)
+	if err != nil {
+		t.Fatalf("Failed to create storage: %v", err)
+	}
+	defer storage.Destroy()
+
+	ctx := context.WithValue(context.Background(), "namespace", "test-namespace")
+
+	// Create test BundleDeployments
+	for i := 0; i < 3; i++ {
+		bd := &storagev1alpha1.BundleDeployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test-queryall-" + string(rune('a'+i)),
+				Namespace: "test-namespace",
+				Labels: map[string]string{
+					"test": "queryall",
+				},
+			},
+			Spec: fleetv1alpha1.BundleDeploymentSpec{
+				DeploymentID: "queryall-test-id",
+			},
+		}
+
+		_, err := storage.Create(ctx, bd, nil, &metav1.CreateOptions{})
+		if err != nil {
+			t.Fatalf("Failed to create BundleDeployment %d: %v", i, err)
+		}
+	}
+
+	// Test QueryAll
+	results, err := db.QueryAll()
+	if err != nil {
+		t.Fatalf("Failed to QueryAll: %v", err)
+	}
+
+	if len(results) != 3 {
+		t.Errorf("Expected 3 rows, got %d", len(results))
+	}
+
+	// Verify data integrity
+	for i, row := range results {
+		if row["namespace"] != "test-namespace" {
+			t.Errorf("Row %d: Expected namespace 'test-namespace', got '%v'", i, row["namespace"])
+		}
+
+		if row["resource_version"] == nil || row["resource_version"].(int64) == 0 {
+			t.Errorf("Row %d: Expected non-zero resource_version", i)
+		}
+
+		if row["uid"] == nil || row["uid"].(string) == "" {
+			t.Errorf("Row %d: Expected non-empty uid", i)
+		}
+
+		if row["generation"] == nil || row["generation"].(int64) != 1 {
+			t.Errorf("Row %d: Expected generation 1, got %v", i, row["generation"])
+		}
+
+		// Verify spec is present
+		if row["spec"] == nil || row["spec"].(string) == "" {
+			t.Errorf("Row %d: Expected non-empty spec", i)
+		}
+	}
+}
+
