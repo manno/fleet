@@ -11,9 +11,9 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	"github.com/rancher/fleet/internal/metrics"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/util/retry"
@@ -39,7 +39,7 @@ type BundleDeploymentReconciler struct {
 // SetupWithManager sets up the controller with the Manager.
 func (r *BundleDeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&fleet.BundleDeployment{}, builder.WithPredicates(
+		For(&storagev1alpha1.BundleDeployment{}, builder.WithPredicates(
 			bundleDeploymentStatusChangedPredicate(),
 		)).
 		WithEventFilter(sharding.FilterByShardID(r.ShardID)).
@@ -56,7 +56,7 @@ func (r *BundleDeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 func (r *BundleDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithName("bundledeployment")
 
-	bd := &fleet.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	err := r.Get(ctx, req.NamespacedName, bd)
 
 	if err != nil {
@@ -140,8 +140,8 @@ func bundleDeploymentStatusChangedPredicate() predicate.Funcs {
 	return predicate.Funcs{
 		CreateFunc: func(e event.CreateEvent) bool { return true },
 		UpdateFunc: func(e event.UpdateEvent) bool {
-			n, nOK := e.ObjectNew.(*fleet.BundleDeployment)
-			o, oOK := e.ObjectOld.(*fleet.BundleDeployment)
+			n, nOK := e.ObjectNew.(*storagev1alpha1.BundleDeployment)
+			o, oOK := e.ObjectOld.(*storagev1alpha1.BundleDeployment)
 			if !nOK || !oOK {
 				return false
 			}
@@ -151,7 +151,7 @@ func bundleDeploymentStatusChangedPredicate() predicate.Funcs {
 	}
 }
 
-func conditionToMessage(cond genericcondition.GenericCondition) string {
+func conditionToMessage(cond fleet.GenericCondition) string {
 	if cond.Reason == "Error" {
 		return "Error: " + cond.Message
 	}

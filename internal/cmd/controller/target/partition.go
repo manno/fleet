@@ -2,6 +2,7 @@ package target
 
 import (
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -31,7 +32,7 @@ func UpdatePartitions(status *fleet.BundleStatus, allTargets []*Target) (err err
 			// for a new bundledeployment, only stage the first maxNew (50) targets
 			if target.Deployment == nil && status.NewlyCreated < status.MaxNew {
 				status.NewlyCreated++
-				target.Deployment = &fleet.BundleDeployment{
+				target.Deployment = &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      target.Bundle.Name,
 						Namespace: target.Cluster.Status.Namespace,

@@ -14,10 +14,11 @@ import (
 
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1/summary"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 func TestSetResources(t *testing.T) {
-	list := []fleet.BundleDeployment{
+	list := []storagev1alpha1.BundleDeployment{
 		{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "bd1",
@@ -221,8 +222,8 @@ func TestSetResources(t *testing.T) {
 }
 
 func TestPerClusterState(t *testing.T) {
-	bundleDeploymentWithState := func(state string) fleet.BundleDeployment {
-		return fleet.BundleDeployment{
+	bundleDeploymentWithState := func(state string) storagev1alpha1.BundleDeployment {
+		return storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "bd1",
 				Namespace: "ns1-cluster1",
@@ -253,12 +254,12 @@ func TestPerClusterState(t *testing.T) {
 
 	tests := []struct {
 		name              string
-		bundleDeployments []fleet.BundleDeployment
+		bundleDeployments []storagev1alpha1.BundleDeployment
 		expectedStatus    fleet.StatusBase
 	}{
 		{
 			name:              "if the state of the resource is error, then it should report it as NotReady",
-			bundleDeployments: []fleet.BundleDeployment{bundleDeploymentWithState("error")},
+			bundleDeployments: []storagev1alpha1.BundleDeployment{bundleDeploymentWithState("error")},
 			expectedStatus: fleet.StatusBase{
 				Resources: []fleet.Resource{
 					{
@@ -273,7 +274,7 @@ func TestPerClusterState(t *testing.T) {
 		},
 		{
 			name:              "if the state of the resource is updating, then it should report it as NotReady",
-			bundleDeployments: []fleet.BundleDeployment{bundleDeploymentWithState("updating")},
+			bundleDeployments: []storagev1alpha1.BundleDeployment{bundleDeploymentWithState("updating")},
 			expectedStatus: fleet.StatusBase{
 				Resources: []fleet.Resource{
 					{
@@ -288,7 +289,7 @@ func TestPerClusterState(t *testing.T) {
 		},
 		{
 			name:              "if the state of the resource is unknown, then it should ignore the state",
-			bundleDeployments: []fleet.BundleDeployment{bundleDeploymentWithState("")},
+			bundleDeployments: []storagev1alpha1.BundleDeployment{bundleDeploymentWithState("")},
 			expectedStatus: fleet.StatusBase{
 				Resources: []fleet.Resource{
 					{
@@ -301,7 +302,7 @@ func TestPerClusterState(t *testing.T) {
 		},
 		{
 			name:              "if the state of the resource is NotReady, then it should report it as NotReady",
-			bundleDeployments: []fleet.BundleDeployment{bundleDeploymentWithState("NotReady")},
+			bundleDeployments: []storagev1alpha1.BundleDeployment{bundleDeploymentWithState("NotReady")},
 			expectedStatus: fleet.StatusBase{
 				Resources: []fleet.Resource{
 					{
@@ -328,9 +329,9 @@ func TestPerClusterState(t *testing.T) {
 }
 
 func TestPerClusterStateTruncation(t *testing.T) {
-	percluster := func(b, c int) fleet.BundleDeployment {
+	percluster := func(b, c int) storagev1alpha1.BundleDeployment {
 		workload := fmt.Sprintf("workload%02d", b)
-		bd := fleet.BundleDeployment{
+		bd := storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      fmt.Sprintf("bundlename%d", b),
 				Namespace: fmt.Sprintf("ns-cluster%d", c),
@@ -379,7 +380,7 @@ func TestPerClusterStateTruncation(t *testing.T) {
 	n := 0
 	maxBundle := 50
 	maxCluster := 800
-	var items = make([]fleet.BundleDeployment, maxBundle*maxCluster)
+	var items = make([]storagev1alpha1.BundleDeployment, maxBundle*maxCluster)
 	for c := range maxCluster {
 		for b := range maxBundle {
 			items[n] = percluster(b, c)

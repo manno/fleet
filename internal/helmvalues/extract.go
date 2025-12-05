@@ -4,10 +4,11 @@ import (
 	"fmt"
 
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 // ExtractOptions extracts the values from options in a bundle deployment.
-func ExtractOptions(bd *fleet.BundleDeployment) (string, []byte, []byte, error) {
+func ExtractOptions(bd *storagev1alpha1.BundleDeployment) (string, []byte, []byte, error) {
 	var options []byte
 	if bd.Spec.Options.Helm != nil && bd.Spec.Options.Helm.Values != nil {
 		var err error
@@ -43,7 +44,7 @@ func ExtractOptions(bd *fleet.BundleDeployment) (string, []byte, []byte, error) 
 }
 
 // ClearOptions removes values from the new bundle deployment
-func ClearOptions(bd *fleet.BundleDeployment) {
+func ClearOptions(bd *storagev1alpha1.BundleDeployment) {
 	if bd.Spec.Options.Helm != nil {
 		bd.Spec.Options.Helm.Values = nil
 	}

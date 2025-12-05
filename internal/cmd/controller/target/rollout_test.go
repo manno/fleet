@@ -7,6 +7,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
@@ -30,7 +31,7 @@ func createTargets(start, stop int) []*Target {
 					Name: "bundle-" + strconv.Itoa(start),
 				},
 			},
-			Deployment: &fleet.BundleDeployment{
+			Deployment: &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{},
 				Spec:       fleet.BundleDeploymentSpec{},
 				Status:     fleet.BundleDeploymentStatus{},

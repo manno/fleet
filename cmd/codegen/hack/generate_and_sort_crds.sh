@@ -41,6 +41,6 @@ fi
 
 # Run controller-gen
 ${CONTROLLERGEN} object:headerFile=cmd/codegen/boilerplate.go.txt,year="$(date +%Y)" paths="./pkg/apis/..."
-${CONTROLLERGEN} crd webhook paths="./pkg/apis/..." output:stdout > $CRDS_YAML
+${CONTROLLERGEN} crd webhook paths="./pkg/apis/fleet.cattle.io/..." output:stdout > $CRDS_YAML
 # Sort
 run_yq --slurp --sort-keys --explicit-start --yaml-output -i 'sort_by(.metadata.name)[]' $CRDS_YAML

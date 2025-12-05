@@ -10,9 +10,9 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	"github.com/rancher/fleet/internal/resourcestatus"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -104,7 +104,7 @@ func (r *StatusReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 
 	logger.V(1).Info("Reconciling GitRepo status")
 
-	bdList := &fleet.BundleDeploymentList{}
+	bdList := &storagev1alpha1.BundleDeploymentList{}
 	err := r.List(ctx, bdList, client.MatchingLabels{
 		fleet.RepoLabel:            gitrepo.Name,
 		fleet.BundleNamespaceLabel: gitrepo.Namespace,
@@ -162,7 +162,7 @@ func (r *StatusReconciler) updateStatus(ctx context.Context, orig *fleet.GitRepo
 	return r.Client.Status().Patch(ctx, obj, statusPatch)
 }
 
-func setStatus(list *fleet.BundleDeploymentList, gitrepo *fleet.GitRepo) error {
+func setStatus(list *storagev1alpha1.BundleDeploymentList, gitrepo *fleet.GitRepo) error {
 	// sort bundledeployments so lists in status are always in the same order
 	sort.Slice(list.Items, func(i, j int) bool {
 		return list.Items[i].UID < list.Items[j].UID
@@ -206,7 +206,7 @@ func (r StatusReconciler) setReadyStatusFromBundle(ctx context.Context, gitrepo 
 
 	found := false
 	// Find a ready status condition in a bundle which is not ready.
-	var condition genericcondition.GenericCondition
+	var condition fleet.GenericCondition
 bundles:
 	for _, bundle := range bList.Items {
 		if bundle.Status.Conditions == nil {
@@ -228,7 +228,7 @@ bundles:
 	}
 
 	found = false
-	newConditions := make([]genericcondition.GenericCondition, 0, len(gitrepo.Status.Conditions))
+	newConditions := make([]fleet.GenericCondition, 0, len(gitrepo.Status.Conditions))
 	for _, c := range gitrepo.Status.Conditions {
 		if c.Type == string(fleet.Ready) {
 			// Replace the ready condition with the one from the bundle

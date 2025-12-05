@@ -25,6 +25,7 @@ import (
 	"github.com/rancher/fleet/internal/metrics"
 	"github.com/rancher/fleet/internal/ocistorage"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	fleetevent "github.com/rancher/fleet/pkg/event"
 	"github.com/rancher/fleet/pkg/sharding"
 	corev1 "k8s.io/api/core/v1"
@@ -97,7 +98,7 @@ func (r *BundleReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Watches(
 			// Fan out from bundledeployment to bundle, this is useful to update the
 			// bundle's status fields.
-			&fleet.BundleDeployment{}, handler.EnqueueRequestsFromMapFunc(BundleDeploymentMapFunc(r)),
+			&storagev1alpha1.BundleDeployment{}, handler.EnqueueRequestsFromMapFunc(BundleDeploymentMapFunc(r)),
 			builder.WithPredicates(bundleDeploymentStatusChangedPredicate()),
 		).
 		Watches(
@@ -462,8 +463,8 @@ func (r *BundleReconciler) removeDisplayNameLabel(ctx context.Context, bundle *f
 func (r *BundleReconciler) createBundleDeployment(
 	ctx context.Context,
 	l logr.Logger,
-	bd *fleet.BundleDeployment,
-) (controllerutil.OperationResult, *fleet.BundleDeployment, error) {
+	bd *storagev1alpha1.BundleDeployment,
+) (controllerutil.OperationResult, *storagev1alpha1.BundleDeployment, error) {
 	logger := l.WithValues("deploymentID", bd.Spec.DeploymentID)
 
 	updated := bd.DeepCopy()
@@ -492,7 +493,7 @@ func (r *BundleReconciler) createBundleDeployment(
 // Returns a hash of options, a pointer to the options secret and an error, if any.
 func (r *BundleReconciler) manageOptionsSecret(
 	ctx context.Context,
-	bd *fleet.BundleDeployment,
+	bd *storagev1alpha1.BundleDeployment,
 ) (string, *corev1.Secret, error) {
 	hash, options, stagedOptions, err := helmvalues.ExtractOptions(bd)
 	if err != nil {
@@ -542,7 +543,7 @@ func (r *BundleReconciler) manageOptionsSecret(
 }
 
 // ensureOwnerReferences sets bd as the owner of s, and returns any error occurring in the process.
-func (r *BundleReconciler) ensureOwnerReferences(ctx context.Context, bd *fleet.BundleDeployment, s *corev1.Secret) error {
+func (r *BundleReconciler) ensureOwnerReferences(ctx context.Context, bd *storagev1alpha1.BundleDeployment, s *corev1.Secret) error {
 	if s == nil {
 		return nil
 	}
@@ -584,7 +585,7 @@ func (r *BundleReconciler) cloneConfigMap(
 	ctx context.Context,
 	namespace string,
 	name string,
-	bd *fleet.BundleDeployment,
+	bd *storagev1alpha1.BundleDeployment,
 ) error {
 	namespacedName := types.NamespacedName{
 		Namespace: namespace,
@@ -629,7 +630,7 @@ func (r *BundleReconciler) cloneSecret(
 	ns string,
 	secretName string,
 	secretType string,
-	bd *fleet.BundleDeployment,
+	bd *storagev1alpha1.BundleDeployment,
 ) error {
 	namespacedName := types.NamespacedName{
 		Namespace: ns,
@@ -671,7 +672,7 @@ func (r *BundleReconciler) cloneSecret(
 	return nil
 }
 
-func (r *BundleReconciler) handleContentAccessSecrets(ctx context.Context, bundle *fleet.Bundle, bd *fleet.BundleDeployment) error {
+func (r *BundleReconciler) handleContentAccessSecrets(ctx context.Context, bundle *fleet.Bundle, bd *storagev1alpha1.BundleDeployment) error {
 	contentsInOCI := bundle.Spec.ContentsID != "" && ocistorage.OCIIsEnabled()
 	contentsInHelmChart := bundle.Spec.HelmOpOptions != nil
 
@@ -730,7 +731,7 @@ func (r *BundleReconciler) updateErrorStatus(
 	return reconcile.TerminalError(orgErr)
 }
 
-func (r *BundleReconciler) handleDownstreamObjects(ctx context.Context, bundle *fleet.Bundle, bd *fleet.BundleDeployment) error {
+func (r *BundleReconciler) handleDownstreamObjects(ctx context.Context, bundle *fleet.Bundle, bd *storagev1alpha1.BundleDeployment) error {
 	if !experimental.CopyResourcesDownstreamEnabled() {
 		return nil
 	}
@@ -784,8 +785,8 @@ func (r *BundleReconciler) updateStatus(ctx context.Context, orig *fleet.Bundle,
 	return nil
 }
 
-func (r *BundleReconciler) listBundleDeploymentsForBundle(ctx context.Context, bundle *fleet.Bundle) ([]fleet.BundleDeployment, error) {
-	list := &fleet.BundleDeploymentList{}
+func (r *BundleReconciler) listBundleDeploymentsForBundle(ctx context.Context, bundle *fleet.Bundle) ([]storagev1alpha1.BundleDeployment, error) {
+	list := &storagev1alpha1.BundleDeploymentList{}
 	if err := r.List(ctx, list,
 		client.MatchingLabels{
 			fleet.BundleLabel:          bundle.GetName(),
@@ -803,7 +804,7 @@ func (r *BundleReconciler) cleanupOrphanedBundleDeployments(ctx context.Context,
 	if err != nil {
 		return err
 	}
-	toDelete := slices.DeleteFunc(list, func(bd fleet.BundleDeployment) bool {
+	toDelete := slices.DeleteFunc(list, func(bd storagev1alpha1.BundleDeployment) bool {
 		// don't delete BundleDeployments that are not in schedule as
 		// that would uninstall the deployment in the agent
 		return uidsToKeep.Has(bd.UID) || bd.Spec.OffSchedule
@@ -855,7 +856,7 @@ func (r *BundleReconciler) computeResult(
 	return ctrl.Result{}, r.updateErrorStatus(ctx, bundleOrig, bundle, err)
 }
 
-func batchDeleteBundleDeployments(ctx context.Context, c client.Client, list []fleet.BundleDeployment) error {
+func batchDeleteBundleDeployments(ctx context.Context, c client.Client, list []storagev1alpha1.BundleDeployment) error {
 	var errs []error
 	for _, bd := range list {
 		if bd.DeletionTimestamp != nil {
@@ -953,7 +954,7 @@ func loadBundleValues(ctx context.Context, c client.Client, bundle *fleet.Bundle
 // and either of the following applies:
 // * the old bundle used OCI storage while the new one does not anymore
 // * both old and new bundles use OCI storage, but the deployment ID has changed between the old bundles and the new one.
-func maybePurgeOCIReferenceSecret(ctx context.Context, c client.Client, old, new *fleet.BundleDeployment) error {
+func maybePurgeOCIReferenceSecret(ctx context.Context, c client.Client, old, new *storagev1alpha1.BundleDeployment) error {
 	if !old.Spec.OCIContents || old.Spec.DeploymentID == "" {
 		return nil
 	}
@@ -996,7 +997,7 @@ func upper(op controllerutil.OperationResult) string {
 // BundleDeploymentMapFunc returns a function that maps a BundleDeployment to a Bundle.
 func BundleDeploymentMapFunc(r *BundleReconciler) func(ctx context.Context, a client.Object) []reconcile.Request {
 	return func(ctx context.Context, a client.Object) []reconcile.Request {
-		bd, ok := a.(*fleet.BundleDeployment)
+		bd, ok := a.(*storagev1alpha1.BundleDeployment)
 		if !ok {
 			return nil
 		}

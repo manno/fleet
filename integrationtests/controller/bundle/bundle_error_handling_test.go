@@ -8,6 +8,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -62,8 +63,8 @@ var _ = Describe("Bundle controller error handling", Ordered, func() {
 		return bundle
 	}
 
-	getBundleDeployments := func(bundleName, bundleNS string) *v1alpha1.BundleDeploymentList {
-		bdList := &v1alpha1.BundleDeploymentList{}
+	getBundleDeployments := func(bundleName, bundleNS string) *storagev1alpha1.BundleDeploymentList {
+		bdList := &storagev1alpha1.BundleDeploymentList{}
 		Expect(k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{
 			Selector: labels.SelectorFromSet(map[string]string{
 				"fleet.cattle.io/bundle-name":      bundleName,
@@ -297,10 +298,10 @@ var _ = Describe("Bundle controller error handling", Ordered, func() {
 
 			By("verifying cluster2 bundledeployment was updated successfully despite cluster1 failure")
 			Eventually(func(g Gomega) {
-				bdList := &v1alpha1.BundleDeploymentList{}
+				bdList := &storagev1alpha1.BundleDeploymentList{}
 				g.Expect(k8sClient.List(ctx, bdList, client.InNamespace(cluster2NS))).To(Succeed())
 
-				var bd2 *v1alpha1.BundleDeployment
+				var bd2 *storagev1alpha1.BundleDeployment
 				for _, bd := range bdList.Items {
 					if bd.Labels["fleet.cattle.io/bundle-name"] == bundleName {
 						bd2 = &bd

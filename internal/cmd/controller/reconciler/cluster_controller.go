@@ -15,6 +15,7 @@ import (
 	"github.com/rancher/fleet/internal/metrics"
 	"github.com/rancher/fleet/internal/resourcestatus"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -65,7 +66,7 @@ func (r *ClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&fleet.Cluster{}).
 		// Watch bundledeployments so we can update the status fields
 		Watches(
-			&fleet.BundleDeployment{},
+			&storagev1alpha1.BundleDeployment{},
 			handler.EnqueueRequestsFromMapFunc(r.mapBundleDeploymentToCluster),
 			builder.WithPredicates(predicate.Funcs{
 				CreateFunc: func(e event.CreateEvent) bool {
@@ -77,8 +78,8 @@ func (r *ClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 				// We still need to update often enough to keep the
 				// status fields up to date.
 				UpdateFunc: func(e event.UpdateEvent) bool {
-					n := e.ObjectNew.(*fleet.BundleDeployment)
-					o := e.ObjectOld.(*fleet.BundleDeployment)
+					n := e.ObjectNew.(*storagev1alpha1.BundleDeployment)
+					o := e.ObjectOld.(*storagev1alpha1.BundleDeployment)
 					if n == nil || o == nil {
 						return false
 					}
@@ -94,7 +95,7 @@ func (r *ClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					return false
 				},
 				DeleteFunc: func(e event.DeleteEvent) bool {
-					o := e.Object.(*fleet.BundleDeployment)
+					o := e.Object.(*storagev1alpha1.BundleDeployment)
 					if o == nil || o.Status.AppliedDeploymentID == "" {
 						return false
 					}
@@ -148,7 +149,7 @@ func (r *ClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	// increased log level, this triggers a lot
 	logger.V(4).Info("Reconciling cluster, cleaning old bundledeployments and updating status", "oldDisplay", cluster.Status.Display)
 
-	bundleDeploymentList := &fleet.BundleDeploymentList{}
+	bundleDeploymentList := &storagev1alpha1.BundleDeploymentList{}
 	if err = r.List(ctx, bundleDeploymentList, client.InNamespace(cluster.Status.Namespace)); err != nil {
 		return ctrl.Result{}, r.updateErrorStatus(ctx, req.NamespacedName, cluster.Status, err)
 	}
@@ -161,7 +162,7 @@ func (r *ClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	toDeleteBundles := indexByNamespacedName(cleanup)
 
 	// Delete BundleDeployments for Bundles being removed while getting a filtered items list
-	bundleDeployments := slices.DeleteFunc(bundleDeploymentList.Items, func(bd fleet.BundleDeployment) bool {
+	bundleDeployments := slices.DeleteFunc(bundleDeploymentList.Items, func(bd storagev1alpha1.BundleDeployment) bool {
 		bundleNamespace := bd.Labels[fleet.BundleNamespaceLabel]
 		bundleName := bd.Labels[fleet.BundleLabel]
 		if _, ok := toDeleteBundles[types.NamespacedName{Namespace: bundleNamespace, Name: bundleName}]; ok {
@@ -333,7 +334,7 @@ func (r *ClusterReconciler) mapBundleDeploymentToCluster(ctx context.Context, a 
 
 	log.FromContext(ctx).WithName("cluster-handler").V(1).Info("Enqueueing cluster for bundledeployment",
 		"cluster", name,
-		"bundledeployment", a.(*fleet.BundleDeployment).Name,
+		"bundledeployment", a.(*storagev1alpha1.BundleDeployment).Name,
 		"clusterNamespace", clusterNS.Name,
 		"clusterRegistrationNamespace", ns)
 

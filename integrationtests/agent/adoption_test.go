@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 var _ = Describe("Adoption", Label("adopt"), func() {
@@ -158,7 +159,7 @@ type adoptEnv struct {
 }
 
 func (e adoptEnv) createBundleDeployment(name string, takeOwnership bool) {
-	bundled := v1alpha1.BundleDeployment{
+	bundled := storagev1alpha1.BundleDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: clusterNS,
@@ -222,8 +223,8 @@ func (e adoptEnv) assertConfigMap(validate func(Gomega, corev1.ConfigMap)) {
 
 // assertBundleDeployment checks that the BundleDeployment exists and that it
 // passes the provided validate function.
-func (e adoptEnv) assertBundleDeployment(name string, validate func(*v1alpha1.BundleDeployment) error) {
-	bd := v1alpha1.BundleDeployment{}
+func (e adoptEnv) assertBundleDeployment(name string, validate func(*storagev1alpha1.BundleDeployment) error) {
+	bd := storagev1alpha1.BundleDeployment{}
 	var err error
 	Eventually(func(g Gomega) {
 		err = k8sClient.Get(
@@ -262,10 +263,10 @@ func (e adoptEnv) deleteConfigMap(name string) {
 	}).Should(Succeed())
 }
 
-func (e adoptEnv) bundleDeploymentResourceMissing(bd *v1alpha1.BundleDeployment) error {
+func (e adoptEnv) bundleDeploymentResourceMissing(bd *storagev1alpha1.BundleDeployment) error {
 	const msgPrefix = "BundleDeployment resource:"
 	for _, condition := range bd.Status.Conditions {
-		if condition.Type != v1alpha1.BundleDeploymentConditionReady {
+		if condition.Type != fleet.BundleDeploymentConditionReady {
 			continue
 		}
 		if condition.Status != corev1.ConditionFalse {
@@ -281,9 +282,9 @@ func (e adoptEnv) bundleDeploymentResourceMissing(bd *v1alpha1.BundleDeployment)
 	return nil
 }
 
-func (e adoptEnv) bundleDeploymentNotOwnedByUs(bd *v1alpha1.BundleDeployment) error {
+func (e adoptEnv) bundleDeploymentNotOwnedByUs(bd *storagev1alpha1.BundleDeployment) error {
 	for _, condition := range bd.Status.Conditions {
-		if condition.Type == v1alpha1.BundleDeploymentConditionReady &&
+		if condition.Type == fleet.BundleDeploymentConditionReady &&
 			condition.Status == corev1.ConditionFalse &&
 			condition.Reason == "Error" &&
 			strings.Contains(condition.Message, "not owned by us") {
@@ -293,9 +294,9 @@ func (e adoptEnv) bundleDeploymentNotOwnedByUs(bd *v1alpha1.BundleDeployment) er
 	return fmt.Errorf("does not match expected condition")
 }
 
-func (e adoptEnv) bundleDeploymentReady(bd *v1alpha1.BundleDeployment) error {
+func (e adoptEnv) bundleDeploymentReady(bd *storagev1alpha1.BundleDeployment) error {
 	for _, condition := range bd.Status.Conditions {
-		if condition.Type == v1alpha1.BundleDeploymentConditionReady &&
+		if condition.Type == fleet.BundleDeploymentConditionReady &&
 			condition.Status == corev1.ConditionTrue {
 			return nil
 		}

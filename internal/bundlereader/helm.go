@@ -6,14 +6,14 @@ import (
 	"os"
 
 	"github.com/rancher/fleet/internal/manifest"
-	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // GetManifestFromHelmChart downloads the given helm chart and creates a
 // manifest with its contents. This is used by the agent to deploy HelmOps.
-func GetManifestFromHelmChart(ctx context.Context, c client.Reader, bd *fleet.BundleDeployment) (*manifest.Manifest, error) {
+func GetManifestFromHelmChart(ctx context.Context, c client.Reader, bd *storagev1alpha1.BundleDeployment) (*manifest.Manifest, error) {
 	helm := bd.Spec.Options.Helm
 
 	if helm == nil {

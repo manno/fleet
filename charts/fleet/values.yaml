@@ -138,6 +138,22 @@ helmops:
   enabled: true
   replicas: 1
 
+## Fleet API Server configuration (for BundleDeployment aggregation)
+apiserver:
+  enabled: false
+  replicas: 1
+  securePort: 8443
+  storage:
+    size: 10Gi
+    storageClassName: ""
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
 ## Fleet agent configuration
 agent:
   replicas: 1

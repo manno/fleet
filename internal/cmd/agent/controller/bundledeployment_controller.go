@@ -14,6 +14,7 @@ import (
 	"github.com/rancher/fleet/internal/helmvalues"
 	"github.com/rancher/fleet/internal/namespaces"
 	fleetv1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 
 	"github.com/go-logr/logr"
@@ -67,7 +68,7 @@ var DefaultRetry = wait.Backoff{
 // SetupWithManager sets up the controller with the Manager.
 func (r *BundleDeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&fleetv1.BundleDeployment{}).
+		For(&storagev1alpha1.BundleDeployment{}).
 		WithEventFilter(
 			// we do not trigger for status changes
 			predicate.Or(
@@ -80,8 +81,8 @@ func (r *BundleDeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 				predicate.Funcs{
 					// except for changes to status.Refresh
 					UpdateFunc: func(e event.UpdateEvent) bool {
-						n := e.ObjectNew.(*fleetv1.BundleDeployment)
-						o := e.ObjectOld.(*fleetv1.BundleDeployment)
+						n := e.ObjectNew.(*storagev1alpha1.BundleDeployment)
+						o := e.ObjectOld.(*storagev1alpha1.BundleDeployment)
 						if n == nil || o == nil {
 							return false
 						}
@@ -115,7 +116,7 @@ func (r *BundleDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Req
 	key := req.String()
 
 	// get latest BundleDeployment from cluster
-	bd := &fleetv1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	err := r.Get(ctx, req.NamespacedName, bd)
 	if apierrors.IsNotFound(err) {
 		// This actually deletes the helm releases if a bundledeployment is deleted or orphaned
@@ -276,7 +277,7 @@ func (r *BundleDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Req
 //nolint:dupl // Same pattern between secrets and config map, but different logic.
 func (r *BundleDeploymentReconciler) copyResourcesFromUpstream(
 	ctx context.Context,
-	bd *fleetv1.BundleDeployment,
+	bd *storagev1alpha1.BundleDeployment,
 	logger logr.Logger,
 ) (bool, error) {
 	if !experimental.CopyResourcesDownstreamEnabled() {
@@ -379,7 +380,7 @@ func (r *BundleDeploymentReconciler) copyResourcesFromUpstream(
 	return requiresBDUpdate, nil
 }
 
-func (r *BundleDeploymentReconciler) updateStatus(ctx context.Context, orig *fleetv1.BundleDeployment, obj *fleetv1.BundleDeployment) error {
+func (r *BundleDeploymentReconciler) updateStatus(ctx context.Context, orig *storagev1alpha1.BundleDeployment, obj *storagev1alpha1.BundleDeployment) error {
 	statusPatch := client.MergeFrom(orig)
 	if patchData, err := statusPatch.Data(obj); err == nil && string(patchData) == "{}" {
 		// skip update if patch is empty

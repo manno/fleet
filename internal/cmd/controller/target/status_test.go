@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 // availableTarget returns a Target that is considered available.
 func availableTarget() *Target {
 	return &Target{
-		Deployment: &fleet.BundleDeployment{
+		Deployment: &storagev1alpha1.BundleDeployment{
 			Spec: fleet.BundleDeploymentSpec{
 				DeploymentID:       "id",
 				StagedDeploymentID: "id",
@@ -28,7 +29,7 @@ func availableTarget() *Target {
 // unavailable due to a mismatched ID.
 func unavailableTargetMismatchedID() *Target {
 	return &Target{
-		Deployment: &fleet.BundleDeployment{
+		Deployment: &storagev1alpha1.BundleDeployment{
 			Spec: fleet.BundleDeploymentSpec{
 				DeploymentID:       "id",
 				StagedDeploymentID: "id",
@@ -46,7 +47,7 @@ func unavailableTargetMismatchedID() *Target {
 // unavailable due to not being ready.
 func unavailableTargetNonReady() *Target {
 	return &Target{
-		Deployment: &fleet.BundleDeployment{
+		Deployment: &storagev1alpha1.BundleDeployment{
 			Spec: fleet.BundleDeploymentSpec{
 				DeploymentID:       "id",
 				StagedDeploymentID: "id",
@@ -211,7 +212,7 @@ func Test_limit(t *testing.T) {
 func Test_isUnavailable(t *testing.T) {
 	tests := []struct {
 		name   string
-		target *fleet.BundleDeployment
+		target *storagev1alpha1.BundleDeployment
 		want   bool
 	}{
 		{
@@ -221,7 +222,7 @@ func Test_isUnavailable(t *testing.T) {
 		},
 		{
 			name: "ready but AppliedDeploymentID does not match DeploymentID",
-			target: &fleet.BundleDeployment{
+			target: &storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					DeploymentID: "123",
 				},
@@ -234,7 +235,7 @@ func Test_isUnavailable(t *testing.T) {
 		},
 		{
 			name: "ready and AppliedDeploymentID does match DeploymentID",
-			target: &fleet.BundleDeployment{
+			target: &storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					DeploymentID: "123",
 				},
@@ -270,7 +271,7 @@ func Test_upToDate(t *testing.T) {
 		{
 			name: "is not up-to-date if .Spec.StagedDeploymentID does not match target.DeploymentID",
 			target: &Target{
-				Deployment: &fleet.BundleDeployment{
+				Deployment: &storagev1alpha1.BundleDeployment{
 					Spec: fleet.BundleDeploymentSpec{
 						DeploymentID:       "id",
 						StagedDeploymentID: "off-id",
@@ -286,7 +287,7 @@ func Test_upToDate(t *testing.T) {
 		{
 			name: "is not up-to-date if .Spec.DeploymentID does not match target.DeploymentID",
 			target: &Target{
-				Deployment: &fleet.BundleDeployment{
+				Deployment: &storagev1alpha1.BundleDeployment{
 					Spec: fleet.BundleDeploymentSpec{
 						DeploymentID:       "off-id",
 						StagedDeploymentID: "id",
@@ -302,7 +303,7 @@ func Test_upToDate(t *testing.T) {
 		{
 			name: "is not up-to-date if .Status.AppliedDeploymentID does not match target.DeploymentID",
 			target: &Target{
-				Deployment: &fleet.BundleDeployment{
+				Deployment: &storagev1alpha1.BundleDeployment{
 					Spec: fleet.BundleDeploymentSpec{
 						DeploymentID:       "id",
 						StagedDeploymentID: "id",
@@ -318,7 +319,7 @@ func Test_upToDate(t *testing.T) {
 		{
 			name: "is up-to-date",
 			target: &Target{
-				Deployment: &fleet.BundleDeployment{
+				Deployment: &storagev1alpha1.BundleDeployment{
 					Spec: fleet.BundleDeploymentSpec{
 						DeploymentID:       "id",
 						StagedDeploymentID: "id",

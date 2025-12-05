@@ -10,13 +10,13 @@ import (
 	releasecommon "helm.sh/helm/v4/pkg/release/common"
 	releasev1 "helm.sh/helm/v4/pkg/release/v1"
 
-	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // RemoveExternalChanges removes changes made outside of fleet using Helm rollback.
-func (h *Helm) RemoveExternalChanges(ctx context.Context, bd *fleet.BundleDeployment) (string, error) {
+func (h *Helm) RemoveExternalChanges(ctx context.Context, bd *storagev1alpha1.BundleDeployment) (string, error) {
 	log.FromContext(ctx).WithName("remove-external-changes").Info("Drift correction: rollback")
 
 	_, defaultNamespace, releaseName := h.getOpts(bd.Name, bd.Spec.Options)

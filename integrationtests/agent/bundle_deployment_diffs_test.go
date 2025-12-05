@@ -7,6 +7,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -31,7 +32,7 @@ var _ = Describe("BundleDeployment diff", func() {
 	)
 
 	createBundleDeployment := func(name string) {
-		bundled := v1alpha1.BundleDeployment{
+		bundled := storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: clusterNS,
@@ -112,7 +113,7 @@ var _ = Describe("BundleDeployment diff", func() {
 			DeferCleanup(func() {
 				Expect(k8sClient.Delete(
 					context.TODO(),
-					&v1alpha1.BundleDeployment{ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name}},
+					&storagev1alpha1.BundleDeployment{ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name}},
 				)).ToNot(HaveOccurred())
 			})
 		})
@@ -130,7 +131,7 @@ var _ = Describe("BundleDeployment diff", func() {
 				Expect(k8sClient.Patch(ctx, patchedSvc, client.StrategicMergeFrom(&svc))).NotTo(HaveOccurred())
 
 				Consistently(func(g Gomega) {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(
 						context.TODO(),
 						types.NamespacedName{Namespace: clusterNS, Name: name},
@@ -156,7 +157,7 @@ var _ = Describe("BundleDeployment diff", func() {
 				Expect(k8sClient.Patch(ctx, patchedCM, client.StrategicMergeFrom(&cm))).NotTo(HaveOccurred())
 
 				Consistently(func(g Gomega) {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(
 						context.TODO(),
 						types.NamespacedName{Namespace: clusterNS, Name: name},
@@ -180,7 +181,7 @@ var _ = Describe("BundleDeployment diff", func() {
 				Expect(k8sClient.Delete(ctx, &svc)).NotTo(HaveOccurred())
 
 				Consistently(func(g Gomega) {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(
 						context.TODO(),
 						types.NamespacedName{Namespace: clusterNS, Name: name},

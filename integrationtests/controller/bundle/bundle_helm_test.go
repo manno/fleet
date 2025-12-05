@@ -10,6 +10,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,7 +38,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 		bundleName                        string
 		bdLabels                          map[string]string
 		expectedNumberOfBundleDeployments int
-		helmOptions                       *v1alpha1.BundleHelmOptions
+		helmOptions                       *fleet.BundleHelmOptions
 		version                           string
 	)
 
@@ -62,7 +63,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 	AfterEach(func() {
 		Expect(k8sClient.Delete(ctx, &v1alpha1.Bundle{ObjectMeta: metav1.ObjectMeta{Namespace: namespace, Name: bundleName}})).NotTo(HaveOccurred())
-		bdList := &v1alpha1.BundleDeploymentList{}
+		bdList := &storagev1alpha1.BundleDeploymentList{}
 		err := k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 		Expect(err).NotTo(HaveOccurred())
 		for _, bd := range bdList.Items {
@@ -79,7 +80,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 	When("helm options is NOT nil, and has no values", func() {
 		BeforeEach(func() {
-			helmOptions = &v1alpha1.BundleHelmOptions{}
+			helmOptions = &fleet.BundleHelmOptions{}
 			bundleName = "helm-not-nil-and-no-values"
 			bdLabels = map[string]string{
 				"fleet.cattle.io/bundle-name":      bundleName,
@@ -109,7 +110,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 	When("helm options is NOT nil, version has v prefix, and has no values", func() {
 		BeforeEach(func() {
-			helmOptions = &v1alpha1.BundleHelmOptions{}
+			helmOptions = &fleet.BundleHelmOptions{}
 			bundleName = "helm-not-nil-vprefix-and-no-values"
 			bdLabels = map[string]string{
 				"fleet.cattle.io/bundle-name":      bundleName,
@@ -139,7 +140,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 	When("helm options is NOT nil, and has values", func() {
 		BeforeEach(func() {
-			helmOptions = &v1alpha1.BundleHelmOptions{
+			helmOptions = &fleet.BundleHelmOptions{
 				SecretName:            "supersecret",
 				InsecureSkipTLSverify: true,
 			}
@@ -171,7 +172,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 	When("helm options is NOT nil, and the version is a constraint", func() {
 		BeforeEach(func() {
-			helmOptions = &v1alpha1.BundleHelmOptions{
+			helmOptions = &fleet.BundleHelmOptions{
 				SecretName:            "supersecret",
 				InsecureSkipTLSverify: true,
 			}
@@ -185,7 +186,7 @@ var _ = Describe("Bundle with helm options", Ordered, func() {
 
 		It("does not create any BundleDeployment", func() {
 			Consistently(func(g Gomega) {
-				bdList := &v1alpha1.BundleDeploymentList{}
+				bdList := &storagev1alpha1.BundleDeploymentList{}
 
 				err := k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 				g.Expect(err).NotTo(HaveOccurred())
@@ -247,8 +248,8 @@ func verifyHelmBundlesDeploymentsAreCreated(
 	numBundleDeployments int,
 	bdLabels map[string]string,
 	bundleName string,
-	helmOptions *v1alpha1.BundleHelmOptions) *v1alpha1.BundleDeploymentList {
-	var bdList *v1alpha1.BundleDeploymentList
+	helmOptions *fleet.BundleHelmOptions) *storagev1alpha1.BundleDeploymentList {
+	var bdList *storagev1alpha1.BundleDeploymentList
 	bdLabels["fleet.cattle.io/bundle-name"] = bundleName
 
 	Eventually(func(g Gomega) {
@@ -257,7 +258,7 @@ func verifyHelmBundlesDeploymentsAreCreated(
 		err := k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: bundleName}, b)
 		g.Expect(err).NotTo(HaveOccurred())
 
-		bdList = &v1alpha1.BundleDeploymentList{}
+		bdList = &storagev1alpha1.BundleDeploymentList{}
 		err = k8sClient.List(ctx, bdList, client.MatchingLabelsSelector{Selector: labels.SelectorFromSet(bdLabels)})
 		Expect(err).NotTo(HaveOccurred())
 
@@ -287,7 +288,7 @@ func getRandBytes(size int) ([]byte, error) {
 	return buf, err
 }
 
-func createHelmSecret(c client.Client, helmOptions *v1alpha1.BundleHelmOptions, ns string) error {
+func createHelmSecret(c client.Client, helmOptions *fleet.BundleHelmOptions, ns string) error {
 	if helmOptions == nil || helmOptions.SecretName == "" {
 		return nil
 	}
@@ -317,7 +318,7 @@ func createHelmSecret(c client.Client, helmOptions *v1alpha1.BundleHelmOptions, 
 	return c.Create(ctx, secret)
 }
 
-func deleteHelmSecret(c client.Client, helmOptions *v1alpha1.BundleHelmOptions, ns string) error {
+func deleteHelmSecret(c client.Client, helmOptions *fleet.BundleHelmOptions, ns string) error {
 	if helmOptions == nil || helmOptions.SecretName == "" {
 		return nil
 	}
@@ -331,7 +332,7 @@ func deleteHelmSecret(c client.Client, helmOptions *v1alpha1.BundleHelmOptions, 
 	return c.Delete(ctx, secret)
 }
 
-func checkBundleDeploymentSecret(c client.Client, helmOptions *v1alpha1.BundleHelmOptions, bundleName, bNamespace, bdNamespace string) {
+func checkBundleDeploymentSecret(c client.Client, helmOptions *fleet.BundleHelmOptions, bundleName, bNamespace, bdNamespace string) {
 	if helmOptions == nil || helmOptions.SecretName == "" {
 		// nothing to check
 		return
@@ -371,7 +372,7 @@ func createHelmBundle(
 	namespace string,
 	targets []v1alpha1.BundleTarget,
 	targetRestrictions []v1alpha1.BundleTarget,
-	helmOptions *v1alpha1.BundleHelmOptions,
+	helmOptions *fleet.BundleHelmOptions,
 	version string,
 ) (*v1alpha1.Bundle, error) {
 	restrictions := []v1alpha1.BundleTargetRestriction{}

@@ -10,6 +10,7 @@ import (
 
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/wrangler/v3/pkg/yaml"
 
@@ -41,7 +42,7 @@ func BundleFromDeployment(labels map[string]string) (string, string) {
 // information about the deployment, associated cluster groups, cluster,
 // bundle, deployment options, and deployment identifier.
 type Target struct {
-	Deployment    *fleet.BundleDeployment
+	Deployment    *storagev1alpha1.BundleDeployment
 	ClusterGroups []*fleet.ClusterGroup
 	Cluster       *fleet.Cluster
 	Bundle        *fleet.Bundle
@@ -51,8 +52,8 @@ type Target struct {
 
 // BundleDeployment returns a new BundleDeployment, it discards annotations, status, etc.
 // The labels are copied from the Bundle.
-func (t *Target) BundleDeployment() *fleet.BundleDeployment {
-	bd := &fleet.BundleDeployment{
+func (t *Target) BundleDeployment() *storagev1alpha1.BundleDeployment {
+	bd := &storagev1alpha1.BundleDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      t.Deployment.Name,
 			Namespace: t.Deployment.Namespace,
@@ -147,7 +148,7 @@ func (t *Target) message() string {
 // initialiseOptionsMaps initialises options and staged options maps of namespace labels and annotations on bd, if
 // needed.
 // Assumes that bd is not nil.
-func initialiseOptionsMaps(bd *fleet.BundleDeployment) {
+func initialiseOptionsMaps(bd *storagev1alpha1.BundleDeployment) {
 	if bd.Spec.Options.NamespaceLabels == nil {
 		bd.Spec.Options.NamespaceLabels = map[string]string{}
 	}

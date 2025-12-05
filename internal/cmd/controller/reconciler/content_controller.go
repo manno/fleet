@@ -5,6 +5,7 @@ import (
 
 	"github.com/rancher/fleet/internal/config"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/sharding"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -37,7 +38,7 @@ func (r *ContentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named("content"). // naming because this controller does not use For()
 		Watches(
-			&fleet.BundleDeployment{},
+			&storagev1alpha1.BundleDeployment{},
 			handler.EnqueueRequestsFromMapFunc(r.mapBundleDeploymentToContent),
 			builder.WithPredicates(
 				// Only trigger for BundleDeployment changes that affect Content references
@@ -46,8 +47,8 @@ func (r *ContentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 						return true
 					},
 					UpdateFunc: func(e event.UpdateEvent) bool {
-						newBD := e.ObjectNew.(*fleet.BundleDeployment)
-						oldBD := e.ObjectOld.(*fleet.BundleDeployment)
+						newBD := e.ObjectNew.(*storagev1alpha1.BundleDeployment)
+						oldBD := e.ObjectOld.(*storagev1alpha1.BundleDeployment)
 
 						// Reconcile if ContentNameLabel changes
 						contentNameChanged := (newBD.Labels != nil && newBD.Labels[fleet.ContentNameLabel] != "") &&
@@ -79,7 +80,7 @@ func (r *ContentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	}
 
 	// List all BundleDeployments that reference this Content resource
-	bdList := &fleet.BundleDeploymentList{}
+	bdList := &storagev1alpha1.BundleDeploymentList{}
 	err := r.List(ctx, bdList, client.MatchingFields{config.ContentNameIndex: content.Name})
 	if err != nil {
 		logger.Error(err, "Failed to list BundleDeployments for Content resource")
@@ -115,7 +116,7 @@ func (r *ContentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 // mapBundleDeploymentToContent maps a BundleDeployment to its associated Content resource.
 func (r *ContentReconciler) mapBundleDeploymentToContent(ctx context.Context, obj client.Object) []ctrl.Request {
-	bd, ok := obj.(*fleet.BundleDeployment)
+	bd, ok := obj.(*storagev1alpha1.BundleDeployment)
 	if !ok {
 		return nil
 	}

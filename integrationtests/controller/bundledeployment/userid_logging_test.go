@@ -8,6 +8,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -21,14 +22,14 @@ var _ = Describe("UserID logging", func() {
 		const userID = "test-user-123"
 
 		var (
-			bd        *fleet.BundleDeployment
+			bd        *storagev1alpha1.BundleDeployment
 			namespace string
 		)
 
 		BeforeEach(func() {
 			namespace = "default"
 
-			bd = &fleet.BundleDeployment{
+			bd = &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
 					GenerateName: "test-bd-",
 					Namespace:    namespace,
@@ -76,14 +77,14 @@ var _ = Describe("UserID logging", func() {
 
 	When("BundleDeployment does not have userID label", func() {
 		var (
-			bd        *fleet.BundleDeployment
+			bd        *storagev1alpha1.BundleDeployment
 			namespace string
 		)
 
 		BeforeEach(func() {
 			namespace = "default"
 
-			bd = &fleet.BundleDeployment{
+			bd = &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
 					GenerateName: "test-bd-no-user-",
 					Namespace:    namespace,

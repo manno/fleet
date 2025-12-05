@@ -5,6 +5,7 @@ import (
 
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -43,7 +44,7 @@ var (
 )
 
 func collectBundleDeploymentMetrics(obj any, metrics map[string]prometheus.Collector) {
-	bundleDep, ok := obj.(*fleet.BundleDeployment)
+	bundleDep, ok := obj.(*storagev1alpha1.BundleDeployment)
 	if !ok {
 		panic("unexpected object type")
 	}

@@ -23,6 +23,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/summary"
 	"github.com/rancher/fleet/internal/helmdeployer"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 // limit the length of nonReady and modified resources
@@ -50,7 +51,7 @@ func New(client client.Client, ds *desiredset.Client, deployer *helmdeployer.Hel
 	}
 }
 
-func ShouldRedeployAgent(bd *fleet.BundleDeployment) bool {
+func ShouldRedeployAgent(bd *storagev1alpha1.BundleDeployment) bool {
 	if isAgent(bd) {
 		return true
 	}
@@ -63,13 +64,13 @@ func ShouldRedeployAgent(bd *fleet.BundleDeployment) bool {
 	return *bd.Status.SyncGeneration != bd.Spec.Options.ForceSyncGeneration
 }
 
-func isAgent(bd *fleet.BundleDeployment) bool {
+func isAgent(bd *storagev1alpha1.BundleDeployment) bool {
 	return strings.HasPrefix(bd.Name, "fleet-agent")
 }
 
 // ShouldUpdateStatus skips resource and ready status updates if the bundle
 // deployment is unchanged or not installed yet.
-func ShouldUpdateStatus(bd *fleet.BundleDeployment) bool {
+func ShouldUpdateStatus(bd *storagev1alpha1.BundleDeployment) bool {
 	if bd.Spec.DeploymentID != bd.Status.AppliedDeploymentID {
 		return false
 	}
@@ -86,7 +87,7 @@ func ShouldUpdateStatus(bd *fleet.BundleDeployment) bool {
 // UpdateStatus sets the status of the bundledeployment based on the resources from the helm release history and the live state.
 // In the status it updates: Ready, NonReadyStatus, IncompleteState, NonReadyStatus, NonModified, ModifiedStatus, Resources and ResourceCounts fields.
 // Additionally it sets the Ready condition either from the NonReadyStatus or the NonModified status field.
-func (m *Monitor) UpdateStatus(ctx context.Context, bd *fleet.BundleDeployment, resources *helmdeployer.Resources) (fleet.BundleDeploymentStatus, error) {
+func (m *Monitor) UpdateStatus(ctx context.Context, bd *storagev1alpha1.BundleDeployment, resources *helmdeployer.Resources) (fleet.BundleDeploymentStatus, error) {
 	logger := log.FromContext(ctx).WithName("update-status")
 	ctx = log.IntoContext(ctx, logger)
 
@@ -157,7 +158,7 @@ func readyError(status fleet.BundleDeploymentStatus) error {
 // updateFromPreviousDeployment updates the status with information from the
 // helm release history and an apply dry run.
 // Modified resources are resources that have changed from the previous helm release.
-func (m *Monitor) updateFromPreviousDeployment(ctx context.Context, bd *fleet.BundleDeployment, resources *helmdeployer.Resources) error {
+func (m *Monitor) updateFromPreviousDeployment(ctx context.Context, bd *storagev1alpha1.BundleDeployment, resources *helmdeployer.Resources) error {
 	resourcesPreviousRelease, err := m.deployer.ResourcesFromPreviousReleaseVersion(bd.Name, bd.Status.Release)
 	if err != nil {
 		return err

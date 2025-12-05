@@ -24,6 +24,11 @@ func main() {
 					"./pkg/apis/fleet.cattle.io/v1alpha1",
 				},
 			},
+			"storage.fleet.cattle.io": {
+				Types: []interface{}{
+					"./pkg/apis/storage.fleet.cattle.io/v1alpha1",
+				},
+			},
 		},
 	})
 }

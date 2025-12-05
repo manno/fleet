@@ -6,7 +6,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/desiredset"
 	"github.com/rancher/fleet/internal/cmd/agent/trigger"
 	"github.com/rancher/fleet/internal/helmdeployer"
-	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -22,7 +22,7 @@ type DriftDetect struct {
 	labelPrefix      string
 	labelSuffix      string
 
-	driftChan chan event.TypedGenericEvent[*fleet.BundleDeployment]
+	driftChan chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment]
 }
 
 func New(
@@ -31,7 +31,7 @@ func New(
 	defaultNamespace string,
 	labelPrefix string,
 	labelSuffix string,
-	driftChan chan event.TypedGenericEvent[*fleet.BundleDeployment],
+	driftChan chan event.TypedGenericEvent[*storagev1alpha1.BundleDeployment],
 ) *DriftDetect {
 	return &DriftDetect{
 		trigger:          trigger,
@@ -48,7 +48,7 @@ func (d *DriftDetect) Clear(bdKey string) error {
 }
 
 // Refresh triggers a sync of all resources of the provided bd which may have drifted from their desired state.
-func (d *DriftDetect) Refresh(ctx context.Context, bdKey string, bd *fleet.BundleDeployment, resources *helmdeployer.Resources) error {
+func (d *DriftDetect) Refresh(ctx context.Context, bdKey string, bd *storagev1alpha1.BundleDeployment, resources *helmdeployer.Resources) error {
 	logger := log.FromContext(ctx).WithName("drift-detect").WithValues("initialResourceVersion", bd.ResourceVersion)
 	logger.V(1).Info("Refreshing drift detection")
 
@@ -63,7 +63,7 @@ func (d *DriftDetect) Refresh(ctx context.Context, bdKey string, bd *fleet.Bundl
 
 	handler := func(key string) {
 		logger.V(1).Info("Notifying driftdetect reconciler of a resource change", "triggeredBy", key)
-		d.driftChan <- event.TypedGenericEvent[*fleet.BundleDeployment]{Object: bd}
+		d.driftChan <- event.TypedGenericEvent[*storagev1alpha1.BundleDeployment]{Object: bd}
 
 	}
 
@@ -74,7 +74,7 @@ func (d *DriftDetect) Refresh(ctx context.Context, bdKey string, bd *fleet.Bundl
 // allResources returns the resources that are deployed by the bundle deployment,
 // according to the helm release history. It adds to be deleted resources to
 // the list, by comparing the desired state to the actual state with apply.
-func (d *DriftDetect) allResources(ctx context.Context, bd *fleet.BundleDeployment, resources *helmdeployer.Resources) (*helmdeployer.Resources, error) {
+func (d *DriftDetect) allResources(ctx context.Context, bd *storagev1alpha1.BundleDeployment, resources *helmdeployer.Resources) (*helmdeployer.Resources, error) {
 	ns := resources.DefaultNamespace
 	if ns == "" {
 		ns = d.defaultNamespace

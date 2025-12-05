@@ -6,6 +6,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -64,14 +65,14 @@ var _ = Describe("Bundle Status Fields", func() {
 			Expect(bundle.Status.Display.ReadyClusters).To(Equal(""))
 
 			By("To reflect the 'Ready' status in bundle, bundleDeployment needs below mentioned status fields.")
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err = k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "name"}, bd)
 				if err != nil {
 					return err
 				}
-				resources := []v1alpha1.BundleDeploymentResource{}
-				resource := v1alpha1.BundleDeploymentResource{
+				resources := []fleet.BundleDeploymentResource{}
+				resource := fleet.BundleDeploymentResource{
 					Kind:       "ConfigMap",
 					APIVersion: "v1",
 					Namespace:  namespace,
@@ -144,7 +145,7 @@ var _ = Describe("Bundle Status Fields", func() {
 			}).Should(BeTrue())
 
 			// prepare bundle deployment so it satisfies the status change
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err = k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "name"}, bd)
 				if err != nil {

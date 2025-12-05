@@ -1,0 +1,18 @@
+{{- if .Values.apiserver.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-apiserver
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: fleet-apiserver
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+    targetPort: {{ .Values.apiserver.securePort }}
+    name: https
+  selector:
+    app: fleet-apiserver
+  type: ClusterIP
+{{- end }}

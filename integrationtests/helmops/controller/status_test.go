@@ -10,12 +10,13 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 var _ = Describe("HelmOp Status Fields", func() {
 	var (
 		helmop *fleet.HelmOp
-		bd     *fleet.BundleDeployment
+		bd     *storagev1alpha1.BundleDeployment
 	)
 
 	BeforeEach(func() {
@@ -67,7 +68,7 @@ var _ = Describe("HelmOp Status Fields", func() {
 			err = k8sClient.Create(ctx, helmop)
 			Expect(err).NotTo(HaveOccurred())
 
-			bd = &fleet.BundleDeployment{}
+			bd = &storagev1alpha1.BundleDeployment{}
 			Eventually(func(g Gomega) {
 				nsName := types.NamespacedName{Namespace: namespace, Name: "name"}
 				g.Expect(k8sClient.Get(ctx, nsName, bd)).ToNot(HaveOccurred())
@@ -94,7 +95,7 @@ var _ = Describe("HelmOp Status Fields", func() {
 
 			// This simulates what the bundle deployment reconciler would do.
 			By("Updating the BundleDeployment status to ready")
-			bd := &fleet.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err := k8sClient.Get(ctx, bundleName, bd)
 				if err != nil {

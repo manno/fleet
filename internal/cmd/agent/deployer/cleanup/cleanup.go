@@ -12,6 +12,7 @@ import (
 	"github.com/rancher/fleet/internal/cmd/agent/deployer/merr"
 	"github.com/rancher/fleet/internal/helmdeployer"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 
 	apierror "k8s.io/apimachinery/pkg/api/errors"
@@ -93,7 +94,7 @@ func (c *Cleanup) OldAgent(ctx context.Context, modifiedStatuses []fleet.Modifie
 	return merr.NewErrors(errs...)
 }
 
-func (c *Cleanup) CleanupReleases(ctx context.Context, key string, bd *fleet.BundleDeployment) error {
+func (c *Cleanup) CleanupReleases(ctx context.Context, key string, bd *storagev1alpha1.BundleDeployment) error {
 	c.cleanupOnce.Do(func() {
 		go c.garbageCollect(ctx)
 	})
@@ -125,7 +126,7 @@ func (c *Cleanup) cleanup(ctx context.Context, logger logr.Logger) error {
 	}
 
 	for _, deployed := range deployed {
-		bundleDeployment := &fleet.BundleDeployment{}
+		bundleDeployment := &storagev1alpha1.BundleDeployment{}
 		err := c.client.Get(ctx, types.NamespacedName{Namespace: c.fleetNamespace, Name: deployed.BundleID}, bundleDeployment)
 		if apierror.IsNotFound(err) {
 			// found a helm secret, but no bundle deployment, so uninstall the release
@@ -158,7 +159,7 @@ func (c *Cleanup) delete(ctx context.Context, bundleDeploymentKey string) error 
 }
 
 // releaseKey returns a deploymentKey from namespace+releaseName
-func releaseKey(ns string, bd *fleet.BundleDeployment) string {
+func releaseKey(ns string, bd *storagev1alpha1.BundleDeployment) string {
 	if bd.Spec.Options.TargetNamespace != "" {
 		ns = bd.Spec.Options.TargetNamespace
 	} else if bd.Spec.Options.DefaultNamespace != "" {

@@ -1,3 +1,5 @@
+// Package summary contains types for summarizing resource status
+// +k8s:openapi-gen=true
 package summary
 
 import (
@@ -6,6 +8,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +k8s:openapi-gen=true
 type Summary struct {
 	State         string                 `json:"state,omitempty"`
 	Error         bool                   `json:"error,omitempty"`

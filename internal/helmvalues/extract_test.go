@@ -5,6 +5,7 @@ import (
 
 	"github.com/rancher/fleet/internal/helmvalues"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 func TestExtractValues(t *testing.T) {
@@ -151,7 +152,7 @@ func TestExtractValues(t *testing.T) {
 
 func TestExtractOptions(t *testing.T) {
 	type args struct {
-		bd *fleet.BundleDeployment
+		bd *storagev1alpha1.BundleDeployment
 	}
 	var nullMap *fleet.GenericMap
 	tests := []struct {
@@ -166,7 +167,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "nil helm options",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: nil,
 					},
@@ -180,7 +181,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "nil values",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{},
 					},
@@ -199,7 +200,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "null values",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
 							Values: nullMap,
@@ -221,7 +222,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "empty values",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
 							Values: &fleet.GenericMap{Data: map[string]interface{}{}},
@@ -243,7 +244,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "values present",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
 							Values: &fleet.GenericMap{
@@ -261,7 +262,7 @@ func TestExtractOptions(t *testing.T) {
 		{
 			name: "values and staged present",
 			args: args{
-				bd: &fleet.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
+				bd: &storagev1alpha1.BundleDeployment{Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
 							Values: &fleet.GenericMap{

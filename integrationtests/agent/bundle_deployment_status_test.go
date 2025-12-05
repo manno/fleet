@@ -14,6 +14,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 var _ = Describe("BundleDeployment status", Ordered, func() {
@@ -30,7 +31,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 	)
 
 	createBundleDeploymentV1 := func(name string) {
-		bundled := v1alpha1.BundleDeployment{
+		bundled := storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: clusterNS,
@@ -57,7 +58,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			// this BundleDeployment will create a deployment with the resources from assets/deployment-v1.yaml
 			createBundleDeploymentV1(name)
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -65,7 +66,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 
 		It("Updates the bundle deployment's status", func() {
 			By("Detecting the BundleDeployment as not ready")
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			err := k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(bd.Status.Ready).To(BeFalse())
@@ -79,13 +80,13 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			Expect(svc.Name).NotTo(BeEmpty())
 
 			By("Listing deployed resources in the status")
-			bd = &v1alpha1.BundleDeployment{}
+			bd = &storagev1alpha1.BundleDeployment{}
 			err = k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(bd.Status.Resources).To(HaveLen(4))
 			ts := bd.Status.Resources[0].CreatedAt
 			Expect(ts.Time).ToNot(BeZero())
-			Expect(bd.Status.Resources).To(ContainElement(v1alpha1.BundleDeploymentResource{
+			Expect(bd.Status.Resources).To(ContainElement(fleet.BundleDeploymentResource{
 				Kind:       "Service",
 				APIVersion: "v1",
 				Namespace:  namespace,
@@ -138,7 +139,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			It("Updates the bundle deployment's status", func() {
 				By("Receiving an update to a release that deletes the svc with a finalizer")
 				Eventually(func() bool {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 					Expect(err).ToNot(HaveOccurred())
 					bd.Spec.DeploymentID = "v2"
@@ -219,7 +220,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			name = "orphanbundletest2"
 			createBundleDeploymentV1(name)
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -227,7 +228,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 
 		It("Updates the bundle deployment's status", func() {
 			By("Showing the BundleDeployment's Ready status as false")
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			err := k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(bd.Status.Ready).To(BeFalse())
@@ -241,13 +242,13 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			Expect(svc.Name).NotTo(BeEmpty())
 
 			By("Listing deployed resources in the status")
-			bd = &v1alpha1.BundleDeployment{}
+			bd = &storagev1alpha1.BundleDeployment{}
 			err = k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(bd.Status.Resources).To(HaveLen(4))
 			ts := bd.Status.Resources[0].CreatedAt
 			Expect(ts.Time).ToNot(BeZero())
-			Expect(bd.Status.Resources).To(ContainElement(v1alpha1.BundleDeploymentResource{
+			Expect(bd.Status.Resources).To(ContainElement(fleet.BundleDeploymentResource{
 				Kind:       "Service",
 				APIVersion: "v1",
 				Namespace:  namespace,
@@ -300,7 +301,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			It("Updates the bundle deployment's status", func() {
 				By("Receiving a BundleDeployment upgrade to a release that deletes the svc with a finalizer")
 				Eventually(func() bool {
-					bd := &v1alpha1.BundleDeployment{}
+					bd := &storagev1alpha1.BundleDeployment{}
 					err := k8sClient.Get(ctx, types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 					Expect(err).ToNot(HaveOccurred())
 					bd.Spec.DeploymentID = "v2"
@@ -381,7 +382,7 @@ var _ = Describe("BundleDeployment status", Ordered, func() {
 			name = "orphanbundletest2"
 			createBundleDeploymentV1(name)
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})

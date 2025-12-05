@@ -29,6 +29,17 @@ rules:
       - "fleet.cattle.io"
     resources:
       - "bundles"
+    verbs:
+      - list
+      - delete
+      - get
+      - watch
+      - update
+      - patch
+      - create
+  - apiGroups:
+      - "storage.fleet.cattle.io"
+    resources:
       - "bundledeployments"
     verbs:
       - list

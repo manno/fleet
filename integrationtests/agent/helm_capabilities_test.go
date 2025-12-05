@@ -8,6 +8,7 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -33,7 +34,7 @@ var _ = Describe("Helm Chart uses Capabilities", Ordered, func() {
 	})
 
 	createBundle := func(env *specEnv, id string, name string) {
-		bundled := v1alpha1.BundleDeployment{
+		bundled := storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      name,
 				Namespace: clusterNS,
@@ -62,7 +63,7 @@ var _ = Describe("Helm Chart uses Capabilities", Ordered, func() {
 			name = "capav1"
 			createBundle(env, "capabilitiesv1", name)
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -88,7 +89,7 @@ var _ = Describe("Helm Chart uses Capabilities", Ordered, func() {
 			name = "capav2"
 			createBundle(env, "capabilitiesv2", name)
 			DeferCleanup(func() {
-				Expect(k8sClient.Delete(context.TODO(), &v1alpha1.BundleDeployment{
+				Expect(k8sClient.Delete(context.TODO(), &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{Namespace: clusterNS, Name: name},
 				})).ToNot(HaveOccurred())
 			})
@@ -96,7 +97,7 @@ var _ = Describe("Helm Chart uses Capabilities", Ordered, func() {
 
 		It("adds the error message to the bundle deployment status", func() {
 			Eventually(func(g Gomega) {
-				bd := &v1alpha1.BundleDeployment{}
+				bd := &storagev1alpha1.BundleDeployment{}
 				err := k8sClient.Get(context.TODO(), types.NamespacedName{Namespace: clusterNS, Name: name}, bd)
 				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(bd.Status.Conditions).ToNot(BeEmpty())

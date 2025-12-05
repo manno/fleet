@@ -9,7 +9,9 @@ import (
 	"github.com/rancher/fleet/internal/cmd/controller/agentmanagement/controllers/manageagent"
 	"github.com/rancher/fleet/internal/names"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	fleetcontrollers "github.com/rancher/fleet/pkg/generated/controllers/fleet.cattle.io/v1alpha1"
+	storagecontrollers "github.com/rancher/fleet/pkg/generated/controllers/storage.fleet.cattle.io/v1alpha1"
 
 	corecontrollers "github.com/rancher/wrangler/v3/pkg/generated/controllers/core/v1"
 	"github.com/rancher/wrangler/v3/pkg/kv"
@@ -25,7 +27,7 @@ type handler struct {
 	clusters             fleetcontrollers.ClusterController
 	clusterCache         fleetcontrollers.ClusterCache
 	clusterGroups        fleetcontrollers.ClusterGroupCache
-	bundleDeployment     fleetcontrollers.BundleDeploymentCache
+	bundleDeployment     storagecontrollers.BundleDeploymentCache
 	namespaceCache       corecontrollers.NamespaceCache
 	namespaces           corecontrollers.NamespaceController
 	gitRepos             fleetcontrollers.GitRepoCache
@@ -33,7 +35,7 @@ type handler struct {
 }
 
 func Register(ctx context.Context,
-	bundleDeployment fleetcontrollers.BundleDeploymentController,
+	bundleDeployment storagecontrollers.BundleDeploymentController,
 	clusterGroups fleetcontrollers.ClusterGroupCache,
 	clusters fleetcontrollers.ClusterController,
 	gitRepos fleetcontrollers.GitRepoCache,
@@ -74,7 +76,7 @@ func (h *handler) ensureNSDeleted(key string, obj *fleet.Cluster) (*fleet.Cluste
 // findClusters enqueues the cluster when the bundledeployment changes. It uses the cluster namespace to determine the cluster.
 func (h *handler) findClusters(namespaces corecontrollers.NamespaceCache) relatedresource.Resolver {
 	return func(namespace, _ string, obj runtime.Object) ([]relatedresource.Key, error) {
-		if _, ok := obj.(*fleet.BundleDeployment); !ok {
+		if _, ok := obj.(*storagev1alpha1.BundleDeployment); !ok {
 			return nil, nil
 		}
 
@@ -90,7 +92,7 @@ func (h *handler) findClusters(namespaces corecontrollers.NamespaceCache) relate
 		if clusterNS == "" || clusterName == "" {
 			return nil, nil
 		}
-		logrus.Debugf("Enqueueing cluster %s/%s for bundledeployment %s/%s", clusterNS, clusterName, namespace, obj.(*fleet.BundleDeployment).Name)
+		logrus.Debugf("Enqueueing cluster %s/%s for bundledeployment %s/%s", clusterNS, clusterName, namespace, obj.(*storagev1alpha1.BundleDeployment).Name)
 		return []relatedresource.Key{
 			{
 				Namespace: clusterNS,

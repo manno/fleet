@@ -24,6 +24,7 @@ import (
 	"github.com/rancher/fleet/internal/bundlereader"
 	"github.com/rancher/fleet/internal/mocks"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 const (
@@ -247,7 +248,7 @@ func newTLSServer(index string, withAuth bool) *httptest.Server {
 func TestGetManifestFromHelmChart(t *testing.T) {
 	cases := []struct {
 		name                string
-		bd                  fleet.BundleDeployment
+		bd                  storagev1alpha1.BundleDeployment
 		readerCalls         func(*mocks.MockReader)
 		requiresAuth        bool
 		expectedNilManifest bool
@@ -257,7 +258,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 	}{
 		{
 			name: "no helm options",
-			bd: fleet.BundleDeployment{
+			bd: storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: nil,
@@ -273,7 +274,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 		},
 		{
 			name: "error reading secret",
-			bd: fleet.BundleDeployment{
+			bd: storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{},
@@ -294,7 +295,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 		},
 		{
 			name: "authentication error",
-			bd: fleet.BundleDeployment{
+			bd: storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
@@ -325,7 +326,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 		},
 		{
 			name: "tls error",
-			bd: fleet.BundleDeployment{
+			bd: storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{
@@ -349,7 +350,7 @@ func TestGetManifestFromHelmChart(t *testing.T) {
 		},
 		{
 			name: "load directory no version specified",
-			bd: fleet.BundleDeployment{
+			bd: storagev1alpha1.BundleDeployment{
 				Spec: fleet.BundleDeploymentSpec{
 					Options: fleet.BundleDeploymentOptions{
 						Helm: &fleet.HelmOptions{

@@ -5,6 +5,7 @@ import (
 
 	"github.com/rancher/fleet/internal/cmd/controller/summary"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
@@ -28,7 +29,7 @@ func BundleStatusChangedPredicate() predicate.TypedFuncs[*fleet.Bundle] {
 
 // setFields sets bundledeployment related status fields:
 // Summary, ReadyClusters, DesiredReadyClusters, Display.State, Display.Message, Display.Error
-func SetFields(list *fleet.BundleDeploymentList, status *fleet.StatusBase) error {
+func SetFields(list *storagev1alpha1.BundleDeploymentList, status *fleet.StatusBase) error {
 	var (
 		maxState   fleet.BundleState
 		message    string

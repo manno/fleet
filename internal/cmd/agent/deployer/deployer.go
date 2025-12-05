@@ -13,6 +13,7 @@ import (
 	"github.com/rancher/fleet/internal/manifest"
 	"github.com/rancher/fleet/internal/ocistorage"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/wrangler/v3/pkg/condition"
 	"github.com/rancher/wrangler/v3/pkg/kv"
@@ -49,7 +50,7 @@ func (d *Deployer) Resources(name string, releaseID string) (*helmdeployer.Resou
 	return d.helm.Resources(name, releaseID)
 }
 
-func (d *Deployer) RemoveExternalChanges(ctx context.Context, bd *fleet.BundleDeployment) (string, error) {
+func (d *Deployer) RemoveExternalChanges(ctx context.Context, bd *storagev1alpha1.BundleDeployment) (string, error) {
 	return d.helm.RemoveExternalChanges(ctx, bd)
 }
 
@@ -59,7 +60,7 @@ func (d *Deployer) RemoveExternalChanges(ctx context.Context, bd *fleet.BundleDe
 // applying changes coming from external resources, such as those referenced through valuesFrom.
 func (d *Deployer) DeployBundle(
 	ctx context.Context,
-	bd *fleet.BundleDeployment,
+	bd *storagev1alpha1.BundleDeployment,
 	force bool,
 ) (fleet.BundleDeploymentStatus, error) {
 	status := bd.Status
@@ -108,7 +109,7 @@ func (d *Deployer) DeployBundle(
 // This loads the manifest and the contents from the upstream cluster.
 // If force is true, checks on whether the bundle deployment exists will be skipped, leading to the bundle deployment
 // being updated even if its deployment ID has not changed.
-func (d *Deployer) helmdeploy(ctx context.Context, logger logr.Logger, bd *fleet.BundleDeployment, force bool) (string, error) {
+func (d *Deployer) helmdeploy(ctx context.Context, logger logr.Logger, bd *storagev1alpha1.BundleDeployment, force bool) (string, error) {
 	if !force && bd.Spec.DeploymentID == bd.Status.AppliedDeploymentID {
 		if ok, err := d.helm.EnsureInstalled(bd.Name, bd.Status.Release); err != nil {
 			return "", err
@@ -169,7 +170,7 @@ func (d *Deployer) helmdeploy(ctx context.Context, logger logr.Logger, bd *fleet
 }
 
 // setNamespaceLabelsAndAnnotations updates the namespace for the release, applying all labels and annotations to that namespace as configured in the bundle spec.
-func (d *Deployer) setNamespaceLabelsAndAnnotations(ctx context.Context, bd *fleet.BundleDeployment, releaseID string) error {
+func (d *Deployer) setNamespaceLabelsAndAnnotations(ctx context.Context, bd *storagev1alpha1.BundleDeployment, releaseID string) error {
 	if bd.Spec.Options.NamespaceLabels == nil && bd.Spec.Options.NamespaceAnnotations == nil {
 		return nil
 	}
@@ -308,7 +309,7 @@ func deployErrToStatus(err error, status fleet.BundleDeploymentStatus) (bool, fl
 	return false, status
 }
 
-func (d *Deployer) checkDependency(ctx context.Context, bd *fleet.BundleDeployment) error {
+func (d *Deployer) checkDependency(ctx context.Context, bd *storagev1alpha1.BundleDeployment) error {
 	var depBundleList []string
 	bundleNamespace := bd.Labels[fleet.BundleNamespaceLabel]
 	for _, depend := range bd.Spec.DependsOn {
@@ -330,7 +331,7 @@ func (d *Deployer) checkDependency(ctx context.Context, bd *fleet.BundleDeployme
 				return err
 			}
 
-			bds := fleet.BundleDeploymentList{}
+			bds := storagev1alpha1.BundleDeploymentList{}
 			err = d.upstreamClient.List(ctx, &bds, client.MatchingLabelsSelector{Selector: selector}, client.InNamespace(bd.Namespace))
 			if err != nil {
 				return err

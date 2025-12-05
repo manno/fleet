@@ -10,12 +10,13 @@ import (
 
 	"github.com/rancher/fleet/integrationtests/utils"
 	v1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 var _ = Describe("GitRepo Status Fields", func() {
 	var (
 		gitrepo *v1alpha1.GitRepo
-		bd      *v1alpha1.BundleDeployment
+		bd      *storagev1alpha1.BundleDeployment
 	)
 
 	BeforeEach(func() {
@@ -61,7 +62,7 @@ var _ = Describe("GitRepo Status Fields", func() {
 			err = k8sClient.Create(ctx, gitrepo)
 			Expect(err).NotTo(HaveOccurred())
 
-			bd = &v1alpha1.BundleDeployment{}
+			bd = &storagev1alpha1.BundleDeployment{}
 			Eventually(func() bool {
 				err = k8sClient.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "name"}, bd)
 				return err == nil
@@ -94,7 +95,7 @@ var _ = Describe("GitRepo Status Fields", func() {
 
 			// This simulates what the bundle deployment reconciler would do.
 			By("Updating the BundleDeployment status to ready")
-			bd := &v1alpha1.BundleDeployment{}
+			bd := &storagev1alpha1.BundleDeployment{}
 			Eventually(func() error {
 				err := k8sClient.Get(ctx, bundleName, bd)
 				if err != nil {
