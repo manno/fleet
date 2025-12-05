@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
@@ -257,10 +256,10 @@ type BundleTarget struct {
 	DoNotDeploy bool `json:"doNotDeploy,omitempty"`
 	// NamespaceLabels are labels that will be appended to the namespace created by Fleet.
 	// +nullable
-	NamespaceLabels map[string]string `json:"namespaceLabels,omitempty"`
+	// NamespaceLabels map[string]string `json:"namespaceLabels,omitempty"`
 	// NamespaceAnnotations are annotations that will be appended to the namespace created by Fleet.
 	// +nullable
-	NamespaceAnnotations map[string]string `json:"namespaceAnnotations,omitempty"`
+	// NamespaceAnnotations map[string]string `json:"namespaceAnnotations,omitempty"`
 }
 
 // BundleSummary contains the number of bundle deployments in each state and a
@@ -344,7 +343,7 @@ type BundleStatus struct {
 	// Conditions is a list of Wrangler conditions that describe the state
 	// of the bundle.
 	// +optional
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 
 	// Summary contains the number of bundle deployments in each state and
 	// a list of non-ready resources.

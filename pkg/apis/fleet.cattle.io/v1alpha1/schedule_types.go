@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -51,7 +50,7 @@ type ScheduleStatus struct {
 	NextStartTime metav1.Time `json:"nextStartTime,omitempty"`
 	// Conditions is a list of Wrangler conditions that describe the state
 	// of the resource.
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 	// MatchingClusters is the list of clusters targeted by the Schedule
 	MatchingClusters []string `json:"matchingClusters,omitempty"`
 }

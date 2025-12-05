@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -113,7 +112,7 @@ const (
 
 type ImageScanStatus struct {
 	// +optional
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 
 	// LastScanTime is the last time image was scanned
 	LastScanTime metav1.Time `json:"lastScanTime,omitempty"`

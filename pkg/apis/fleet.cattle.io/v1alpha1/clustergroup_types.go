@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -58,7 +57,7 @@ type ClusterGroupStatus struct {
 	// +nullable
 	NonReadyClusters []string `json:"nonReadyClusters,omitempty"`
 	// Conditions is a list of conditions and their statuses for the cluster group.
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 	// Summary is a summary of the bundle deployments and their resources
 	// in the cluster group.
 	Summary BundleSummary `json:"summary,omitempty"`

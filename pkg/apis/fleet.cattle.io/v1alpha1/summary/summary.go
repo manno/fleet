@@ -1,3 +1,5 @@
+// Package summary contains types for summarizing resource status
+// +k8s:openapi-gen=true
 package summary
 
 import (

@@ -13,6 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/apiserver/pkg/registry/rest"
@@ -41,6 +42,8 @@ func NewBundleDeploymentStorage(db *Database) (*BundleDeploymentStorage, error) 
 var _ rest.StandardStorage = &BundleDeploymentStorage{}
 var _ rest.Scoper = &BundleDeploymentStorage{}
 var _ rest.Storage = &BundleDeploymentStorage{}
+var _ rest.SingularNameProvider = &BundleDeploymentStorage{}
+var _ rest.GroupVersionKindProvider = &BundleDeploymentStorage{}
 
 // New returns a new BundleDeployment
 func (s *BundleDeploymentStorage) New() runtime.Object {
@@ -55,6 +58,16 @@ func (s *BundleDeploymentStorage) Destroy() {
 // NewList returns a new BundleDeploymentList
 func (s *BundleDeploymentStorage) NewList() runtime.Object {
 	return &fleetv1alpha1.BundleDeploymentList{}
+}
+
+// GetSingularName returns the singular name for BundleDeployment
+func (s *BundleDeploymentStorage) GetSingularName() string {
+	return "bundledeployment"
+}
+
+// GroupVersionKind returns the GVK for BundleDeployment
+func (s *BundleDeploymentStorage) GroupVersionKind(containingGV schema.GroupVersion) schema.GroupVersionKind {
+	return fleetv1alpha1.SchemeGroupVersion.WithKind("BundleDeployment")
 }
 
 // NamespaceScoped returns true if the resource is namespaced

@@ -1,6 +1,27 @@
 package v1alpha1
 
-import "github.com/rancher/wrangler/v3/pkg/genericcondition"
+import (
+	corev1 "k8s.io/api/core/v1"
+)
+
+// GenericCondition is a copy of wrangler's GenericCondition to avoid external dependencies in OpenAPI generation.
+// This allows the Fleet API server to generate complete OpenAPI definitions without requiring
+// the wrangler package to have openapi-gen markers.
+// +k8s:openapi-gen=true
+type GenericCondition struct {
+	// Type of condition.
+	Type string `json:"type"`
+	// Status of the condition, one of True, False, Unknown.
+	Status corev1.ConditionStatus `json:"status"`
+	// The last time this condition was updated.
+	LastUpdateTime string `json:"lastUpdateTime,omitempty"`
+	// Last time the condition transitioned from one status to another.
+	LastTransitionTime string `json:"lastTransitionTime,omitempty"`
+	// The reason for the condition's last transition.
+	Reason string `json:"reason,omitempty"`
+	// Human-readable message indicating details about last transition
+	Message string `json:"message,omitempty"`
+}
 
 type StatusBase struct {
 	// ReadyClusters is the lowest number of clusters that are ready over
@@ -16,7 +37,7 @@ type StatusBase struct {
 	Display StatusDisplay `json:"display,omitempty"`
 	// Conditions is a list of Wrangler conditions that describe the state
 	// of the resource.
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 	// Resources contains metadata about the resources of each bundle.
 	Resources []Resource `json:"resources,omitempty"`
 	// ResourceCounts contains the number of resources in each state over all bundles.

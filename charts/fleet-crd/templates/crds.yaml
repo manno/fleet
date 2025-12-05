@@ -1002,6 +1002,13 @@ spec:
                   type: string
                 conditions:
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -1022,7 +1029,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -2902,6 +2909,13 @@ spec:
 
                     of the bundle.'
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -2922,7 +2936,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -3558,6 +3572,13 @@ spec:
                   description: Conditions is a list of conditions and their statuses
                     for the cluster group.
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -3578,7 +3599,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -6020,6 +6041,13 @@ spec:
                   type: boolean
                 conditions:
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -6040,7 +6068,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -6895,6 +6923,13 @@ spec:
 
                     of the resource.'
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -6915,7 +6950,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -8896,6 +8931,13 @@ spec:
 
                     of the resource.'
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -8916,7 +8958,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -9507,6 +9549,13 @@ spec:
                   type: string
                 conditions:
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -9527,7 +9576,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status
@@ -9789,6 +9838,13 @@ spec:
 
                     of the resource.'
                   items:
+                    description: 'GenericCondition is a copy of wrangler''s GenericCondition
+                      to avoid external dependencies in OpenAPI generation.
+
+                      This allows the Fleet API server to generate complete OpenAPI
+                      definitions without requiring
+
+                      the wrangler package to have openapi-gen markers.'
                     properties:
                       lastTransitionTime:
                         description: Last time the condition transitioned from one
@@ -9809,7 +9865,7 @@ spec:
                           Unknown.
                         type: string
                       type:
-                        description: Type of cluster condition.
+                        description: Type of condition.
                         type: string
                     required:
                       - status

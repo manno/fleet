@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -154,7 +153,7 @@ type ClusterSpec struct {
 }
 
 type ClusterStatus struct {
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 
 	// Namespace is the cluster namespace, it contains the clusters service
 	// account as well as any bundledeployments. Example:

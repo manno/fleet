@@ -9,7 +9,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 )
 
 func init() {
@@ -394,7 +393,7 @@ type DownstreamResource struct {
 
 type BundleDeploymentStatus struct {
 	// +nullable
-	Conditions []genericcondition.GenericCondition `json:"conditions,omitempty"`
+	Conditions []GenericCondition `json:"conditions,omitempty"`
 	// +nullable
 	AppliedDeploymentID string `json:"appliedDeploymentID,omitempty"`
 	// Release is the Helm release ID
