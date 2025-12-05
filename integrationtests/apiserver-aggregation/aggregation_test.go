@@ -15,10 +15,6 @@ import (
 )
 
 var _ = Describe("Full API Aggregation Integration", Ordered, func() {
-	BeforeAll(func() {
-		Skip("Skipping full integration tests - requires OpenAPI generation for storage.fleet.cattle.io")
-	})
-
 	var (
 		testCtx       context.Context
 		testNamespace string
@@ -71,10 +67,11 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			// Verify it was created and has proper metadata
+			// Note: TypeMeta (Kind/APIVersion) are typically stripped by k8s clients
 			Expect(bd.ResourceVersion).NotTo(BeEmpty())
 			Expect(bd.UID).NotTo(BeEmpty())
-			Expect(bd.APIVersion).To(Equal("storage.fleet.cattle.io/v1alpha1"))
-			Expect(bd.Kind).To(Equal("BundleDeployment"))
+			Expect(bd.Namespace).To(Equal(testNamespace))
+			Expect(bd.Name).To(Equal("test-bd-aggregated"))
 
 			GinkgoWriter.Printf("✅ Created BundleDeployment through API aggregation: %s/%s\n",
 				bd.Namespace, bd.Name)
@@ -269,18 +266,6 @@ var _ = Describe("Full API Aggregation Integration", Ordered, func() {
 			Expect(retrieved.Status.Display.State).To(Equal("Ready"))
 
 			GinkgoWriter.Printf("✅ Updated status through API aggregation\n")
-		})
-	})
-
-	Describe("API Discovery", func() {
-		It("should list storage.fleet.cattle.io in API groups", func() {
-			// This tests that the API is properly registered and discoverable
-			// The k8s client should be able to discover our API group
-
-			// If we can create/get resources, the API is discoverable
-			// This is implicitly tested by all the CRUD operations above
-
-			GinkgoWriter.Println("✅ API is discoverable (tested via CRUD operations)")
 		})
 	})
 })

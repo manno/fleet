@@ -15,16 +15,11 @@ import (
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime/serializer"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apiserver/pkg/endpoints/openapi"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	"k8s.io/apiserver/pkg/server/options"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/kubernetes/scheme"
 	restclient "k8s.io/client-go/rest"
 	basecompatibility "k8s.io/component-base/compatibility"
 	baseversion "k8s.io/component-base/version"
@@ -37,6 +32,7 @@ import (
 	"github.com/rancher/fleet/integrationtests/utils"
 	fleetapiserver "github.com/rancher/fleet/internal/cmd/apiserver"
 	"github.com/rancher/fleet/internal/cmd/apiserver/storage"
+	fleetv1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	fleetopenapi "github.com/rancher/fleet/pkg/generated/openapi"
 )
@@ -49,11 +45,6 @@ var (
 	cancel           context.CancelFunc
 	tmpDir           string
 	aggregatedServer *aggregatedServerInfo
-
-	// Scheme defines methods for serializing and deserializing API objects
-	Scheme = runtime.NewScheme()
-	// Codecs provides methods for retrieving codecs and serializers for specific groups and versions
-	Codecs = serializer.NewCodecFactory(Scheme)
 )
 
 type aggregatedServerInfo struct {
@@ -86,15 +77,18 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	// Register the storage.fleet.cattle.io types with the scheme
-	err = storagev1alpha1.AddToScheme(Scheme)
+	// Register APIService scheme for k8s client
+	err = apiregistrationv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
-	// ???
-	metav1.AddToGroupVersion(Scheme, schema.GroupVersion{Version: "v1"})
 
-	// Create client
-	utilruntime.Must(clientgoscheme.AddToScheme(Scheme))
-	k8sclient, err = client.New(cfg, client.Options{Scheme: Scheme})
+	err = fleetv1.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+
+	err = storagev1alpha1.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+
+	// Create client using standard k8s scheme
+	k8sclient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sclient).NotTo(BeNil())
 
@@ -315,44 +309,25 @@ func createAPIService(ctx context.Context, k8sClient client.Client, server *aggr
 	}
 	_ = k8sClient.Create(ctx, ns) // Ignore error if exists
 
-	// Create Service
+	// Create ExternalName Service pointing to localhost
+	// This bypasses endpoint validation that rejects loopback addresses
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "fleet-apiserver",
 			Namespace: "default",
 		},
 		Spec: corev1.ServiceSpec{
+			Type:         corev1.ServiceTypeExternalName,
+			ExternalName: "localhost",
 			Ports: []corev1.ServicePort{{
-				Port:       443,
-				TargetPort: intstr.FromInt(server.port),
-				Protocol:   corev1.ProtocolTCP,
+				Port:     int32(server.port),
+				Protocol: corev1.ProtocolTCP,
 			}},
 		},
 	}
 	err := k8sClient.Create(ctx, svc)
 	if err != nil {
 		return fmt.Errorf("failed to create service: %w", err)
-	}
-
-	// Create Endpoints pointing to our server
-	endpoints := &corev1.Endpoints{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "fleet-apiserver",
-			Namespace: "default",
-		},
-		Subsets: []corev1.EndpointSubset{{
-			Addresses: []corev1.EndpointAddress{{
-				IP: "127.0.0.1",
-			}},
-			Ports: []corev1.EndpointPort{{
-				Port:     int32(server.port),
-				Protocol: corev1.ProtocolTCP,
-			}},
-		}},
-	}
-	err = k8sClient.Create(ctx, endpoints)
-	if err != nil {
-		return fmt.Errorf("failed to create endpoints: %w", err)
 	}
 
 	// Create APIService
@@ -368,17 +343,17 @@ func createAPIService(ctx context.Context, k8sClient client.Client, server *aggr
 			Service: &apiregistrationv1.ServiceReference{
 				Namespace: "default",
 				Name:      "fleet-apiserver",
-				Port:      intPtr(int32(443)),
+				Port:      intPtr(int32(server.port)),
 			},
 			InsecureSkipTLSVerify: true, // For testing with self-signed certs
 		},
 	}
 	err = k8sClient.Create(ctx, apiService)
-	if err != nil {
+	if client.IgnoreAlreadyExists(err) != nil {
 		return fmt.Errorf("failed to create APIService: %w", err)
 	}
 
-	GinkgoWriter.Println("✅ Created APIService, Service, and Endpoints")
+	GinkgoWriter.Println("✅ Created APIService and ExternalName Service")
 	return nil
 }
 
