@@ -16,7 +16,7 @@ spec:
       labels:
         app: fleet-apiserver
     spec:
-      serviceAccountName: {{ include "fleet.name" . }}
+      serviceAccountName: fleet-controller
       {{- if .Values.nodeSelector }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
@@ -48,9 +48,6 @@ spec:
           name: https
           protocol: TCP
         volumeMounts:
-        - name: serving-cert
-          mountPath: /var/run/fleet-apiserver/serving-cert
-          readOnly: true
         - name: database
           mountPath: /var/lib/fleet-apiserver
         {{- if .Values.apiserver.resources }}
@@ -71,10 +68,6 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
       volumes:
-      - name: serving-cert
-        secret:
-          secretName: fleet-apiserver-cert
-          defaultMode: 420
       - name: database
         persistentVolumeClaim:
           claimName: fleet-apiserver-db

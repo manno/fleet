@@ -111,8 +111,6 @@ builds:
     main: ./cmd/fleetapiserver
     binary: fleetapiserver-{{ .Os }}-{{ .Arch }}{{ if .Arm }}64{{ end }}
     no_unique_dist_dir: true
-    env:
-      - CGO_ENABLED=1
     ldflags:
       - -w -s
       - -X github.com/rancher/fleet/pkg/version.GitCommit={{ .Commit }}

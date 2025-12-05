@@ -44,16 +44,19 @@ The SQLite database stores:
 ### Prerequisites
 
 - Go 1.24+
-- CGO enabled (required for SQLite)
+- **No CGO required** (uses pure Go SQLite implementation)
 
 ### Build Commands
 
 ```bash
-# Build the API server binary
-CGO_ENABLED=1 go build -o bin/fleetapiserver ./cmd/fleetapiserver
+# Build the API server binary (no CGO required)
+go build -o bin/fleetapiserver ./cmd/fleetapiserver
+
+# Cross-compile for Linux
+GOOS=linux GOARCH=amd64 go build -o bin/fleetapiserver-linux-amd64 ./cmd/fleetapiserver
 
 # Run tests
-CGO_ENABLED=1 go test -v ./internal/cmd/apiserver/storage/...
+go test -v ./internal/cmd/apiserver/storage/...
 ```
 
 ### Release Build
@@ -61,6 +64,8 @@ CGO_ENABLED=1 go test -v ./internal/cmd/apiserver/storage/...
 The API server is included in the GoReleaser configuration (`.goreleaser.yaml`) and will be built for:
 - linux/amd64
 - linux/arm64
+
+**Note**: Uses pure Go SQLite implementation (modernc.org/sqlite), no CGO required.
 
 ## Deployment
 

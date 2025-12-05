@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 // Database wraps the SQLite database connection
@@ -19,7 +19,7 @@ type Database struct {
 
 // NewDatabase creates a new database connection and initializes the schema
 func NewDatabase(dbPath string) (*Database, error) {
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s?_journal_mode=WAL", dbPath))
+	db, err := sql.Open("sqlite", fmt.Sprintf("%s?_pragma=journal_mode(WAL)", dbPath))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
