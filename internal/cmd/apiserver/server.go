@@ -17,8 +17,8 @@ import (
 	baseversion "k8s.io/component-base/version"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/internal/cmd/apiserver/storage"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	fleetopenapi "github.com/rancher/fleet/pkg/generated/openapi"
 )
 
@@ -73,10 +73,10 @@ func run(ctx context.Context, opts *FleetAPIServer) error {
 
 	// Create server config
 	serverConfig := genericapiserver.NewRecommendedConfig(Codecs)
-	
+
 	// Set the LoopbackClientConfig to use the detected kubeconfig
 	serverConfig.LoopbackClientConfig = kubeconfig
-	
+
 	// Setup OpenAPI configuration (required by Complete())
 	serverConfig.OpenAPIConfig = genericapiserver.DefaultOpenAPIConfig(
 		fleetopenapi.GetOpenAPIDefinitions,

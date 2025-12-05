@@ -28,13 +28,13 @@ type Watcher struct {
 }
 
 type watcherInstance struct {
-	id             int
-	namespace      string
+	id              int
+	namespace       string
 	resourceVersion int64
-	ch             chan watch.Event
-	ctx            context.Context
-	labelSelector  labels.Selector
-	fieldSelector  fields.Selector
+	ch              chan watch.Event
+	ctx             context.Context
+	labelSelector   labels.Selector
+	fieldSelector   fields.Selector
 }
 
 type watchEvent struct {
@@ -43,6 +43,7 @@ type watchEvent struct {
 	EventType       string
 	Namespace       string
 	Name            string
+	UID             sql.NullString
 	Timestamp       int64
 }
 
@@ -228,12 +229,12 @@ func (w *Watcher) poll() {
 
 // pollWatcher polls for events for a specific watcher
 func (w *Watcher) pollWatcher(wi *watcherInstance) {
-	query := `SELECT id, resource_version, event_type, namespace, name, timestamp 
+	query := `SELECT id, resource_version, event_type, namespace, name, uid, timestamp
 	          FROM watch_events WHERE resource_version > ? ORDER BY resource_version ASC LIMIT 100`
 
 	args := []interface{}{wi.resourceVersion}
 	if wi.namespace != "" {
-		query = `SELECT id, resource_version, event_type, namespace, name, timestamp 
+		query = `SELECT id, resource_version, event_type, namespace, name, uid, timestamp
 		         FROM watch_events WHERE resource_version > ? AND namespace = ? 
 		         ORDER BY resource_version ASC LIMIT 100`
 		args = append(args, wi.namespace)
@@ -247,7 +248,7 @@ func (w *Watcher) pollWatcher(wi *watcherInstance) {
 
 	for rows.Next() {
 		var event watchEvent
-		if err := rows.Scan(&event.ID, &event.ResourceVersion, &event.EventType, &event.Namespace, &event.Name, &event.Timestamp); err != nil {
+		if err := rows.Scan(&event.ID, &event.ResourceVersion, &event.EventType, &event.Namespace, &event.Name, &event.UID, &event.Timestamp); err != nil {
 			continue
 		}
 
@@ -275,6 +276,7 @@ func (w *Watcher) pollWatcher(wi *watcherInstance) {
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: event.Namespace,
 					Name:      event.Name,
+					UID:       types.UID(event.UID.String),
 				},
 				TypeMeta: metav1.TypeMeta{
 					Kind:       "BundleDeployment",
@@ -386,7 +388,7 @@ func (w *Watcher) getBundleDeployment(namespace, name string) (*storagev1alpha1.
 }
 
 // RecordEvent records a watch event in the database
-func (w *Watcher) RecordEvent(resourceVersion int64, eventType watch.EventType, namespace, name string) {
+func (w *Watcher) RecordEvent(resourceVersion int64, eventType watch.EventType, namespace, name string, uid types.UID) {
 	eventTypeStr := ""
 	switch eventType {
 	case watch.Added:
@@ -399,17 +401,17 @@ func (w *Watcher) RecordEvent(resourceVersion int64, eventType watch.EventType, 
 		return
 	}
 
-	query := `INSERT INTO watch_events (resource_version, event_type, namespace, name, timestamp) 
-	          VALUES (?, ?, ?, ?, ?)`
+	query := `INSERT INTO watch_events (resource_version, event_type, namespace, name, uid, timestamp) 
+	          VALUES (?, ?, ?, ?, ?, ?)`
 
-	_, err := w.db.DB().Exec(query, resourceVersion, eventTypeStr, namespace, name, time.Now().Unix())
+	_, err := w.db.DB().Exec(query, resourceVersion, eventTypeStr, namespace, name, string(uid), time.Now().Unix())
 	if err != nil {
 		// Log error but don't fail the operation
 		fmt.Printf("Failed to record watch event: %v\n", err)
 	}
 
 	// Clean up old watch events (keep last 10000)
-	go w.cleanupOldEvents()
+	w.cleanupOldEvents()
 }
 
 // cleanupOldEvents removes old watch events to prevent unbounded growth

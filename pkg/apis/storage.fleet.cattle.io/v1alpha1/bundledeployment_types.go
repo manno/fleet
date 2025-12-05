@@ -56,4 +56,3 @@ type BundleDeploymentList struct {
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []BundleDeployment `json:"items"`
 }
-

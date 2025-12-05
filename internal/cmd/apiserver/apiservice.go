@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/sirupsen/logrus"
-	apiregistrationv1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
+	apiregistrationv1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1"
 	"k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset"
 )
 
@@ -21,7 +21,7 @@ func configureAPIService(ctx context.Context, config *rest.Config, namespace, se
 	}
 
 	apiServiceName := "v1alpha1.storage.fleet.cattle.io"
-	
+
 	// Get the existing APIService (auto-created by Kubernetes for CRDs)
 	apiService, err := aggregatorClient.ApiregistrationV1().APIServices().Get(ctx, apiServiceName, metav1.GetOptions{})
 	if err != nil {
@@ -38,7 +38,7 @@ func configureAPIService(ctx context.Context, config *rest.Config, namespace, se
 		Name:      serviceName,
 	}
 	apiService.Spec.InsecureSkipTLSVerify = true
-	
+
 	// Remove the automanaged label so Kubernetes doesn't revert our changes
 	if apiService.Labels == nil {
 		apiService.Labels = make(map[string]string)

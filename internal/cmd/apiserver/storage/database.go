@@ -24,9 +24,10 @@ func NewDatabase(dbPath string) (*Database, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Configure connection pool
-	db.SetMaxOpenConns(1) // SQLite works best with a single connection
-	db.SetMaxIdleConns(1)
+	// Configure connection pool for WAL mode
+	// WAL mode allows multiple readers and one writer concurrently
+	db.SetMaxOpenConns(10) // Allow multiple readers in WAL mode
+	db.SetMaxIdleConns(2)
 
 	d := &Database{
 		db: db,
@@ -76,6 +77,7 @@ func (d *Database) initSchema() error {
 		event_type TEXT NOT NULL,
 		namespace TEXT NOT NULL,
 		name TEXT NOT NULL,
+		uid TEXT,
 		timestamp INTEGER NOT NULL
 	);
 

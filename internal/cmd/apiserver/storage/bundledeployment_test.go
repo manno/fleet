@@ -8,6 +8,7 @@ import (
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apiserver/pkg/endpoints/request"
 
 	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
@@ -74,13 +75,12 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 	}
 	defer storage.Destroy()
 
-	ctx := context.WithValue(context.Background(), "namespace", "test-namespace")
+	ctx := request.WithNamespace(context.Background(), "test-namespace")
 
 	// Test Create
 	bd := &storagev1alpha1.BundleDeployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test-bd",
-			Namespace: "test-namespace",
+			Name: "test-bd",
 			Labels: map[string]string{
 				"test": "label",
 			},
@@ -171,14 +171,13 @@ func TestBundleDeploymentListWithLabelSelector(t *testing.T) {
 	}
 	defer storage.Destroy()
 
-	ctx := context.WithValue(context.Background(), "namespace", "test-namespace")
+	ctx := request.WithNamespace(context.Background(), "test-namespace")
 
 	// Create multiple BundleDeployments with different labels
 	for i := 0; i < 3; i++ {
 		bd := &storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-bd-" + string(rune('a'+i)),
-				Namespace: "test-namespace",
+				Name: "test-bd-" + string(rune('a'+i)),
 				Labels: map[string]string{
 					"app": "test",
 				},
@@ -233,14 +232,13 @@ func TestDatabaseQueryAll(t *testing.T) {
 	}
 	defer storage.Destroy()
 
-	ctx := context.WithValue(context.Background(), "namespace", "test-namespace")
+	ctx := request.WithNamespace(context.Background(), "test-namespace")
 
 	// Create test BundleDeployments
 	for i := 0; i < 3; i++ {
 		bd := &storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "test-queryall-" + string(rune('a'+i)),
-				Namespace: "test-namespace",
+				Name: "test-queryall-" + string(rune('a'+i)),
 				Labels: map[string]string{
 					"test": "queryall",
 				},
@@ -290,4 +288,3 @@ func TestDatabaseQueryAll(t *testing.T) {
 		}
 	}
 }
-

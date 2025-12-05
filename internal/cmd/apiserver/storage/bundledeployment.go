@@ -16,6 +16,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 
 	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
@@ -23,7 +24,7 @@ import (
 
 // BundleDeploymentStorage implements rest.StandardStorage for BundleDeployment
 type BundleDeploymentStorage struct {
-	db *Database
+	db      *Database
 	watcher *Watcher
 }
 
@@ -77,9 +78,9 @@ func (s *BundleDeploymentStorage) NamespaceScoped() bool {
 
 // Get retrieves a BundleDeployment by namespace and name
 func (s *BundleDeploymentStorage) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
-	namespace := ""
-	if ns, ok := ctx.Value("namespace").(string); ok {
-		namespace = ns
+	namespace, ok := request.NamespaceFrom(ctx)
+	if !ok {
+		return nil, errors.NewBadRequest("namespace is required for a namespaced resource")
 	}
 
 	query := `SELECT namespace, name, resource_version, uid, creation_timestamp, deletion_timestamp, 
@@ -170,9 +171,11 @@ func (s *BundleDeploymentStorage) Get(ctx context.Context, name string, options 
 
 // List retrieves a list of BundleDeployments
 func (s *BundleDeploymentStorage) List(ctx context.Context, options *metainternalversion.ListOptions) (runtime.Object, error) {
-	namespace := ""
-	if ns, ok := ctx.Value("namespace").(string); ok {
-		namespace = ns
+	namespace, ok := request.NamespaceFrom(ctx)
+	if !ok {
+		// This should not happen for a namespaced resource.
+		// For a non-namespaced list, ok is false.
+		namespace = ""
 	}
 
 	query := `SELECT namespace, name, resource_version, uid, creation_timestamp, deletion_timestamp, 
@@ -290,13 +293,11 @@ func (s *BundleDeploymentStorage) Create(ctx context.Context, obj runtime.Object
 		return nil, fmt.Errorf("invalid object type")
 	}
 
-	namespace := bd.Namespace
-	if namespace == "" {
-		if ns, ok := ctx.Value("namespace").(string); ok {
-			namespace = ns
-			bd.Namespace = namespace
-		}
+	namespace, ok := request.NamespaceFrom(ctx)
+	if !ok {
+		return nil, errors.NewBadRequest("namespace is required for a namespaced resource")
 	}
+	bd.Namespace = namespace
 
 	// Generate UID if not present
 	if bd.UID == "" {
@@ -326,6 +327,20 @@ func (s *BundleDeploymentStorage) Create(ctx context.Context, obj runtime.Object
 	specJSON, _ := json.Marshal(bd.Spec)
 	statusJSON, _ := json.Marshal(bd.Status)
 
+	// Check if it already exists first
+	var existingCount int
+	checkQuery := `SELECT COUNT(*) FROM bundledeployments WHERE namespace = ? AND name = ?`
+	err = s.db.DB().QueryRowContext(ctx, checkQuery, bd.Namespace, bd.Name).Scan(&existingCount)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing bundledeployment: %w", err)
+	}
+
+	if existingCount > 0 {
+		return nil, errors.NewAlreadyExists(
+			schema.GroupResource{Group: "storage.fleet.cattle.io", Resource: "bundledeployments"},
+			bd.Name)
+	}
+
 	query := `INSERT INTO bundledeployments 
 	          (namespace, name, resource_version, uid, creation_timestamp, generation, 
 	           labels, annotations, finalizers, owner_references, spec, status) 
@@ -351,7 +366,7 @@ func (s *BundleDeploymentStorage) Create(ctx context.Context, obj runtime.Object
 	}
 
 	// Record watch event
-	s.watcher.RecordEvent(rv, watch.Added, namespace, bd.Name)
+	s.watcher.RecordEvent(rv, watch.Added, namespace, bd.Name, bd.UID)
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
@@ -441,7 +456,7 @@ func (s *BundleDeploymentStorage) Update(ctx context.Context, name string, objIn
 	}
 
 	// Record watch event
-	s.watcher.RecordEvent(rv, watch.Modified, bd.Namespace, bd.Name)
+	s.watcher.RecordEvent(rv, watch.Modified, bd.Namespace, bd.Name, bd.UID)
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
@@ -462,7 +477,10 @@ func (s *BundleDeploymentStorage) Delete(ctx context.Context, name string, delet
 	bd := existing.(*storagev1alpha1.BundleDeployment)
 
 	// Get namespace from context
-	namespace := bd.Namespace
+	namespace, ok := request.NamespaceFrom(ctx)
+	if !ok {
+		return nil, false, errors.NewBadRequest("namespace is required for a namespaced resource")
+	}
 
 	// Get next resource version
 	rv, err := s.db.NextResourceVersion()
@@ -478,7 +496,7 @@ func (s *BundleDeploymentStorage) Delete(ctx context.Context, name string, delet
 	}
 
 	// Record watch event
-	s.watcher.RecordEvent(rv, watch.Deleted, namespace, name)
+	s.watcher.RecordEvent(rv, watch.Deleted, namespace, name, bd.UID)
 
 	return bd, true, nil
 }
@@ -503,10 +521,7 @@ func (s *BundleDeploymentStorage) DeleteCollection(ctx context.Context, deleteVa
 
 // Watch watches for changes to BundleDeployments
 func (s *BundleDeploymentStorage) Watch(ctx context.Context, options *metainternalversion.ListOptions) (watch.Interface, error) {
-	namespace := ""
-	if ns, ok := ctx.Value("namespace").(string); ok {
-		namespace = ns
-	}
+	namespace, _ := request.NamespaceFrom(ctx)
 
 	rv := int64(0)
 	if options != nil && options.ResourceVersion != "" {
@@ -552,5 +567,3 @@ func (s *BundleDeploymentStatusStorage) Get(ctx context.Context, name string, op
 func (s *BundleDeploymentStatusStorage) Update(ctx context.Context, name string, objInfo rest.UpdatedObjectInfo, createValidation rest.ValidateObjectFunc, updateValidation rest.ValidateObjectUpdateFunc, forceAllowCreate bool, options *metav1.UpdateOptions) (runtime.Object, bool, error) {
 	return s.storage.Update(ctx, name, objInfo, createValidation, updateValidation, false, options)
 }
-
-

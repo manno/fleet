@@ -8,6 +8,7 @@ import (
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/apiserver/pkg/registry/rest"
 
 	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
@@ -21,7 +22,7 @@ var _ = Describe("API Server Storage Layer", func() {
 
 	BeforeEach(func() {
 		// Use the shared db and store from suite_test.go
-		testCtx = context.WithValue(context.Background(), "namespace", "test-namespace")
+		testCtx = request.WithNamespace(context.Background(), "test-namespace")
 	})
 
 	AfterEach(func() {
@@ -32,8 +33,8 @@ var _ = Describe("API Server Storage Layer", func() {
 		It("should create a BundleDeployment", func() {
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-bd",
-					Namespace: "test-namespace",
+					Name: "test-bd",
+					// Namespace is ignored, taken from context
 					Labels: map[string]string{
 						"test": "label",
 					},
@@ -61,8 +62,7 @@ var _ = Describe("API Server Storage Layer", func() {
 		It("should get a BundleDeployment", func() {
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-get",
-					Namespace: "test-namespace",
+					Name: "test-get",
 				},
 				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "get-test-id",
@@ -84,8 +84,7 @@ var _ = Describe("API Server Storage Layer", func() {
 		It("should update a BundleDeployment", func() {
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-update",
-					Namespace: "test-namespace",
+					Name: "test-update",
 				},
 				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "original-id",
@@ -110,8 +109,7 @@ var _ = Describe("API Server Storage Layer", func() {
 		It("should delete a BundleDeployment", func() {
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-delete",
-					Namespace: "test-namespace",
+					Name: "test-delete",
 				},
 				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "delete-test-id",
@@ -133,8 +131,7 @@ var _ = Describe("API Server Storage Layer", func() {
 			for i := 0; i < 3; i++ {
 				bd := &storagev1alpha1.BundleDeployment{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "test-list-" + string(rune('a'+i)),
-						Namespace: "test-namespace",
+						Name: "test-list-" + string(rune('a'+i)),
 						Labels: map[string]string{
 							"test": "list",
 						},
@@ -159,8 +156,7 @@ var _ = Describe("API Server Storage Layer", func() {
 			// Create BundleDeployments with different labels
 			bd1 := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-selector-1",
-					Namespace: "test-namespace",
+					Name: "test-selector-1",
 					Labels: map[string]string{
 						"env": "prod",
 					},
@@ -171,8 +167,7 @@ var _ = Describe("API Server Storage Layer", func() {
 
 			bd2 := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-selector-2",
-					Namespace: "test-namespace",
+					Name: "test-selector-2",
 					Labels: map[string]string{
 						"env": "dev",
 					},
@@ -202,8 +197,7 @@ var _ = Describe("API Server Storage Layer", func() {
 		It("should update status subresource", func() {
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-status",
-					Namespace: "test-namespace",
+					Name: "test-status",
 				},
 				Spec: fleetv1alpha1.BundleDeploymentSpec{
 					DeploymentID: "status-test-id",
@@ -248,8 +242,7 @@ var _ = Describe("API Server Storage Layer", func() {
 			// Create a test BundleDeployment
 			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-db-verification",
-					Namespace: "test-namespace",
+					Name: "test-db-verification",
 					Labels: map[string]string{
 						"test": "db-verification",
 					},
