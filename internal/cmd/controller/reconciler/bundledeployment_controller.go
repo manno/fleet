@@ -13,7 +13,6 @@ import (
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/util/retry"
@@ -151,7 +150,7 @@ func bundleDeploymentStatusChangedPredicate() predicate.Funcs {
 	}
 }
 
-func conditionToMessage(cond genericcondition.GenericCondition) string {
+func conditionToMessage(cond fleet.GenericCondition) string {
 	if cond.Reason == "Error" {
 		return "Error: " + cond.Message
 	}

@@ -12,7 +12,6 @@ import (
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/pkg/durations"
 	"github.com/rancher/fleet/pkg/sharding"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -206,7 +205,7 @@ func (r StatusReconciler) setReadyStatusFromBundle(ctx context.Context, gitrepo 
 
 	found := false
 	// Find a ready status condition in a bundle which is not ready.
-	var condition genericcondition.GenericCondition
+	var condition fleet.GenericCondition
 bundles:
 	for _, bundle := range bList.Items {
 		if bundle.Status.Conditions == nil {
@@ -228,7 +227,7 @@ bundles:
 	}
 
 	found = false
-	newConditions := make([]genericcondition.GenericCondition, 0, len(gitrepo.Status.Conditions))
+	newConditions := make([]fleet.GenericCondition, 0, len(gitrepo.Status.Conditions))
 	for _, c := range gitrepo.Status.Conditions {
 		if c.Type == string(fleet.Ready) {
 			// Replace the ready condition with the one from the bundle

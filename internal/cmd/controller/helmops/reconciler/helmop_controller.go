@@ -27,7 +27,6 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/go-logr/logr"
 	"github.com/rancher/wrangler/v3/pkg/condition"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	"github.com/reugn/go-quartz/quartz"
 
 	"github.com/rancher/fleet/internal/bundlereader"
@@ -444,7 +443,7 @@ func updateStatus(ctx context.Context, c client.Client, req types.NamespacedName
 		}
 
 		// only keep the Ready condition from live status, it's calculated by the status reconciler
-		conds := []genericcondition.GenericCondition{}
+		conds := []fleet.GenericCondition{}
 		for _, c := range t.Status.Conditions {
 			if c.Type == "Ready" {
 				conds = append(conds, c)

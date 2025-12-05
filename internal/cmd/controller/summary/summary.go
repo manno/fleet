@@ -7,10 +7,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 	fleet "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
 
 	"github.com/rancher/wrangler/v3/pkg/condition"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 )
 
 // IncrementState increments counters in the BundleSummary. We store up to 10 non ready resources in the summary, with the bundldedeployment's state.
@@ -116,7 +116,7 @@ func SetReadyConditions(obj interface{}, referencedKind string, summary fleet.Bu
 	c.Message(obj, msg)
 }
 
-func MessageFromCondition(conditionType string, conds []genericcondition.GenericCondition) string {
+func MessageFromCondition(conditionType string, conds []v1alpha1.GenericCondition) string {
 	for _, cond := range conds {
 		if cond.Type == conditionType {
 			return cond.Message

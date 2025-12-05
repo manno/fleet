@@ -24,7 +24,6 @@ import (
 	"github.com/rancher/fleet/pkg/sharding"
 
 	"github.com/rancher/wrangler/v3/pkg/condition"
-	"github.com/rancher/wrangler/v3/pkg/genericcondition"
 	"github.com/rancher/wrangler/v3/pkg/kstatus"
 
 	batchv1 "k8s.io/api/batch/v1"
@@ -782,7 +781,7 @@ func updateStatus(ctx context.Context, c client.Client, req types.NamespacedName
 		t.Status.UpdateGeneration = status.UpdateGeneration
 
 		// only keep the Ready condition from live status, it's calculated by the status reconciler
-		conds := []genericcondition.GenericCondition{}
+		conds := []v1alpha1.GenericCondition{}
 		for _, c := range t.Status.Conditions {
 			if c.Type == "Ready" {
 				conds = append(conds, c)
