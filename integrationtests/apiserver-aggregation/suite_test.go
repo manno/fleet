@@ -14,7 +14,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
-	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apiserver/pkg/endpoints/openapi"
 	"k8s.io/apiserver/pkg/registry/rest"
@@ -83,9 +82,6 @@ var _ = BeforeSuite(func() {
 	err = apiregistrationv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = apiextensionsv1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
-
 	err = fleetv1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -96,16 +92,6 @@ var _ = BeforeSuite(func() {
 	k8sclient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sclient).NotTo(BeNil())
-
-	// CRITICAL: Delete the storage.fleet.cattle.io CRD from envtest
-	// so that API aggregation takes precedence
-	// In production, this CRD should not exist in fleet-crd chart - only the APIService should be installed
-	GinkgoWriter.Println("🔧 Removing storage.fleet.cattle.io CRD to force API aggregation...")
-	GinkgoWriter.Println("   (In production, don't install this CRD - use APIService instead)")
-	err = removeCRD(ctx, k8sclient, "bundledeployments.storage.fleet.cattle.io")
-	Expect(err).NotTo(HaveOccurred())
-	GinkgoWriter.Println("✅ CRD removed, APIService will handle storage.fleet.cattle.io")
-
 
 	// Start our aggregated API server
 	aggregatedServer, err = startAggregatedAPIServer(ctx, tmpDir, cfg)
@@ -398,26 +384,4 @@ func isAPIServiceAvailable(ctx context.Context, k8sClient client.Client) bool {
 
 func intPtr(i int32) *int32 {
 	return &i
-}
-
-func removeCRD(ctx context.Context, k8sClient client.Client, crdName string) error {
-	// Delete the CRD
-	crd := &apiextensionsv1.CustomResourceDefinition{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: crdName,
-		},
-	}
-	
-	err := k8sClient.Delete(ctx, crd)
-	if client.IgnoreNotFound(err) != nil {
-		return fmt.Errorf("failed to delete CRD %s: %w", crdName, err)
-	}
-
-	// Wait for CRD to be fully removed
-	Eventually(func() bool {
-		err := k8sClient.Get(ctx, client.ObjectKey{Name: crdName}, crd)
-		return client.IgnoreNotFound(err) == nil
-	}, 30*time.Second, 1*time.Second).Should(BeTrue())
-
-	return nil
 }

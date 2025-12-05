@@ -35,7 +35,7 @@ This directory contains integration tests that verify the complete flow from k8s
 The test suite:
 
 1. **Starts envtest** with all Fleet CRDs
-2. **Removes the storage.fleet.cattle.io CRD** (simulates production where it shouldn't exist)
+2. **Verifies storage.fleet.cattle.io CRD does not exist** (generator excludes it)
 3. **Starts the aggregated API server** with SQLite backend
 4. **Creates APIService resource** to register the aggregated API
 5. **Shares the database instance** between test verification and API server
