@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
-	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 func TestDatabaseBasicOperations(t *testing.T) {
@@ -76,7 +76,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 	ctx := context.WithValue(context.Background(), "namespace", "test-namespace")
 
 	// Test Create
-	bd := &fleetv1alpha1.BundleDeployment{
+	bd := &storagev1alpha1.BundleDeployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test-bd",
 			Namespace: "test-namespace",
@@ -84,7 +84,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 				"test": "label",
 			},
 		},
-		Spec: fleetv1alpha1.BundleDeploymentSpec{
+		Spec: storagev1alpha1.BundleDeploymentSpec{
 			DeploymentID: "test-deployment-id",
 		},
 	}
@@ -94,7 +94,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 		t.Fatalf("Failed to create BundleDeployment: %v", err)
 	}
 
-	createdBD := created.(*fleetv1alpha1.BundleDeployment)
+	createdBD := created.(*storagev1alpha1.BundleDeployment)
 	if createdBD.Name != "test-bd" {
 		t.Errorf("Expected name 'test-bd', got '%s'", createdBD.Name)
 	}
@@ -111,7 +111,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 		t.Fatalf("Failed to get BundleDeployment: %v", err)
 	}
 
-	retrievedBD := retrieved.(*fleetv1alpha1.BundleDeployment)
+	retrievedBD := retrieved.(*storagev1alpha1.BundleDeployment)
 	if retrievedBD.Name != "test-bd" {
 		t.Errorf("Expected name 'test-bd', got '%s'", retrievedBD.Name)
 	}
@@ -125,7 +125,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 		t.Fatalf("Failed to list BundleDeployments: %v", err)
 	}
 
-	list := listResult.(*fleetv1alpha1.BundleDeploymentList)
+	list := listResult.(*storagev1alpha1.BundleDeploymentList)
 	if len(list.Items) != 1 {
 		t.Errorf("Expected 1 item in list, got %d", len(list.Items))
 	}
@@ -142,7 +142,7 @@ func TestBundleDeploymentCRUD(t *testing.T) {
 		t.Fatalf("Failed to list BundleDeployments after delete: %v", err)
 	}
 
-	list = listResult.(*fleetv1alpha1.BundleDeploymentList)
+	list = listResult.(*storagev1alpha1.BundleDeploymentList)
 	if len(list.Items) != 0 {
 		t.Errorf("Expected 0 items after delete, got %d", len(list.Items))
 	}
@@ -174,7 +174,7 @@ func TestBundleDeploymentListWithLabelSelector(t *testing.T) {
 
 	// Create multiple BundleDeployments with different labels
 	for i := 0; i < 3; i++ {
-		bd := &fleetv1alpha1.BundleDeployment{
+		bd := &storagev1alpha1.BundleDeployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test-bd-" + string(rune('a'+i)),
 				Namespace: "test-namespace",
@@ -204,7 +204,7 @@ func TestBundleDeploymentListWithLabelSelector(t *testing.T) {
 		t.Fatalf("Failed to list with selector: %v", err)
 	}
 
-	list := listResult.(*fleetv1alpha1.BundleDeploymentList)
+	list := listResult.(*storagev1alpha1.BundleDeploymentList)
 	if len(list.Items) != 1 {
 		t.Errorf("Expected 1 item with env=prod, got %d", len(list.Items))
 	}

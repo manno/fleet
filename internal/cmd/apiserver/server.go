@@ -17,7 +17,7 @@ import (
 	baseversion "k8s.io/component-base/version"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 	"github.com/rancher/fleet/internal/cmd/apiserver/storage"
 	fleetopenapi "github.com/rancher/fleet/pkg/generated/openapi"
 )
@@ -30,8 +30,8 @@ var (
 )
 
 func init() {
-	// Register the fleet types with the scheme
-	if err := fleetv1alpha1.AddToScheme(Scheme); err != nil {
+	// Register the storage.fleet.cattle.io types with the scheme
+	if err := storagev1alpha1.AddToScheme(Scheme); err != nil {
 		panic(err)
 	}
 	metav1.AddToGroupVersion(Scheme, schema.GroupVersion{Version: "v1"})
@@ -52,7 +52,7 @@ func run(ctx context.Context, opts *FleetAPIServer) error {
 	}
 
 	// Setup recommended options for API server
-	recommendedOptions := options.NewRecommendedOptions("", Codecs.LegacyCodec(fleetv1alpha1.SchemeGroupVersion))
+	recommendedOptions := options.NewRecommendedOptions("", Codecs.LegacyCodec(storagev1alpha1.SchemeGroupVersion))
 	recommendedOptions.SecureServing.BindPort = opts.SecurePort
 	recommendedOptions.SecureServing.ServerCert.CertDirectory = opts.CertDir
 	// Disable etcd since we're using SQLite
@@ -111,7 +111,7 @@ func run(ctx context.Context, opts *FleetAPIServer) error {
 	}
 
 	// Install the API group
-	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(fleetv1alpha1.SchemeGroupVersion.Group, Scheme, metav1.ParameterCodec, Codecs)
+	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(storagev1alpha1.SchemeGroupVersion.Group, Scheme, metav1.ParameterCodec, Codecs)
 
 	// Create storage map for v1alpha1 resources
 	v1alpha1Storage := map[string]rest.Storage{}

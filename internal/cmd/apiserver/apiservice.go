@@ -20,7 +20,7 @@ func configureAPIService(ctx context.Context, config *rest.Config, namespace, se
 		return fmt.Errorf("failed to create aggregator client: %w", err)
 	}
 
-	apiServiceName := "v1alpha1.fleet.cattle.io"
+	apiServiceName := "v1alpha1.storage.fleet.cattle.io"
 	
 	// Get the existing APIService (auto-created by Kubernetes for CRDs)
 	apiService, err := aggregatorClient.ApiregistrationV1().APIServices().Get(ctx, apiServiceName, metav1.GetOptions{})

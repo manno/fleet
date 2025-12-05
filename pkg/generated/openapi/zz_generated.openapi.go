@@ -29,164 +29,200 @@ import (
 
 func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenAPIDefinition {
 	return map[string]common.OpenAPIDefinition{
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AgentSchedulingCustomization":   schema_pkg_apis_fleetcattleio_v1alpha1_AgentSchedulingCustomization(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AgentStatus":                    schema_pkg_apis_fleetcattleio_v1alpha1_AgentStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AlphabeticalPolicy":             schema_pkg_apis_fleetcattleio_v1alpha1_AlphabeticalPolicy(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Bundle":                         schema_pkg_apis_fleetcattleio_v1alpha1_Bundle(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeployment":               schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeployment(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentDisplay":        schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentList":           schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentOptions":        schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentResource":       schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentResource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentSpec":           schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentStatus":         schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDisplay":                  schema_pkg_apis_fleetcattleio_v1alpha1_BundleDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleHelmOptions":              schema_pkg_apis_fleetcattleio_v1alpha1_BundleHelmOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleList":                     schema_pkg_apis_fleetcattleio_v1alpha1_BundleList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleNamespaceMapping":         schema_pkg_apis_fleetcattleio_v1alpha1_BundleNamespaceMapping(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleNamespaceMappingList":     schema_pkg_apis_fleetcattleio_v1alpha1_BundleNamespaceMappingList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundlePath":                     schema_pkg_apis_fleetcattleio_v1alpha1_BundlePath(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleRef":                      schema_pkg_apis_fleetcattleio_v1alpha1_BundleRef(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleResource":                 schema_pkg_apis_fleetcattleio_v1alpha1_BundleResource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleSpec":                     schema_pkg_apis_fleetcattleio_v1alpha1_BundleSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleStatus":                   schema_pkg_apis_fleetcattleio_v1alpha1_BundleStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleSummary":                  schema_pkg_apis_fleetcattleio_v1alpha1_BundleSummary(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleTarget":                   schema_pkg_apis_fleetcattleio_v1alpha1_BundleTarget(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleTargetRestriction":        schema_pkg_apis_fleetcattleio_v1alpha1_BundleTargetRestriction(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Cluster":                        schema_pkg_apis_fleetcattleio_v1alpha1_Cluster(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterDisplay":                 schema_pkg_apis_fleetcattleio_v1alpha1_ClusterDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroup":                   schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroup(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupDisplay":            schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupList":               schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupSpec":               schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupStatus":             schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterList":                    schema_pkg_apis_fleetcattleio_v1alpha1_ClusterList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistration":            schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistration(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationList":        schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationSpec":        schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationStatus":      schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationToken":       schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationToken(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenList":   schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenSpec":   schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenStatus": schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterSpec":                    schema_pkg_apis_fleetcattleio_v1alpha1_ClusterSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterStatus":                  schema_pkg_apis_fleetcattleio_v1alpha1_ClusterStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.CommitSpec":                     schema_pkg_apis_fleetcattleio_v1alpha1_CommitSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ComparePatch":                   schema_pkg_apis_fleetcattleio_v1alpha1_ComparePatch(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ConfigMapKeySelector":           schema_pkg_apis_fleetcattleio_v1alpha1_ConfigMapKeySelector(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Content":                        schema_pkg_apis_fleetcattleio_v1alpha1_Content(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ContentList":                    schema_pkg_apis_fleetcattleio_v1alpha1_ContentList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ContentStatus":                  schema_pkg_apis_fleetcattleio_v1alpha1_ContentStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.CorrectDrift":                   schema_pkg_apis_fleetcattleio_v1alpha1_CorrectDrift(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.DiffOptions":                    schema_pkg_apis_fleetcattleio_v1alpha1_DiffOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.DownstreamResource":             schema_pkg_apis_fleetcattleio_v1alpha1_DownstreamResource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.FleetYAML":                      schema_pkg_apis_fleetcattleio_v1alpha1_FleetYAML(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GenericCondition":               schema_pkg_apis_fleetcattleio_v1alpha1_GenericCondition(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GenericMap":                     schema_pkg_apis_fleetcattleio_v1alpha1_GenericMap(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitOpsBundleDeploymentOptions":  schema_pkg_apis_fleetcattleio_v1alpha1_GitOpsBundleDeploymentOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitOpsHelmOptions":              schema_pkg_apis_fleetcattleio_v1alpha1_GitOpsHelmOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepo":                        schema_pkg_apis_fleetcattleio_v1alpha1_GitRepo(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoDisplay":                 schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoList":                    schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoRestriction":             schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoRestriction(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoRestrictionList":         schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoRestrictionList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoSpec":                    schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoStatus":                  schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitTarget":                      schema_pkg_apis_fleetcattleio_v1alpha1_GitTarget(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOp":                         schema_pkg_apis_fleetcattleio_v1alpha1_HelmOp(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpList":                     schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpSpec":                     schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpStatus":                   schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOptions":                    schema_pkg_apis_fleetcattleio_v1alpha1_HelmOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.IgnoreOptions":                  schema_pkg_apis_fleetcattleio_v1alpha1_IgnoreOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImagePolicyChoice":              schema_pkg_apis_fleetcattleio_v1alpha1_ImagePolicyChoice(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScan":                      schema_pkg_apis_fleetcattleio_v1alpha1_ImageScan(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanList":                  schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanSpec":                  schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanStatus":                schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanYAML":                  schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanYAML(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.KustomizeOptions":               schema_pkg_apis_fleetcattleio_v1alpha1_KustomizeOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.LocalObjectReference":           schema_pkg_apis_fleetcattleio_v1alpha1_LocalObjectReference(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ModifiedStatus":                 schema_pkg_apis_fleetcattleio_v1alpha1_ModifiedStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.NonReadyResource":               schema_pkg_apis_fleetcattleio_v1alpha1_NonReadyResource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.NonReadyStatus":                 schema_pkg_apis_fleetcattleio_v1alpha1_NonReadyStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Operation":                      schema_pkg_apis_fleetcattleio_v1alpha1_Operation(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.OverwrittenResource":            schema_pkg_apis_fleetcattleio_v1alpha1_OverwrittenResource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Partition":                      schema_pkg_apis_fleetcattleio_v1alpha1_Partition(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PartitionStatus":                schema_pkg_apis_fleetcattleio_v1alpha1_PartitionStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PerClusterState":                schema_pkg_apis_fleetcattleio_v1alpha1_PerClusterState(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PodDisruptionBudgetSpec":        schema_pkg_apis_fleetcattleio_v1alpha1_PodDisruptionBudgetSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PriorityClassSpec":              schema_pkg_apis_fleetcattleio_v1alpha1_PriorityClassSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Resource":                       schema_pkg_apis_fleetcattleio_v1alpha1_Resource(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ResourceCounts":                 schema_pkg_apis_fleetcattleio_v1alpha1_ResourceCounts(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ResourceKey":                    schema_pkg_apis_fleetcattleio_v1alpha1_ResourceKey(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.RolloutStrategy":                schema_pkg_apis_fleetcattleio_v1alpha1_RolloutStrategy(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Schedule":                       schema_pkg_apis_fleetcattleio_v1alpha1_Schedule(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleList":                   schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleList(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleSpec":                   schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleSpec(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleStatus":                 schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleStatus(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleTarget":                 schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleTarget(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleTargets":                schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleTargets(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.SecretKeySelector":              schema_pkg_apis_fleetcattleio_v1alpha1_SecretKeySelector(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.SemVerPolicy":                   schema_pkg_apis_fleetcattleio_v1alpha1_SemVerPolicy(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.StatusBase":                     schema_pkg_apis_fleetcattleio_v1alpha1_StatusBase(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.StatusDisplay":                  schema_pkg_apis_fleetcattleio_v1alpha1_StatusDisplay(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ValuesFrom":                     schema_pkg_apis_fleetcattleio_v1alpha1_ValuesFrom(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.YAMLOptions":                    schema_pkg_apis_fleetcattleio_v1alpha1_YAMLOptions(ref),
-		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1/summary.Summary":                schema_apis_fleetcattleio_v1alpha1_summary_Summary(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroup":                                             schema_pkg_apis_meta_v1_APIGroup(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroupList":                                         schema_pkg_apis_meta_v1_APIGroupList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResource":                                          schema_pkg_apis_meta_v1_APIResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResourceList":                                      schema_pkg_apis_meta_v1_APIResourceList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.APIVersions":                                          schema_pkg_apis_meta_v1_APIVersions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ApplyOptions":                                         schema_pkg_apis_meta_v1_ApplyOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Condition":                                            schema_pkg_apis_meta_v1_Condition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.CreateOptions":                                        schema_pkg_apis_meta_v1_CreateOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.DeleteOptions":                                        schema_pkg_apis_meta_v1_DeleteOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Duration":                                             schema_pkg_apis_meta_v1_Duration(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldSelectorRequirement":                             schema_pkg_apis_meta_v1_FieldSelectorRequirement(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldsV1":                                             schema_pkg_apis_meta_v1_FieldsV1(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GetOptions":                                           schema_pkg_apis_meta_v1_GetOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupKind":                                            schema_pkg_apis_meta_v1_GroupKind(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupResource":                                        schema_pkg_apis_meta_v1_GroupResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersion":                                         schema_pkg_apis_meta_v1_GroupVersion(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionForDiscovery":                             schema_pkg_apis_meta_v1_GroupVersionForDiscovery(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionKind":                                     schema_pkg_apis_meta_v1_GroupVersionKind(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionResource":                                 schema_pkg_apis_meta_v1_GroupVersionResource(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.InternalEvent":                                        schema_pkg_apis_meta_v1_InternalEvent(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector":                                        schema_pkg_apis_meta_v1_LabelSelector(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelectorRequirement":                             schema_pkg_apis_meta_v1_LabelSelectorRequirement(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.List":                                                 schema_pkg_apis_meta_v1_List(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta":                                             schema_pkg_apis_meta_v1_ListMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ListOptions":                                          schema_pkg_apis_meta_v1_ListOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ManagedFieldsEntry":                                   schema_pkg_apis_meta_v1_ManagedFieldsEntry(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.MicroTime":                                            schema_pkg_apis_meta_v1_MicroTime(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta":                                           schema_pkg_apis_meta_v1_ObjectMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.OwnerReference":                                       schema_pkg_apis_meta_v1_OwnerReference(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadata":                                schema_pkg_apis_meta_v1_PartialObjectMetadata(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadataList":                            schema_pkg_apis_meta_v1_PartialObjectMetadataList(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Patch":                                                schema_pkg_apis_meta_v1_Patch(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.PatchOptions":                                         schema_pkg_apis_meta_v1_PatchOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Preconditions":                                        schema_pkg_apis_meta_v1_Preconditions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.RootPaths":                                            schema_pkg_apis_meta_v1_RootPaths(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.ServerAddressByClientCIDR":                            schema_pkg_apis_meta_v1_ServerAddressByClientCIDR(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Status":                                               schema_pkg_apis_meta_v1_Status(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusCause":                                          schema_pkg_apis_meta_v1_StatusCause(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusDetails":                                        schema_pkg_apis_meta_v1_StatusDetails(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Table":                                                schema_pkg_apis_meta_v1_Table(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableColumnDefinition":                                schema_pkg_apis_meta_v1_TableColumnDefinition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableOptions":                                         schema_pkg_apis_meta_v1_TableOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRow":                                             schema_pkg_apis_meta_v1_TableRow(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRowCondition":                                    schema_pkg_apis_meta_v1_TableRowCondition(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Time":                                                 schema_pkg_apis_meta_v1_Time(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp":                                            schema_pkg_apis_meta_v1_Timestamp(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.TypeMeta":                                             schema_pkg_apis_meta_v1_TypeMeta(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.UpdateOptions":                                        schema_pkg_apis_meta_v1_UpdateOptions(ref),
-		"k8s.io/apimachinery/pkg/apis/meta/v1.WatchEvent":                                           schema_pkg_apis_meta_v1_WatchEvent(ref),
-		"k8s.io/apimachinery/pkg/runtime.RawExtension":                                              schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
-		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                                                  schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
-		"k8s.io/apimachinery/pkg/runtime.Unknown":                                                   schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
-		"k8s.io/apimachinery/pkg/version.Info":                                                      schema_k8sio_apimachinery_pkg_version_Info(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AgentSchedulingCustomization":          schema_pkg_apis_fleetcattleio_v1alpha1_AgentSchedulingCustomization(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AgentStatus":                           schema_pkg_apis_fleetcattleio_v1alpha1_AgentStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.AlphabeticalPolicy":                    schema_pkg_apis_fleetcattleio_v1alpha1_AlphabeticalPolicy(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Bundle":                                schema_pkg_apis_fleetcattleio_v1alpha1_Bundle(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeployment":                      schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeployment(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentDisplay":               schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentList":                  schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentOptions":               schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentResource":              schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentResource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentSpec":                  schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDeploymentStatus":                schema_pkg_apis_fleetcattleio_v1alpha1_BundleDeploymentStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleDisplay":                         schema_pkg_apis_fleetcattleio_v1alpha1_BundleDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleHelmOptions":                     schema_pkg_apis_fleetcattleio_v1alpha1_BundleHelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleList":                            schema_pkg_apis_fleetcattleio_v1alpha1_BundleList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleNamespaceMapping":                schema_pkg_apis_fleetcattleio_v1alpha1_BundleNamespaceMapping(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleNamespaceMappingList":            schema_pkg_apis_fleetcattleio_v1alpha1_BundleNamespaceMappingList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundlePath":                            schema_pkg_apis_fleetcattleio_v1alpha1_BundlePath(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleRef":                             schema_pkg_apis_fleetcattleio_v1alpha1_BundleRef(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleResource":                        schema_pkg_apis_fleetcattleio_v1alpha1_BundleResource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleSpec":                            schema_pkg_apis_fleetcattleio_v1alpha1_BundleSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleStatus":                          schema_pkg_apis_fleetcattleio_v1alpha1_BundleStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleSummary":                         schema_pkg_apis_fleetcattleio_v1alpha1_BundleSummary(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleTarget":                          schema_pkg_apis_fleetcattleio_v1alpha1_BundleTarget(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.BundleTargetRestriction":               schema_pkg_apis_fleetcattleio_v1alpha1_BundleTargetRestriction(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Cluster":                               schema_pkg_apis_fleetcattleio_v1alpha1_Cluster(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterDisplay":                        schema_pkg_apis_fleetcattleio_v1alpha1_ClusterDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroup":                          schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroup(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupDisplay":                   schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupList":                      schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupSpec":                      schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterGroupStatus":                    schema_pkg_apis_fleetcattleio_v1alpha1_ClusterGroupStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterList":                           schema_pkg_apis_fleetcattleio_v1alpha1_ClusterList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistration":                   schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistration(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationList":               schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationSpec":               schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationStatus":             schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationToken":              schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationToken(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenList":          schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenSpec":          schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterRegistrationTokenStatus":        schema_pkg_apis_fleetcattleio_v1alpha1_ClusterRegistrationTokenStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterSpec":                           schema_pkg_apis_fleetcattleio_v1alpha1_ClusterSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ClusterStatus":                         schema_pkg_apis_fleetcattleio_v1alpha1_ClusterStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.CommitSpec":                            schema_pkg_apis_fleetcattleio_v1alpha1_CommitSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ComparePatch":                          schema_pkg_apis_fleetcattleio_v1alpha1_ComparePatch(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ConfigMapKeySelector":                  schema_pkg_apis_fleetcattleio_v1alpha1_ConfigMapKeySelector(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Content":                               schema_pkg_apis_fleetcattleio_v1alpha1_Content(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ContentList":                           schema_pkg_apis_fleetcattleio_v1alpha1_ContentList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ContentStatus":                         schema_pkg_apis_fleetcattleio_v1alpha1_ContentStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.CorrectDrift":                          schema_pkg_apis_fleetcattleio_v1alpha1_CorrectDrift(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.DiffOptions":                           schema_pkg_apis_fleetcattleio_v1alpha1_DiffOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.DownstreamResource":                    schema_pkg_apis_fleetcattleio_v1alpha1_DownstreamResource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.FleetYAML":                             schema_pkg_apis_fleetcattleio_v1alpha1_FleetYAML(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GenericCondition":                      schema_pkg_apis_fleetcattleio_v1alpha1_GenericCondition(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GenericMap":                            schema_pkg_apis_fleetcattleio_v1alpha1_GenericMap(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitOpsBundleDeploymentOptions":         schema_pkg_apis_fleetcattleio_v1alpha1_GitOpsBundleDeploymentOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitOpsHelmOptions":                     schema_pkg_apis_fleetcattleio_v1alpha1_GitOpsHelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepo":                               schema_pkg_apis_fleetcattleio_v1alpha1_GitRepo(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoDisplay":                        schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoList":                           schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoRestriction":                    schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoRestriction(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoRestrictionList":                schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoRestrictionList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoSpec":                           schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitRepoStatus":                         schema_pkg_apis_fleetcattleio_v1alpha1_GitRepoStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.GitTarget":                             schema_pkg_apis_fleetcattleio_v1alpha1_GitTarget(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOp":                                schema_pkg_apis_fleetcattleio_v1alpha1_HelmOp(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpList":                            schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpSpec":                            schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOpStatus":                          schema_pkg_apis_fleetcattleio_v1alpha1_HelmOpStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.HelmOptions":                           schema_pkg_apis_fleetcattleio_v1alpha1_HelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.IgnoreOptions":                         schema_pkg_apis_fleetcattleio_v1alpha1_IgnoreOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImagePolicyChoice":                     schema_pkg_apis_fleetcattleio_v1alpha1_ImagePolicyChoice(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScan":                             schema_pkg_apis_fleetcattleio_v1alpha1_ImageScan(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanList":                         schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanSpec":                         schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanStatus":                       schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ImageScanYAML":                         schema_pkg_apis_fleetcattleio_v1alpha1_ImageScanYAML(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.KustomizeOptions":                      schema_pkg_apis_fleetcattleio_v1alpha1_KustomizeOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.LocalObjectReference":                  schema_pkg_apis_fleetcattleio_v1alpha1_LocalObjectReference(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ModifiedStatus":                        schema_pkg_apis_fleetcattleio_v1alpha1_ModifiedStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.NonReadyResource":                      schema_pkg_apis_fleetcattleio_v1alpha1_NonReadyResource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.NonReadyStatus":                        schema_pkg_apis_fleetcattleio_v1alpha1_NonReadyStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Operation":                             schema_pkg_apis_fleetcattleio_v1alpha1_Operation(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.OverwrittenResource":                   schema_pkg_apis_fleetcattleio_v1alpha1_OverwrittenResource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Partition":                             schema_pkg_apis_fleetcattleio_v1alpha1_Partition(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PartitionStatus":                       schema_pkg_apis_fleetcattleio_v1alpha1_PartitionStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PerClusterState":                       schema_pkg_apis_fleetcattleio_v1alpha1_PerClusterState(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PodDisruptionBudgetSpec":               schema_pkg_apis_fleetcattleio_v1alpha1_PodDisruptionBudgetSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.PriorityClassSpec":                     schema_pkg_apis_fleetcattleio_v1alpha1_PriorityClassSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Resource":                              schema_pkg_apis_fleetcattleio_v1alpha1_Resource(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ResourceCounts":                        schema_pkg_apis_fleetcattleio_v1alpha1_ResourceCounts(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ResourceKey":                           schema_pkg_apis_fleetcattleio_v1alpha1_ResourceKey(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.RolloutStrategy":                       schema_pkg_apis_fleetcattleio_v1alpha1_RolloutStrategy(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.Schedule":                              schema_pkg_apis_fleetcattleio_v1alpha1_Schedule(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleList":                          schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleList(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleSpec":                          schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleStatus":                        schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleTarget":                        schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleTarget(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ScheduleTargets":                       schema_pkg_apis_fleetcattleio_v1alpha1_ScheduleTargets(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.SecretKeySelector":                     schema_pkg_apis_fleetcattleio_v1alpha1_SecretKeySelector(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.SemVerPolicy":                          schema_pkg_apis_fleetcattleio_v1alpha1_SemVerPolicy(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.StatusBase":                            schema_pkg_apis_fleetcattleio_v1alpha1_StatusBase(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.StatusDisplay":                         schema_pkg_apis_fleetcattleio_v1alpha1_StatusDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.ValuesFrom":                            schema_pkg_apis_fleetcattleio_v1alpha1_ValuesFrom(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1.YAMLOptions":                           schema_pkg_apis_fleetcattleio_v1alpha1_YAMLOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1/summary.Summary":                       schema_apis_fleetcattleio_v1alpha1_summary_Summary(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeployment":              schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeployment(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentDisplay":       schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentList":          schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentList(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentOptions":       schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentResource":      schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentResource(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentSpec":          schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentSpec(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentStatus":        schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleHelmOptions":             schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleHelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleRef":                     schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleRef(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleSummary":                 schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleSummary(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ComparePatch":                  schema_pkg_apis_storagefleetcattleio_v1alpha1_ComparePatch(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ConfigMapKeySelector":          schema_pkg_apis_storagefleetcattleio_v1alpha1_ConfigMapKeySelector(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.CorrectDrift":                  schema_pkg_apis_storagefleetcattleio_v1alpha1_CorrectDrift(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DiffOptions":                   schema_pkg_apis_storagefleetcattleio_v1alpha1_DiffOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DownstreamResource":            schema_pkg_apis_storagefleetcattleio_v1alpha1_DownstreamResource(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericCondition":              schema_pkg_apis_storagefleetcattleio_v1alpha1_GenericCondition(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericMap":                    schema_pkg_apis_storagefleetcattleio_v1alpha1_GenericMap(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GitOpsBundleDeploymentOptions": schema_pkg_apis_storagefleetcattleio_v1alpha1_GitOpsBundleDeploymentOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GitOpsHelmOptions":             schema_pkg_apis_storagefleetcattleio_v1alpha1_GitOpsHelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.HelmOptions":                   schema_pkg_apis_storagefleetcattleio_v1alpha1_HelmOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.IgnoreOptions":                 schema_pkg_apis_storagefleetcattleio_v1alpha1_IgnoreOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.KustomizeOptions":              schema_pkg_apis_storagefleetcattleio_v1alpha1_KustomizeOptions(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.LocalObjectReference":          schema_pkg_apis_storagefleetcattleio_v1alpha1_LocalObjectReference(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ModifiedStatus":                schema_pkg_apis_storagefleetcattleio_v1alpha1_ModifiedStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyResource":              schema_pkg_apis_storagefleetcattleio_v1alpha1_NonReadyResource(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyStatus":                schema_pkg_apis_storagefleetcattleio_v1alpha1_NonReadyStatus(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Operation":                     schema_pkg_apis_storagefleetcattleio_v1alpha1_Operation(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.OverwrittenResource":           schema_pkg_apis_storagefleetcattleio_v1alpha1_OverwrittenResource(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.PerClusterState":               schema_pkg_apis_storagefleetcattleio_v1alpha1_PerClusterState(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Resource":                      schema_pkg_apis_storagefleetcattleio_v1alpha1_Resource(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts":                schema_pkg_apis_storagefleetcattleio_v1alpha1_ResourceCounts(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.SecretKeySelector":             schema_pkg_apis_storagefleetcattleio_v1alpha1_SecretKeySelector(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.StatusBase":                    schema_pkg_apis_storagefleetcattleio_v1alpha1_StatusBase(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.StatusDisplay":                 schema_pkg_apis_storagefleetcattleio_v1alpha1_StatusDisplay(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ValuesFrom":                    schema_pkg_apis_storagefleetcattleio_v1alpha1_ValuesFrom(ref),
+		"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions":                   schema_pkg_apis_storagefleetcattleio_v1alpha1_YAMLOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroup":                                                    schema_pkg_apis_meta_v1_APIGroup(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIGroupList":                                                schema_pkg_apis_meta_v1_APIGroupList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResource":                                                 schema_pkg_apis_meta_v1_APIResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIResourceList":                                             schema_pkg_apis_meta_v1_APIResourceList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.APIVersions":                                                 schema_pkg_apis_meta_v1_APIVersions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ApplyOptions":                                                schema_pkg_apis_meta_v1_ApplyOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Condition":                                                   schema_pkg_apis_meta_v1_Condition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.CreateOptions":                                               schema_pkg_apis_meta_v1_CreateOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.DeleteOptions":                                               schema_pkg_apis_meta_v1_DeleteOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Duration":                                                    schema_pkg_apis_meta_v1_Duration(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldSelectorRequirement":                                    schema_pkg_apis_meta_v1_FieldSelectorRequirement(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.FieldsV1":                                                    schema_pkg_apis_meta_v1_FieldsV1(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GetOptions":                                                  schema_pkg_apis_meta_v1_GetOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupKind":                                                   schema_pkg_apis_meta_v1_GroupKind(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupResource":                                               schema_pkg_apis_meta_v1_GroupResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersion":                                                schema_pkg_apis_meta_v1_GroupVersion(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionForDiscovery":                                    schema_pkg_apis_meta_v1_GroupVersionForDiscovery(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionKind":                                            schema_pkg_apis_meta_v1_GroupVersionKind(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.GroupVersionResource":                                        schema_pkg_apis_meta_v1_GroupVersionResource(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.InternalEvent":                                               schema_pkg_apis_meta_v1_InternalEvent(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector":                                               schema_pkg_apis_meta_v1_LabelSelector(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelectorRequirement":                                    schema_pkg_apis_meta_v1_LabelSelectorRequirement(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.List":                                                        schema_pkg_apis_meta_v1_List(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta":                                                    schema_pkg_apis_meta_v1_ListMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ListOptions":                                                 schema_pkg_apis_meta_v1_ListOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ManagedFieldsEntry":                                          schema_pkg_apis_meta_v1_ManagedFieldsEntry(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.MicroTime":                                                   schema_pkg_apis_meta_v1_MicroTime(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta":                                                  schema_pkg_apis_meta_v1_ObjectMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.OwnerReference":                                              schema_pkg_apis_meta_v1_OwnerReference(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadata":                                       schema_pkg_apis_meta_v1_PartialObjectMetadata(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PartialObjectMetadataList":                                   schema_pkg_apis_meta_v1_PartialObjectMetadataList(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Patch":                                                       schema_pkg_apis_meta_v1_Patch(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.PatchOptions":                                                schema_pkg_apis_meta_v1_PatchOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Preconditions":                                               schema_pkg_apis_meta_v1_Preconditions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.RootPaths":                                                   schema_pkg_apis_meta_v1_RootPaths(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.ServerAddressByClientCIDR":                                   schema_pkg_apis_meta_v1_ServerAddressByClientCIDR(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Status":                                                      schema_pkg_apis_meta_v1_Status(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusCause":                                                 schema_pkg_apis_meta_v1_StatusCause(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.StatusDetails":                                               schema_pkg_apis_meta_v1_StatusDetails(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Table":                                                       schema_pkg_apis_meta_v1_Table(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableColumnDefinition":                                       schema_pkg_apis_meta_v1_TableColumnDefinition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableOptions":                                                schema_pkg_apis_meta_v1_TableOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRow":                                                    schema_pkg_apis_meta_v1_TableRow(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TableRowCondition":                                           schema_pkg_apis_meta_v1_TableRowCondition(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Time":                                                        schema_pkg_apis_meta_v1_Time(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.Timestamp":                                                   schema_pkg_apis_meta_v1_Timestamp(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.TypeMeta":                                                    schema_pkg_apis_meta_v1_TypeMeta(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.UpdateOptions":                                               schema_pkg_apis_meta_v1_UpdateOptions(ref),
+		"k8s.io/apimachinery/pkg/apis/meta/v1.WatchEvent":                                                  schema_pkg_apis_meta_v1_WatchEvent(ref),
+		"k8s.io/apimachinery/pkg/runtime.RawExtension":                                                     schema_k8sio_apimachinery_pkg_runtime_RawExtension(ref),
+		"k8s.io/apimachinery/pkg/runtime.TypeMeta":                                                         schema_k8sio_apimachinery_pkg_runtime_TypeMeta(ref),
+		"k8s.io/apimachinery/pkg/runtime.Unknown":                                                          schema_k8sio_apimachinery_pkg_runtime_Unknown(ref),
+		"k8s.io/apimachinery/pkg/version.Info":                                                             schema_k8sio_apimachinery_pkg_version_Info(ref),
 	}
 }
 
@@ -6438,6 +6474,2023 @@ func schema_apis_fleetcattleio_v1alpha1_summary_Summary(ref common.ReferenceCall
 					"message": {
 						SchemaProps: spec.SchemaProps{
 							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeployment(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleDeployment is used internally by Fleet and should not be used directly. When a Bundle is deployed to a cluster an instance of a Bundle is called a BundleDeployment. A BundleDeployment represents the state of that Bundle on a specific cluster with its cluster-specific customizations. The Fleet agent is only aware of BundleDeployment resources that are created for the cluster the agent is managing.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentStatus"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentSpec", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentStatus", "k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentDisplay(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"deployed": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"monitored": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"state": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleDeploymentList contains a list of BundleDeployment",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeployment"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeployment", "k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"yaml": {
+						SchemaProps: spec.SchemaProps{
+							Description: "YAML options, if using raw YAML these are names that map to overlays/{name} files that will be used to replace or patch a resource.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions"),
+						},
+					},
+					"kustomize": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kustomize options for the deployment, like the dir containing the kustomization.yaml file.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.KustomizeOptions"),
+						},
+					},
+					"defaultNamespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DefaultNamespace is the namespace to use for resources that do not specify a namespace. This field is not used to enforce or lock down the deployment to a specific namespace.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetNamespace if present will assign all resource to this namespace and if any cluster scoped resource exists the deployment will fail.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"helm": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Helm options for the deployment, like the chart name, repo and values.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.HelmOptions"),
+						},
+					},
+					"serviceAccount": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ServiceAccount which will be used to perform this deployment.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"forceSyncGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ForceSyncGeneration is used to force a redeployment",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"diff": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Diff can be used to ignore the modified state of objects which are amended at runtime.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DiffOptions"),
+						},
+					},
+					"keepResources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "KeepResources can be used to keep the deployed resources when removing the bundle",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"deleteNamespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeleteNamespace can be used to delete the deployed namespace when removing the bundle",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"ignore": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IgnoreOptions can be used to ignore fields when monitoring the bundle.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.IgnoreOptions"),
+						},
+					},
+					"correctDrift": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CorrectDrift specifies how drift correction should work.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.CorrectDrift"),
+						},
+					},
+					"namespaceLabels": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NamespaceLabels are labels that will be appended to the namespace created by Fleet.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"namespaceAnnotations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NamespaceAnnotations are annotations that will be appended to the namespace created by Fleet.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"deleteCRDResources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeleteCRDResources deletes CRDs. Warning! this will also delete all your Custom Resources.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"downstreamResources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DownstreamResources points to resources to be copied into downstream clusters, from the bundle's namespace.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DownstreamResource"),
+									},
+								},
+							},
+						},
+					},
+					"overwrites": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Overwrites indicates which resources, if any, come from this bundle and overwrite another existing bundle. This flag is set internally by Fleet, and should not be altered by users.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.OverwrittenResource"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.CorrectDrift", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DiffOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.DownstreamResource", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.HelmOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.IgnoreOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.KustomizeOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.OverwrittenResource", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentResource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleDeploymentResource contains the metadata of a deployed resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"createdAt": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"paused": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Paused if set to true, will stop any BundleDeployments from being updated. If true, BundleDeployments will be marked as out of sync when changes are detected.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"stagedOptions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "StagedOptions are the deployment options, that are staged for the next deployment.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentOptions"),
+						},
+					},
+					"stagedDeploymentID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "StagedDeploymentID is the ID of the staged deployment.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"options": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Options are the deployment options, that are currently applied.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentOptions"),
+						},
+					},
+					"deploymentID": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DeploymentID is the ID of the currently applied deployment.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"dependsOn": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DependsOn refers to the bundles which must be ready before this bundle can be deployed.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleRef"),
+									},
+								},
+							},
+						},
+					},
+					"correctDrift": {
+						SchemaProps: spec.SchemaProps{
+							Description: "CorrectDrift specifies how drift correction should work.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.CorrectDrift"),
+						},
+					},
+					"ociContents": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OCIContents is true when this deployment's contents is stored in an oci registry",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"helmChartOptions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "HelmChartOptions is not nil and has the helm chart config details when contents should be downloaded from a helm chart",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleHelmOptions"),
+						},
+					},
+					"valuesHash": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValuesHash is the hash of the values used to deploy the bundle.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"offSchedule": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OffSchedule specifies if the BundleDeployment can be updated. If set to true, will stop any BundleDeployments from being updated. If true, BundleDeployments will be marked as out of sync when changes are detected.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleHelmOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleRef", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.CorrectDrift"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleDeploymentStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericCondition"),
+									},
+								},
+							},
+						},
+					},
+					"appliedDeploymentID": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"release": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Release is the Helm release ID",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"nonModified": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"nonReadyStatus": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyStatus"),
+									},
+								},
+							},
+						},
+					},
+					"modifiedStatus": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ModifiedStatus"),
+									},
+								},
+							},
+						},
+					},
+					"incompleteState": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IncompleteState is true if there are more than 10 non-ready or modified resources, meaning that the lists in those fields have been truncated.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"display": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentDisplay"),
+						},
+					},
+					"syncGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"integer"},
+							Format: "int64",
+						},
+					},
+					"resources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources lists the metadata of resources that were deployed according to the helm release history.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentResource"),
+									},
+								},
+							},
+						},
+					},
+					"resourceCounts": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceCounts contains the number of resources in each state.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentDisplay", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleDeploymentResource", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericCondition", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ModifiedStatus", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyStatus", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleHelmOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleHelmOptions contains helm options for downloading a bundle from a helm repository.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"helmOpSecretName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SecretName stores the secret name for storing credentials when accessing a remote helm repository defined in a HelmOp resource",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"helmOpInsecureSkipTLSVerify": {
+						SchemaProps: spec.SchemaProps{
+							Description: "InsecureSkipTLSverify will use insecure HTTPS to clone the helm app resource.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleRef(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleRef is a reference to a bundle.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the bundle.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"selector": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Selector matching bundle's labels.",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.LabelSelector"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_BundleSummary(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "BundleSummary contains the summary of a bundle.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"notReady": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NotReady is the number of bundle deployments that are not ready.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"waitApplied": {
+						SchemaProps: spec.SchemaProps{
+							Description: "WaitApplied is the number of bundle deployments that are waiting to be applied.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"errApplied": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ErrApplied is the number of bundle deployments that errored during applying.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"outOfSync": {
+						SchemaProps: spec.SchemaProps{
+							Description: "OutOfSync is the number of bundle deployments that are out of sync.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"modified": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Modified is the number of bundle deployments that have been modified.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Ready is the number of bundle deployments that are ready.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"pending": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Pending is the number of bundle deployments that are pending.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"desiredReady": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DesiredReady is the number of bundle deployments that should be ready.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"nonReadyResources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NonReadyResources contains a list of non-ready resources per bundle deployment.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyResource"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyResource"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_ComparePatch(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ComparePatch matches a resource and removes fields from the check for modifications.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is the kind of the resource to match.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion is the apiVersion of the resource to match.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace is the namespace of the resource to match.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the resource to match.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"operations": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Operations remove a JSON path from the resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Operation"),
+									},
+								},
+							},
+						},
+					},
+					"jsonPointers": {
+						SchemaProps: spec.SchemaProps{
+							Description: "JSONPointers ignore diffs at a certain JSON path.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Operation"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_ConfigMapKeySelector(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of a resource in the same namespace as the referent.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_CorrectDrift(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "CorrectDrift specifies how drift correction should work.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"enabled": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Enabled correct drift if true.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"force": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Force helm rollback with --force option will be used if true. This will try to recreate all resources in the release.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"keepFailHistory": {
+						SchemaProps: spec.SchemaProps{
+							Description: "KeepFailHistory keeps track of failed rollbacks in the helm history.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_DiffOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"comparePatches": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ComparePatches match a resource and remove fields, or the resource itself from the check for modifications.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ComparePatch"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ComparePatch"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_DownstreamResource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "DownstreamResource contains identifiers for a resource to be copied from the parent bundle's namespace to each downstream cluster.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_GenericCondition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GenericCondition is a copy of wrangler's GenericCondition to avoid external dependencies in OpenAPI generation. This allows the Fleet API server to generate complete OpenAPI definitions without requiring the wrangler package to have openapi-gen markers.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type of condition.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status of the condition, one of True, False, Unknown.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastUpdateTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The last time this condition was updated.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Last time the condition transitioned from one status to another.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reason for the condition's last transition.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Human-readable message indicating details about last transition",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"type", "status"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_GenericMap(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_GitOpsBundleDeploymentOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GitOpsBundleDeploymentOptions contains options which only make sense for GitOps",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"yaml": {
+						SchemaProps: spec.SchemaProps{
+							Description: "YAML options, if using raw YAML these are names that map to overlays/{name} files that will be used to replace or patch a resource.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions"),
+						},
+					},
+					"kustomize": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kustomize options for the deployment, like the dir containing the kustomization.yaml file.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.KustomizeOptions"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.KustomizeOptions", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.YAMLOptions"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_GitOpsHelmOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GitOpsHelmOptions contains Helm options which only make sense for GitOps.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"valuesFiles": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValuesFiles is a list of files to load values from.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_HelmOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "HelmOptions for the deployment. For Helm-based bundles, all options can be used, otherwise some options are ignored. For example ReleaseName works with all bundle types.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"valuesFiles": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValuesFiles is a list of files to load values from.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"chart": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Chart can refer to any go-getter URL or OCI registry based helm chart URL. The chart will be downloaded.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"repo": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Repo is the name of the HTTPS helm repo to download the chart from.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"releaseName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ReleaseName sets a custom release name to deploy the chart as. If not specified a release name will be generated by combining the invoking GitRepo.name + GitRepo.path.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"version": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Version of the chart to download",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"timeoutSeconds": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TimeoutSeconds is the time to wait for Helm operations.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"values": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Values passed to Helm. It is possible to specify the keys and values as go template strings.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericMap"),
+						},
+					},
+					"templateValues": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Template Values passed to Helm. It is possible to specify the keys and values as go template strings. Unlike .values, content of each key will be templated first, before serializing to yaml. This allows to template complex values, like ranges and maps. templateValues keys have precedence over values keys in case of conflict.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"valuesFrom": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ValuesFrom loads the values from configmaps and secrets.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ValuesFrom"),
+									},
+								},
+							},
+						},
+					},
+					"force": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Force allows to override immutable resources. This could be dangerous.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"takeOwnership": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TakeOwnership makes helm skip the check for its own annotations",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"maxHistory": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MaxHistory limits the maximum number of revisions saved per release by Helm.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"waitForJobs": {
+						SchemaProps: spec.SchemaProps{
+							Description: "WaitForJobs if set and timeoutSeconds provided, will wait until all Jobs have been completed before marking the GitRepo as ready. It will wait for as long as timeoutSeconds",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"atomic": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Atomic sets the --atomic flag when Helm is performing an upgrade",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"disablePreProcess": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DisablePreProcess disables template processing in values",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"disableDNS": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DisableDNS can be used to customize Helm's EnableDNS option, which Fleet sets to `true` by default.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"skipSchemaValidation": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SkipSchemaValidation allows skipping schema validation against the chart values",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"disableDependencyUpdate": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DisableDependencyUpdate allows skipping chart dependencies update",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericMap", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ValuesFrom"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_IgnoreOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "IgnoreOptions defines conditions to be ignored when monitoring the Bundle.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions is a list of conditions to be ignored when monitoring the Bundle.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Type: []string{"object"},
+										AdditionalProperties: &spec.SchemaOrBool{
+											Allows: true,
+											Schema: &spec.Schema{
+												SchemaProps: spec.SchemaProps{
+													Default: "",
+													Type:    []string{"string"},
+													Format:  "",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_KustomizeOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "KustomizeOptions for a deployment.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"dir": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Dir points to a custom folder for kustomize resources. This folder must contain a kustomization.yaml file.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_LocalObjectReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of a resource in the same namespace as the referent.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_ModifiedStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ModifiedStatus is used to report the status of a resource that is modified. It indicates if the modification was a create, a delete or a patch.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"missing": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"exist": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Exist is true if the resource exists but is not owned by us. This can happen if a resource was adopted by another bundle whereas the first bundle still exists and due to that reports that it does not own it.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"delete": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"boolean"},
+							Format: "",
+						},
+					},
+					"patch": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_NonReadyResource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NonReadyResource contains information about a non-ready resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"bundleState": {
+						SchemaProps: spec.SchemaProps{
+							Description: "BundleState is the state of the bundle, e.g. \"NotReady\" or \"Modified\".",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Message contains information why the bundle is not ready.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"modifiedStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ModifiedStatus lists the state for each modified resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ModifiedStatus"),
+									},
+								},
+							},
+						},
+					},
+					"nonReadyStatus": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NonReadyStatus lists the state for each non-ready resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyStatus"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ModifiedStatus", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.NonReadyStatus"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_NonReadyStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "NonReadyStatus is used to report the status of a resource that is not ready. It includes a summary.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"uid": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"summary": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1/summary.Summary"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1/summary.Summary"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_Operation(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Operation of a ComparePatch, usually: * \"remove\" to remove a specific path in a resource * \"ignore\" to remove the entire resource from checks for modifications.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"op": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Op is usually \"remove\" or \"ignore\"",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"path": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Path is the JSON path to remove. Not needed if Op is \"ignore\".",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"value": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Value is usually empty.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_OverwrittenResource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "OverwrittenResource indicates a resource that is overwritten by another bundle.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_PerClusterState(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "PerClusterState aggregates list of cluster IDs per state for a given Resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Ready is a list of cluster IDs for which this a resource is in Ready state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"waitApplied": {
+						SchemaProps: spec.SchemaProps{
+							Description: "WaitApplied is a list of cluster IDs for which this a resource is in WaitApplied state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"pending": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Pending is a list of cluster IDs for which this a resource is in Pending state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"modified": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Modified is a list of cluster IDs for which this a resource is in Modified state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"orphaned": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Orphaned is a list of cluster IDs for which this a resource is in Orphaned state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"missing": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Missing is a list of cluster IDs for which this a resource is in Missing state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"unknown": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Unknown is a list of cluster IDs for which this a resource is in Unknown state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"notReady": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NotReady is a list of cluster IDs for which this a resource is in NotReady state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_Resource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Resource contains metadata about the resources of a bundle.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion is the API version of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is the k8s kind of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Type is the type of the resource, e.g. \"apiextensions.k8s.io.customresourcedefinition\" or \"configmap\".",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"id": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ID is the name of the resource, e.g. \"namespace1/my-config\" or \"backingimagemanagers.storage.io\".",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Namespace of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the resource.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"incompleteState": {
+						SchemaProps: spec.SchemaProps{
+							Description: "IncompleteState is true if a bundle summary has 10 or more non-ready resources or a non-ready resource has more 10 or more non-ready or modified states.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"state": {
+						SchemaProps: spec.SchemaProps{
+							Description: "State is the state of the resource, e.g. \"Unknown\", \"WaitApplied\", \"ErrApplied\" or \"Ready\".",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"error": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Error is true if any Error in the PerClusterState is true.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"transitioning": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Transitioning is true if any Transitioning in the PerClusterState is true.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Message is the first message from the PerClusterStates.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"perClusterState": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PerClusterState contains lists of cluster IDs for every State for this resource",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.PerClusterState"),
+						},
+					},
+				},
+				Required: []string{"perClusterState"},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.PerClusterState"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_ResourceCounts(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "ResourceCounts contains the number of resources in each state.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"ready": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Ready is the number of ready resources.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"desiredReady": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DesiredReady is the number of resources that should be ready.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"waitApplied": {
+						SchemaProps: spec.SchemaProps{
+							Description: "WaitApplied is the number of resources that are waiting to be applied.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"modified": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Modified is the number of resources that have been modified.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"orphaned": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Orphaned is the number of orphaned resources.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"missing": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Missing is the number of missing resources.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"unknown": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Unknown is the number of resources in an unknown state.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"notReady": {
+						SchemaProps: spec.SchemaProps{
+							Description: "NotReady is the number of not ready resources. Resources are not ready if they do not match any other state.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_SecretKeySelector(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of a resource in the same namespace as the referent.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"namespace": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"key": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_StatusBase(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"readyClusters": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ReadyClusters is the lowest number of clusters that are ready over all the bundles of this resource.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"desiredReadyClusters": {
+						SchemaProps: spec.SchemaProps{
+							Description: "DesiredReadyClusters\tis the number of clusters that should be ready for bundles of this resource.",
+							Default:     0,
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"summary": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Summary contains the number of bundle deployments in each state and a list of non-ready resources.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleSummary"),
+						},
+					},
+					"display": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Display contains a human readable summary of the status.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.StatusDisplay"),
+						},
+					},
+					"conditions": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions is a list of Wrangler conditions that describe the state of the resource.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericCondition"),
+									},
+								},
+							},
+						},
+					},
+					"resources": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Resources contains metadata about the resources of each bundle.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Resource"),
+									},
+								},
+							},
+						},
+					},
+					"resourceCounts": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ResourceCounts contains the number of resources in each state over all bundles.",
+							Default:     map[string]interface{}{},
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts"),
+						},
+					},
+					"perClusterResourceCounts": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PerClusterResourceCounts contains the number of resources in each state over all bundles, per cluster.",
+							Type:        []string{"object"},
+							AdditionalProperties: &spec.SchemaOrBool{
+								Allows: true,
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Ref: ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.BundleSummary", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.GenericCondition", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.Resource", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ResourceCounts", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.StatusDisplay"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_StatusDisplay(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Type: []string{"object"},
+				Properties: map[string]spec.Schema{
+					"readyBundleDeployments": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ReadyBundleDeployments is a string in the form \"%d/%d\", that describes the number of ready bundledeployments over the total number of bundledeployments.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"state": {
+						SchemaProps: spec.SchemaProps{
+							Description: "State is the state of the resource, e.g. \"GitUpdating\" or the maximal BundleState according to StateRank.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Message contains the relevant message from the deployment conditions.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"error": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Error is true if a message is present.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_ValuesFrom(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "Define helm values that can come from configmap, secret or external. Credit: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"configMapKeyRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reference to a config map with release values.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ConfigMapKeySelector"),
+						},
+					},
+					"secretKeyRef": {
+						SchemaProps: spec.SchemaProps{
+							Description: "The reference to a secret with release values.",
+							Ref:         ref("github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.SecretKeySelector"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.ConfigMapKeySelector", "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1.SecretKeySelector"},
+	}
+}
+
+func schema_pkg_apis_storagefleetcattleio_v1alpha1_YAMLOptions(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "YAMLOptions, if using raw YAML these are names that map to overlays/{name} files that will be used to replace or patch a resource.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"overlays": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Overlays is a list of names that maps to folders in \"overlays/\". If you wish to customize the file ./subdir/resource.yaml then a file ./overlays/myoverlay/subdir/resource.yaml will replace the base file. A file named ./overlays/myoverlay/subdir/resource_patch.yaml will patch the base file.",
+							Type:        []string{"array"},
 							Items: &spec.SchemaOrArray{
 								Schema: &spec.Schema{
 									SchemaProps: spec.SchemaProps{

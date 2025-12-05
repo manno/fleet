@@ -15,7 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/watch"
 
-	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 // Watcher manages watch connections for BundleDeployments
@@ -136,7 +136,7 @@ func (w *Watcher) sendInitialEvents(wi *watcherInstance) {
 	defer rows.Close()
 
 	for rows.Next() {
-		bd := &fleetv1alpha1.BundleDeployment{}
+		bd := &storagev1alpha1.BundleDeployment{}
 		var labelsJSON, annotationsJSON, finalizersJSON, ownerRefsJSON, specJSON, statusJSON sql.NullString
 		var deletionTimestamp sql.NullInt64
 		var creationTimestamp int64
@@ -194,7 +194,7 @@ func (w *Watcher) sendInitialEvents(wi *watcherInstance) {
 
 		bd.TypeMeta = metav1.TypeMeta{
 			Kind:       "BundleDeployment",
-			APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+			APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 		}
 
 		// Apply label selector
@@ -271,14 +271,14 @@ func (w *Watcher) pollWatcher(wi *watcherInstance) {
 
 		// For DELETED events, we don't have the full object
 		if eventType == watch.Deleted {
-			bd := &fleetv1alpha1.BundleDeployment{
+			bd := &storagev1alpha1.BundleDeployment{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: event.Namespace,
 					Name:      event.Name,
 				},
 				TypeMeta: metav1.TypeMeta{
 					Kind:       "BundleDeployment",
-					APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+					APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 				},
 			}
 			select {
@@ -313,14 +313,14 @@ func (w *Watcher) pollWatcher(wi *watcherInstance) {
 }
 
 // getBundleDeployment retrieves a BundleDeployment from the database
-func (w *Watcher) getBundleDeployment(namespace, name string) (*fleetv1alpha1.BundleDeployment, error) {
+func (w *Watcher) getBundleDeployment(namespace, name string) (*storagev1alpha1.BundleDeployment, error) {
 	query := `SELECT namespace, name, resource_version, uid, creation_timestamp, deletion_timestamp, 
 	          generation, labels, annotations, finalizers, owner_references, spec, status 
 	          FROM bundledeployments WHERE namespace = ? AND name = ?`
 
 	row := w.db.DB().QueryRow(query, namespace, name)
 
-	bd := &fleetv1alpha1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	var labelsJSON, annotationsJSON, finalizersJSON, ownerRefsJSON, specJSON, statusJSON sql.NullString
 	var deletionTimestamp sql.NullInt64
 	var creationTimestamp int64
@@ -379,7 +379,7 @@ func (w *Watcher) getBundleDeployment(namespace, name string) (*fleetv1alpha1.Bu
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
-		APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+		APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 	}
 
 	return bd, nil

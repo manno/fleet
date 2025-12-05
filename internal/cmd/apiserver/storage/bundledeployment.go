@@ -18,7 +18,7 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/apiserver/pkg/registry/rest"
 
-	fleetv1alpha1 "github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	storagev1alpha1 "github.com/rancher/fleet/pkg/apis/storage.fleet.cattle.io/v1alpha1"
 )
 
 // BundleDeploymentStorage implements rest.StandardStorage for BundleDeployment
@@ -47,7 +47,7 @@ var _ rest.GroupVersionKindProvider = &BundleDeploymentStorage{}
 
 // New returns a new BundleDeployment
 func (s *BundleDeploymentStorage) New() runtime.Object {
-	return &fleetv1alpha1.BundleDeployment{}
+	return &storagev1alpha1.BundleDeployment{}
 }
 
 // Destroy cleans up resources on deletion
@@ -57,7 +57,7 @@ func (s *BundleDeploymentStorage) Destroy() {
 
 // NewList returns a new BundleDeploymentList
 func (s *BundleDeploymentStorage) NewList() runtime.Object {
-	return &fleetv1alpha1.BundleDeploymentList{}
+	return &storagev1alpha1.BundleDeploymentList{}
 }
 
 // GetSingularName returns the singular name for BundleDeployment
@@ -67,7 +67,7 @@ func (s *BundleDeploymentStorage) GetSingularName() string {
 
 // GroupVersionKind returns the GVK for BundleDeployment
 func (s *BundleDeploymentStorage) GroupVersionKind(containingGV schema.GroupVersion) schema.GroupVersionKind {
-	return fleetv1alpha1.SchemeGroupVersion.WithKind("BundleDeployment")
+	return storagev1alpha1.SchemeGroupVersion.WithKind("BundleDeployment")
 }
 
 // NamespaceScoped returns true if the resource is namespaced
@@ -88,7 +88,7 @@ func (s *BundleDeploymentStorage) Get(ctx context.Context, name string, options 
 
 	row := s.db.DB().QueryRowContext(ctx, query, namespace, name)
 
-	bd := &fleetv1alpha1.BundleDeployment{}
+	bd := &storagev1alpha1.BundleDeployment{}
 	var labelsJSON, annotationsJSON, finalizersJSON, ownerRefsJSON, specJSON, statusJSON sql.NullString
 	var deletionTimestamp sql.NullInt64
 	var creationTimestamp int64
@@ -112,7 +112,7 @@ func (s *BundleDeploymentStorage) Get(ctx context.Context, name string, options 
 	)
 
 	if err == sql.ErrNoRows {
-		return nil, errors.NewNotFound(fleetv1alpha1.SchemeGroupVersion.WithResource("bundledeployments").GroupResource(), name)
+		return nil, errors.NewNotFound(storagev1alpha1.SchemeGroupVersion.WithResource("bundledeployments").GroupResource(), name)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get bundledeployment: %w", err)
@@ -162,7 +162,7 @@ func (s *BundleDeploymentStorage) Get(ctx context.Context, name string, options 
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
-		APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+		APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 	}
 
 	return bd, nil
@@ -197,16 +197,16 @@ func (s *BundleDeploymentStorage) List(ctx context.Context, options *metainterna
 	}
 	defer rows.Close()
 
-	list := &fleetv1alpha1.BundleDeploymentList{
+	list := &storagev1alpha1.BundleDeploymentList{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "BundleDeploymentList",
-			APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+			APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 		},
-		Items: []fleetv1alpha1.BundleDeployment{},
+		Items: []storagev1alpha1.BundleDeployment{},
 	}
 
 	for rows.Next() {
-		bd := fleetv1alpha1.BundleDeployment{}
+		bd := storagev1alpha1.BundleDeployment{}
 		var labelsJSON, annotationsJSON, finalizersJSON, ownerRefsJSON, specJSON, statusJSON sql.NullString
 		var deletionTimestamp sql.NullInt64
 		var creationTimestamp int64
@@ -264,7 +264,7 @@ func (s *BundleDeploymentStorage) List(ctx context.Context, options *metainterna
 
 		bd.TypeMeta = metav1.TypeMeta{
 			Kind:       "BundleDeployment",
-			APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+			APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 		}
 
 		// Apply label selector filtering
@@ -285,7 +285,7 @@ func (s *BundleDeploymentStorage) List(ctx context.Context, options *metainterna
 
 // Create creates a new BundleDeployment
 func (s *BundleDeploymentStorage) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
-	bd, ok := obj.(*fleetv1alpha1.BundleDeployment)
+	bd, ok := obj.(*storagev1alpha1.BundleDeployment)
 	if !ok {
 		return nil, fmt.Errorf("invalid object type")
 	}
@@ -355,7 +355,7 @@ func (s *BundleDeploymentStorage) Create(ctx context.Context, obj runtime.Object
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
-		APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+		APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 	}
 
 	return bd, nil
@@ -378,7 +378,7 @@ func (s *BundleDeploymentStorage) Update(ctx context.Context, name string, objIn
 		return created, true, err
 	}
 
-	existingBD := existing.(*fleetv1alpha1.BundleDeployment)
+	existingBD := existing.(*storagev1alpha1.BundleDeployment)
 
 	// Get updated object
 	updatedObj, err := objInfo.UpdatedObject(ctx, existingBD)
@@ -386,7 +386,7 @@ func (s *BundleDeploymentStorage) Update(ctx context.Context, name string, objIn
 		return nil, false, err
 	}
 
-	bd, ok := updatedObj.(*fleetv1alpha1.BundleDeployment)
+	bd, ok := updatedObj.(*storagev1alpha1.BundleDeployment)
 	if !ok {
 		return nil, false, fmt.Errorf("invalid object type")
 	}
@@ -445,7 +445,7 @@ func (s *BundleDeploymentStorage) Update(ctx context.Context, name string, objIn
 
 	bd.TypeMeta = metav1.TypeMeta{
 		Kind:       "BundleDeployment",
-		APIVersion: fleetv1alpha1.SchemeGroupVersion.String(),
+		APIVersion: storagev1alpha1.SchemeGroupVersion.String(),
 	}
 
 	return bd, false, nil
@@ -459,7 +459,7 @@ func (s *BundleDeploymentStorage) Delete(ctx context.Context, name string, delet
 		return nil, false, err
 	}
 
-	bd := existing.(*fleetv1alpha1.BundleDeployment)
+	bd := existing.(*storagev1alpha1.BundleDeployment)
 
 	// Get namespace from context
 	namespace := bd.Namespace
@@ -490,7 +490,7 @@ func (s *BundleDeploymentStorage) DeleteCollection(ctx context.Context, deleteVa
 		return nil, err
 	}
 
-	bdList := list.(*fleetv1alpha1.BundleDeploymentList)
+	bdList := list.(*storagev1alpha1.BundleDeploymentList)
 	for _, bd := range bdList.Items {
 		_, _, err := s.Delete(ctx, bd.Name, deleteValidation, options)
 		if err != nil {
@@ -522,7 +522,7 @@ func (s *BundleDeploymentStorage) Watch(ctx context.Context, options *metaintern
 
 // ConvertToTable converts the object to a table for printing
 func (s *BundleDeploymentStorage) ConvertToTable(ctx context.Context, obj runtime.Object, tableOptions runtime.Object) (*metav1.Table, error) {
-	gr := fleetv1alpha1.SchemeGroupVersion.WithResource("bundledeployments").GroupResource()
+	gr := storagev1alpha1.SchemeGroupVersion.WithResource("bundledeployments").GroupResource()
 	return rest.NewDefaultTableConvertor(gr).ConvertToTable(ctx, obj, tableOptions)
 }
 
@@ -540,7 +540,7 @@ var _ rest.Storage = &BundleDeploymentStatusStorage{}
 var _ rest.Patcher = &BundleDeploymentStatusStorage{}
 
 func (s *BundleDeploymentStatusStorage) New() runtime.Object {
-	return &fleetv1alpha1.BundleDeployment{}
+	return &storagev1alpha1.BundleDeployment{}
 }
 
 func (s *BundleDeploymentStatusStorage) Destroy() {}
