@@ -23,7 +23,9 @@ func GetManifestFromHelmChart(ctx context.Context, c client.Reader, bd *fleet.Bu
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(temp)
+	defer func() {
+		_ = os.RemoveAll(temp)
+	}()
 
 	nsName := types.NamespacedName{Namespace: bd.Namespace, Name: bd.Spec.HelmChartOptions.SecretName}
 	auth, err := ReadHelmAuthFromSecret(ctx, c, nsName)

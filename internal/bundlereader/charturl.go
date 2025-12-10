@@ -152,7 +152,9 @@ func getHelmRepoIndex(ctx context.Context, repoURL string, auth Auth) (helmRepoI
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch %q: %w", indexURL, err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {

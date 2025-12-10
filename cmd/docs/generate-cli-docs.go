@@ -108,7 +108,9 @@ func createMarkdownFile(cmd *cobra.Command, dir string) error {
 	if err != nil {
 		return errors.Wrap(err, "error creating file")
 	}
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	err = writeFileHeader(f, cmd.CommandPath())
 	if err != nil {
@@ -153,5 +155,5 @@ sidebar_label: "%s"
 }
 
 func usage() {
-	fmt.Fprintln(os.Stdout, "Usage: ", os.Args[0], " <directory>")
+	_, _ = fmt.Fprintln(os.Stdout, "Usage: ", os.Args[0], " <directory>")
 }
