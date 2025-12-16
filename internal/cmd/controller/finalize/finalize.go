@@ -18,9 +18,29 @@ import (
 )
 
 const (
-	HelmOpFinalizer           = "fleet.cattle.io/helmop-finalizer"
-	GitRepoFinalizer          = "fleet.cattle.io/gitrepo-finalizer"
-	BundleFinalizer           = "fleet.cattle.io/bundle-finalizer"
+	// HelmOpFinalizer is attached to HelmOp resources to ensure proper cleanup
+	// of Helm releases and related resources. When a HelmOp is deleted, this
+	// finalizer ensures that the corresponding Helm release is uninstalled
+	// before allowing the HelmOp resource to be removed from etcd.
+	HelmOpFinalizer = "fleet.cattle.io/helmop-finalizer"
+
+	// GitRepoFinalizer is attached to GitRepo resources to ensure proper cleanup
+	// of all dependent resources when a GitRepo is deleted. This includes purging
+	// all related Bundles, BundleDeployments, ImageScans, and optionally the
+	// target namespace if Bundle.Spec.DeleteNamespace is true.
+	GitRepoFinalizer = "fleet.cattle.io/gitrepo-finalizer"
+
+	// BundleFinalizer is attached to Bundle resources to ensure proper cleanup
+	// of all related BundleDeployments when a Bundle is deleted. This finalizer
+	// prevents the Bundle from being removed until all of its BundleDeployments
+	// have been properly cleaned up from target clusters.
+	BundleFinalizer = "fleet.cattle.io/bundle-finalizer"
+
+	// BundleDeploymentFinalizer is attached to BundleDeployment resources to ensure
+	// proper cleanup of deployed resources on target clusters. This finalizer ensures
+	// that Helm releases, Content resources, and any deployed Kubernetes resources
+	// are properly removed from the target cluster before the BundleDeployment
+	// resource itself is deleted from etcd.
 	BundleDeploymentFinalizer = "fleet.cattle.io/bundle-deployment-finalizer"
 )
 
