@@ -5,13 +5,16 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+
+	"github.com/rancher/fleet/pkg/version"
 )
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "report",
-		Short: "report on a ginkgo json",
-		Long:  `This is used to analyze benchmark results.`,
+		Use:     "report",
+		Short:   "report on a ginkgo json",
+		Long:    `This is used to analyze benchmark results.`,
+		Version: version.FriendlyVersion(),
 	}
 	input     string
 	db        string
