@@ -176,6 +176,7 @@ var _ = BeforeSuite(func() {
 	record.CRDCount(ctx, e, "CRDCount")
 	record.Nodes(ctx, e)
 	record.Clusters(ctx, e)
+	record.BenchmarkVersion(e)
 	if metrics {
 		record.Metrics(e, "")
 	}

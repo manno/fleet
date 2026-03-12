@@ -22,6 +22,7 @@ import (
 
 	"github.com/rancher/fleet/e2e/testenv/kubectl"
 	"github.com/rancher/fleet/pkg/apis/fleet.cattle.io/v1alpha1"
+	fleetversion "github.com/rancher/fleet/pkg/version"
 
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -151,6 +152,10 @@ func Clusters(ctx context.Context, setup *gm.Experiment) {
 	clusters := &v1alpha1.ClusterList{}
 	Expect(k8sClient.List(ctx, clusters, client.InNamespace(workspace))).To(Succeed())
 	setup.RecordValue("ClusterCount", float64(len(clusters.Items)), gm.Precision(0), gm.Units("clusters"))
+}
+
+func BenchmarkVersion(experiment *gm.Experiment) {
+	experiment.RecordNote(Header("Benchmark Version")+fleetversion.FriendlyVersion(), gm.Style("{{green}}"))
 }
 
 func Nodes(ctx context.Context, experiment *gm.Experiment) {

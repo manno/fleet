@@ -106,6 +106,7 @@ type corpusEntry = struct {
 type matchStringOnly func(pat, str string) (bool, error)
 
 func (f matchStringOnly) MatchString(pat, str string) (bool, error)   { return f(pat, str) }
+func (f matchStringOnly) ModulePath() string                          { return "" }
 func (f matchStringOnly) StartCPUProfile(w io.Writer) error           { return errMain }
 func (f matchStringOnly) StopCPUProfile()                             {}
 func (f matchStringOnly) WriteProfileTo(string, io.Writer, int) error { return errMain }
