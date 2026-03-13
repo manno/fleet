@@ -35,6 +35,22 @@ type gitRepoManifestData struct {
 	Workspace string
 }
 
+type deploymentUpdateState struct {
+	DeploymentID        string
+	AppliedDeploymentID string
+	ForceSyncGeneration int64
+	SyncGeneration      *int64
+	Ready               bool
+}
+
+func hasLabel(obj client.Object, key, value string) bool {
+	labels := obj.GetLabels()
+	if labels == nil {
+		return false
+	}
+	return labels[key] == value
+}
+
 func setClusterLabel(clusterNames []string, label, value string) (map[string]clusterLabelState, error) {
 	originalStates := make(map[string]clusterLabelState, len(clusterNames))
 
@@ -124,7 +140,7 @@ func updateGitRepoForceSyncGeneration(group string, generation int64) error {
 	return nil
 }
 
-func collectGitRepoTargetingState(group string, expectedTargets int, expectedForceSync int64) (map[string]string, error) {
+func collectGitRepoTargetingState(group string, expectedTargets int, expectedForceSync int64) (map[string]deploymentUpdateState, error) {
 	list, err := listGitReposByGroup(group)
 	if err != nil {
 		return nil, err
@@ -147,7 +163,99 @@ func collectGitRepoTargetingState(group string, expectedTargets int, expectedFor
 		}
 	}
 
-	return collectBundleTargetingStateForGroup(group, gitRepoTargetingExpectedBundles, expectedTargets, false)
+	allBundles := &v1alpha1.BundleList{}
+	if err := k8sClient.List(ctx, allBundles, client.InNamespace(workspace)); err != nil {
+		return nil, err
+	}
+
+	bundles := make([]v1alpha1.Bundle, 0, len(allBundles.Items))
+	for _, bundle := range allBundles.Items {
+		if hasLabel(&bundle, "fleet.cattle.io/group", group) {
+			bundles = append(bundles, bundle)
+		}
+	}
+
+	if len(bundles) != gitRepoTargetingExpectedBundles {
+		return nil, fmt.Errorf("expected %d bundles, got %d", gitRepoTargetingExpectedBundles, len(bundles))
+	}
+
+	for _, bundle := range bundles {
+		if bundle.Generation != bundle.Status.ObservedGeneration {
+			return nil, fmt.Errorf("bundle %s generation %d has observed generation %d", bundle.Name, bundle.Generation, bundle.Status.ObservedGeneration)
+		}
+		if bundle.Status.Summary.DesiredReady != expectedTargets {
+			return nil, fmt.Errorf("bundle %s desired ready %d, expected %d", bundle.Name, bundle.Status.Summary.DesiredReady, expectedTargets)
+		}
+	}
+
+	allDeployments := &v1alpha1.BundleDeploymentList{}
+	if err := k8sClient.List(ctx, allDeployments); err != nil {
+		return nil, err
+	}
+
+	deployments := make([]v1alpha1.BundleDeployment, 0, len(allDeployments.Items))
+	for _, deployment := range allDeployments.Items {
+		if hasLabel(&deployment, "fleet.cattle.io/group", group) {
+			deployments = append(deployments, deployment)
+		}
+	}
+
+	expectedDeployments := gitRepoTargetingExpectedBundles * expectedTargets
+	if len(deployments) != expectedDeployments {
+		return nil, fmt.Errorf("expected %d bundledeployments, got %d", expectedDeployments, len(deployments))
+	}
+
+	deploymentStates := make(map[string]deploymentUpdateState, len(deployments))
+	for _, deployment := range deployments {
+		if deployment.Spec.DeploymentID == "" {
+			return nil, fmt.Errorf("bundledeployment %s/%s has empty deployment ID", deployment.Namespace, deployment.Name)
+		}
+		if deployment.Spec.Options.ForceSyncGeneration != expectedForceSync {
+			return nil, fmt.Errorf(
+				"bundledeployment %s/%s force sync generation %d, expected %d",
+				deployment.Namespace,
+				deployment.Name,
+				deployment.Spec.Options.ForceSyncGeneration,
+				expectedForceSync,
+			)
+		}
+		if expectedForceSync > 0 {
+			if deployment.Status.SyncGeneration == nil {
+				return nil, fmt.Errorf("bundledeployment %s/%s has nil sync generation", deployment.Namespace, deployment.Name)
+			}
+			if *deployment.Status.SyncGeneration != expectedForceSync {
+				return nil, fmt.Errorf(
+					"bundledeployment %s/%s sync generation %d, expected %d",
+					deployment.Namespace,
+					deployment.Name,
+					*deployment.Status.SyncGeneration,
+					expectedForceSync,
+				)
+			}
+		}
+		if deployment.Status.AppliedDeploymentID != deployment.Spec.DeploymentID {
+			return nil, fmt.Errorf(
+				"bundledeployment %s/%s applied deployment ID %q does not match spec deployment ID %q",
+				deployment.Namespace,
+				deployment.Name,
+				deployment.Status.AppliedDeploymentID,
+				deployment.Spec.DeploymentID,
+			)
+		}
+		if !deployment.Status.Ready {
+			return nil, fmt.Errorf("bundledeployment %s/%s is not ready", deployment.Namespace, deployment.Name)
+		}
+		key := fmt.Sprintf("%s/%s", deployment.Namespace, deployment.Name)
+		deploymentStates[key] = deploymentUpdateState{
+			DeploymentID:        deployment.Spec.DeploymentID,
+			AppliedDeploymentID: deployment.Status.AppliedDeploymentID,
+			ForceSyncGeneration: deployment.Spec.Options.ForceSyncGeneration,
+			SyncGeneration:      deployment.Status.SyncGeneration,
+			Ready:               deployment.Status.Ready,
+		}
+	}
+
+	return deploymentStates, nil
 }
 
 // create-update-1-gitrepo-100-gitrepo-3-bundledeployment
@@ -211,32 +319,18 @@ var _ = Context("Benchmarks GitOps Targeting", func() {
 				_, err := k.Apply("-f", manifest)
 				Expect(err).ToNot(HaveOccurred())
 
-				var deploymentIDs map[string]string
 				Eventually(func() error {
-					current, err := collectGitRepoTargetingState(gitRepoTargetingGroup, expectedTargets, 0)
-					if err != nil {
-						return err
-					}
-					deploymentIDs = current
-					return nil
+					_, err := collectGitRepoTargetingState(gitRepoTargetingGroup, expectedTargets, 0)
+					return err
 				}).WithTimeout(LongTimeout).WithPolling(LongPollingInterval).Should(Succeed())
 
 				for wave := 1; wave <= gitRepoTargetingUpdateWaves; wave++ {
-					previousDeploymentIDs := deploymentIDs
-
 					err := updateGitRepoForceSyncGeneration(gitRepoTargetingGroup, int64(wave))
 					Expect(err).ToNot(HaveOccurred())
 
 					Eventually(func() error {
-						current, err := collectGitRepoTargetingState(gitRepoTargetingGroup, expectedTargets, int64(wave))
-						if err != nil {
-							return err
-						}
-						if err := deploymentIDsChanged(current, previousDeploymentIDs); err != nil {
-							return err
-						}
-						deploymentIDs = current
-						return nil
+						_, err := collectGitRepoTargetingState(gitRepoTargetingGroup, expectedTargets, int64(wave))
+						return err
 					}).WithTimeout(LongTimeout).WithPolling(LongPollingInterval).Should(Succeed())
 				}
 			}, gm.Style("{{bold}}"))
