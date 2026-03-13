@@ -1,0 +1,12 @@
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: bm-update-1-gitrepo-100-gitrepo-3-bundledeployment
+spec:
+  repo: https://github.com/rancher/fleet-test-data
+  branch: benchmarks/v0.15
+  paths:
+    - benchmarks/create-update-1-gitrepo-100-gitrepo-3-bundledeployment/child-gitrepos
+  targetNamespace: {{ .Workspace }}
+  targets:
+    - clusterName: local

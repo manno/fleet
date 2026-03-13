@@ -11,12 +11,17 @@ The benchmark suite measures **core experiments** that align with Fleet's bundle
 - **`create-1-gitrepo-50-bundle`**: Measures how fast Fleet can create 50 bundles from a single GitRepo
 - **`create-50-gitrepo-50-bundle`**: Tests scaling with 50 GitRepos creating 50 bundles total
 
-### 2. Targeting Performance - Bundle to BundleDeployment
+### 2. GitOps Targeting Performance - Parent GitRepo to Child BundleDeployment Updates
+
+- **`create-update-1-gitrepo-100-gitrepo-3-bundledeployment`**: Applies one parent GitRepo to the local cluster so it creates 100 child GitRepos, each child rendering 3 Helm-backed bundles with values files, then forces child GitRepo update waves and measures BundleDeployment creation and update propagation
+
+### 3. Targeting Performance - Bundle to BundleDeployment
 
 - **`create-50-bundle`**: Creates 50 bundles and measures how long it takes to target them to clusters (creating BundleDeployments)
 - **`create-150-bundle`**: Creates 150 bundles targeting all clusters (skips if >1000 clusters to avoid overwhelming etcd)
+- **`create-update-500-bundle`**: Creates 500 bundles, limits targeting to at most two benchmark clusters, and reapplies updated bundle content multiple times to stress bundle update throughput without exploding BundleDeployment fan-out
 
-### 3. Deployment Performance - BundleDeployment to Ready Resources
+### 4. Deployment Performance - BundleDeployment to Ready Resources
 
 - **`create-1-bundledeployment-10-resources`**: Measures deployment of 1 BundleDeployment resulting in 10 Kubernetes resources per cluster
 - **`create-50-bundledeployment-500-resources`**: Tests larger-scale deployment with 50 BundleDeployments creating 500 resources per cluster
@@ -282,7 +287,9 @@ benchmarks/
 ├── assets/                    # Test resources (embedded in binary)
 │   ├── create-1-gitrepo-50-bundle/
 │   ├── create-50-gitrepo-50-bundle/
+│   ├── create-update-1-gitrepo-100-gitrepo-3-bundledeployment/
 │   ├── create-bundle/
+│   ├── create-update-bundle/
 │   ├── create-1-bundledeployment-10-resources/
 │   └── create-bundledeployment-500-resources/
 ├── cmd/                       # CLI wrapper and reporting tools (package main)
@@ -295,6 +302,7 @@ benchmarks/
 ├── report/                    # Report generation and formatting
 ├── suite.go                   # Ginkgo test suite setup (package benchmarks)
 ├── gitrepo_bundle.go         # GitOps performance tests
+├── gitrepo_targeting.go      # Parent GitRepo to child BundleDeployment targeting tests
 ├── targeting.go              # Targeting performance tests
 └── deploy.go                 # Deployment performance tests
 ```

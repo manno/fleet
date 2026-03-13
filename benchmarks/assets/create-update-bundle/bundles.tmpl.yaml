@@ -1,0 +1,27 @@
+{{ range $i := N .Max }}
+---
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Bundle
+metadata:
+  name: create-update-{{- $i }}-bundle
+  labels:
+    fleet.cattle.io/commit: 269ad1f41bd40bf9f2df9dec571fcc299ecf5c94
+    fleet.cattle.io/benchmark-group: {{ $.Group }}
+spec:
+  resources:
+  - content: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: test-config-{{ $i }}-revision-{{ $.Revision }}
+      data:
+        bundle: "{{ $i }}"
+        revision: "{{ $.Revision }}"
+        payload: |
+          benchmark bundle {{ $i }} revision {{ $.Revision }}
+    name: configmap-revision-{{ $.Revision }}.yaml
+  targets:
+{{- range $.ClusterNames }}
+  - clusterName: {{ printf "%q" . }}
+{{- end }}
+{{ end }}
